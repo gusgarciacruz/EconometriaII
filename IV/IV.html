@@ -1,0 +1,1280 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Estimación por variables instrumentales (IV)</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Gustavo A. García   ggarci24@eafit.edu.co                  " />
+    <script src="libs/header-attrs-2.11/header-attrs.js"></script>
+    <script src="libs/clipboard-2.0.6/clipboard.min.js"></script>
+    <link href="libs/xaringanExtra-clipboard-0.2.6/xaringanExtra-clipboard.css" rel="stylesheet" />
+    <script src="libs/xaringanExtra-clipboard-0.2.6/xaringanExtra-clipboard.js"></script>
+    <script>window.xaringanExtraClipboard(null, {"button":"<i class=\"fa fa-clipboard\"><\/i>","success":"<i class=\"fa fa-check\" style=\"color: #90BE6D\"><\/i>","error":"<i class=\"fa fa-times-circle\" style=\"color: #F94144\"><\/i>"})</script>
+    <link href="libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+    <link href="libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+    <link href="libs/xaringanExtra-extra-styles-0.2.6/xaringanExtra-extra-styles.css" rel="stylesheet" />
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Estimación por variables instrumentales (IV)
+### Gustavo A. García <br> <span class="notbold" style="font-size:65%"><a href="mailto:ggarci24@eafit.edu.co" class="email">ggarci24@eafit.edu.co</a></span> <br> <br> <br> <br> <br> <br> <br> <br> <br>
+### <span class="notbold" style="font-size:65%">Econometría II <br> Programa de Economía <br> Universidad EAFIT</span>
+
+---
+
+
+
+
+&lt;style&gt;
+.notbold{
+    font-weight:normal
+}
+
+body {
+text-align: justify;
+}
+
+h1{
+      margin-top: -1px;
+      margin-bottom: -3px;
+}
+
+.small-code pre{
+  margin-bottom: -10px;
+  
+}  
+
+.medium-code pre{
+  margin-bottom: 2px;
+  
+} 
+&lt;/style&gt;
+
+
+
+
+
+
+&lt;font size = "5"&gt;
+
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+
+Link slides en formato [html](https://gusgarciacruz.github.io/EconometriaII/IV/IV.html)
+
+Link slides en formato [PDF](https://gusgarciacruz.github.io/EconometriaII/IV/IV.pdf)
+---
+# &lt;span style="font-size:80%"&gt;En este tema&lt;/span&gt;
+
+- &lt;span style="font-size:150%"&gt;[&lt;span style="color:black"&gt;Motivación](#motivacion)&lt;/span&gt; &lt;br&gt; &lt;br&gt;
+
+- &lt;span style="font-size:150%"&gt; [&lt;span style="color:black"&gt;Causas](#causas)&lt;/span&gt; &lt;br&gt; &lt;br&gt;
+
+- &lt;span style="font-size:150%"&gt; [&lt;span style="color:black"&gt;El estimador por variables instrumentales](#iv)&lt;/span&gt; &lt;br&gt; &lt;br&gt;
+
+- &lt;span style="font-size:150%"&gt; [&lt;span style="color:black"&gt;Múltiples instrumentos: mínimos cuadrados en dos etapas (MC2E - *2SLS*)](#2sls)&lt;/span&gt; &lt;br&gt; &lt;br&gt;
+
+- &lt;span style="font-size:150%"&gt; [&lt;span style="color:black"&gt;2SLS: el caso general](#2slsg)&lt;/span&gt; &lt;br&gt; &lt;br&gt;
+
+- &lt;span style="font-size:150%"&gt; [&lt;span style="color:black"&gt;Expresión general para el estimador 2SLS](#expresion)&lt;/span&gt; &lt;br&gt; &lt;br&gt;
+
+- &lt;span style="font-size:150%"&gt; [&lt;span style="color:black"&gt;Ejercicio aplicado en R: efectos de la educación de la mujer sobre la fertilidad](#ejercicio)&lt;/span&gt;
+
+---
+# &lt;span style="font-size:80%"&gt;Lecturas&lt;/span&gt;
+- &lt;span style="font-size:150%"&gt;Wooldridge, J. (2010). *Econometric Analysis of Cross Section and Panel Data*. 2a edición. MA: MIT Press. &lt;span style="color:blue"&gt;Cap 5 &lt;br&gt; &lt;br&gt;
+
+- &lt;span style="font-size:150%"&gt; Greene, W. H. (2018). *Econometric Analysis*. 8th ed. NY: Pearson. &lt;span style="color:blue"&gt;Cap 8
+
+---
+name: motivacion
+# &lt;span style="font-size:80%"&gt;Motivación&lt;/span&gt;
+Recordemos que el modelo de RLM tiene la siguiente estructura y supuestos: 
+
+`$$\textbf{Y} = \textbf{X}\pmb{\beta} + \textbf{u}$$`
+- Modelo completo: `\(E(\textbf{u})=\textbf{0}\)`
+- &lt;span style="color:blue"&gt;Exogeneidad: `\(E(\textbf{X}'\textbf{u})=\textbf{0}\)`&lt;/span&gt;
+- Perturbaciones esféricas: `\(Cov(\textbf{u})=E(\textbf{u}\textbf{u}')=\sigma_{u}^2\textbf{I}_{n}\)`
+	(homocedasticidad y no autocorrelación)
+-	No multicolinealidad perfecta: `\(\rho(\textbf{X}_{n\text{x}k})=k&lt;n\)`
+-	Normalidad: `\(\textbf{u}_{n\text{x}1}\sim \textbf{N}(\textbf{0}_{n\text{x}1},\sigma_{u}^2\textbf{I}_{n})\)`
+
+El estimador por MCO es:
+
+`$$\widehat{\pmb{\beta}}_{MCO}=(\textbf{X}'\textbf{X})^{-1}\textbf{X}'\textbf{Y}$$`
+Ahora, la existencia de correlación entre los regresores y las perturbaciones estocásticas del modelo genera sesgo e inconsistencia en los parámetros estimados por MCO:
+- Para que `\(E(\widehat{\pmb{\beta}}_{MCO})=\pmb{\beta}\)` se requiere que `\(E(\textbf{X}'\textbf{u})=\textbf{0}\)`
+- Para que `\(plim(\widehat{\pmb{\beta}}_{MCO})=\pmb{\beta}\)` se requiere que `\(plim(N^{-1}\textbf{X}'\textbf{u})=0\)`
+
+---
+# &lt;span style="font-size:80%"&gt;Motivación&lt;/span&gt;
+&lt;font size = "5"&gt;
+&lt;p style="line-height: 2em;"&gt;
+Como existe correlación entre `\(\textbf{u}\)` y `\(\textbf{X}\)` entonces se genera un &lt;font color = "blue"&gt;problema de identificación&lt;/font&gt;, ya que `\(\frac{\partial\textbf{Y}}{\partial\textbf{X}} = \pmb{\beta} + \frac{\partial\textbf{u}}{\partial\textbf{X}}\)`, lo que implica que la estimación por MCO será `\(\pmb{\beta} + \frac{\partial\textbf{u}}{\partial\textbf{X}}\)` y no `\(\pmb{\beta}\)`
+
+---
+name: causas
+# &lt;span style="font-size:80%"&gt;Causas&lt;/span&gt;
+&lt;font size = "5"&gt;
+En econometría aplicada, la endogeneidad puede usualmente venir por las siguientes causas:
+&lt;font color = "blue"&gt;
+- Omisión de variables relevantes &lt;br&gt;&lt;br&gt;
+- Errores de medida en los regresores &lt;br&gt;&lt;br&gt;
+- Simultaneidad &lt;br&gt;&lt;br&gt;
+- Sesgo de selección &lt;br&gt;&lt;br&gt;
+- Modelos dinámicos y perturbaciones autocorrelacionadas
+
+---
+# &lt;span style="font-size:80%"&gt;Causas: &lt;font color = "blue"&gt;omisión de variables relevantes&lt;/font&gt;&lt;/span&gt;
+Se está interesado en la siguiente esperanza condicional &lt;font color = "blue"&gt; `\(E(y|\textbf{x}, q)\)`&lt;/font&gt;, pero `\(q\)` no es observable
+
+No habría problema si `\(q\)` y `\(\textbf{x}\)` no estuvieran correlacionados, pero ya que `\(q\)` no es observable haría parte del término de error y, por tanto, `\(\textbf{x}\)` y `\(u\)` estarán correlacionados a través de `\(q\)`, es decir, que &lt;font color = "blue"&gt; `\(\textbf{x}\)` sería endógena&lt;/font&gt;
+
+&lt;font color = "blue"&gt; Ejemplo&lt;/font&gt;: El salario de un individuo está dado por la siguiente ecuación:
+
+`$$w_i = \beta_1 + \beta_2 Educ_i + \beta_3 Habil_i + u_i$$`
+donde
+`$$Educ_i = \alpha_1 + \alpha_2 Habil_i + \epsilon_i$$`
+
+`\(w_i:\)` salario; `\(Educ_i:\)` nivel educativo; `\(Habil_i:\)` habilidad (variable no observable)
+
+Dado que `\(Habil_i\)` es no observable se termina estimando el siguiente modelo:
+`$$w_i = \beta_1 + \beta_2 Educ_i + \eta_i$$`
+así que, `\(\eta_i = \beta_3 Habil_i + u_i\)`, lo que implica que
+
+`$$E(Educ_i \eta_i) = E((\alpha_1 + \alpha_2 Habil_i + \epsilon_i)(\beta_3 Habil_i + u_i)) \neq 0$$`
+
+---
+# &lt;span style="font-size:80%"&gt;Causas: &lt;font color = "blue"&gt;errores de medida en los regresores&lt;/font&gt;&lt;/span&gt;
+
+En este caso nos gustaría medir el efecto de una variable `\(x_k^*\)`, pero sólo se puede observar una &lt;font color = "blue"&gt;medida imperfecta de ésta, `\(x_k\)`&lt;/font&gt;. Cuando se utiliza como regresor esta medida imperfecta, la medida de error se &lt;font color = "blue"&gt;transmitiría a los errores&lt;/font&gt;. &lt;font color = "blue"&gt;En la medida que `\(x_k^*\)` y `\(x_k\)` estén más correlacionadas o no, `\(x_K\)` será o no endógena&lt;/font&gt;
+
+&lt;font color = "blue"&gt;Ejemplo&lt;/font&gt;: Volviendo sobre la ecuación de salarios del anterior ejemplo:
+
+`$$w_i = \beta_1 + \beta_2 Educ_i + u_i$$`
+La educación `\((Educ_i)\)` es una variable que no se puede medir completamente y los años de educación es típicamente la mejor &lt;font color = "blue"&gt;variable proxy&lt;/font&gt; disponible. Entonces los años de escolaridad `\((Schooling_i)\)` que es lo que observamos viene determinada por:
+
+`$$Schooling_i = Educ_i + \epsilon_i$$`
+
+donde `\(\epsilon_i\)` es la medida de error. Por simple sustitución se tiene:
+
+`$$w_i = \beta_1 + \beta_2 Schooling_i + \eta_i$$`
+donde `\(\eta_i = u_i - \beta_2 \epsilon_i\)`. `\(Schooling_i\)` está claramente correlacionada con `\(\eta_i\)`, por lo que esta variables es endógena en la ecuación de salarios 
+
+---
+# &lt;span style="font-size:80%"&gt;Causas: &lt;font color = "blue"&gt;simultaneidad&lt;/font&gt;&lt;/span&gt;
+Este problema ocurre cuando al menos uno de las variables explicativas, es determinada simultáneamente junto con `\(y\)`. Si `\(x_k\)` es determinada parcialmente como función de `\(y\)`, entonces `\(x_k\)` y `\(u\)` estarán correlacionadas
+
+Ejemplo&lt;/font&gt;: En el modelo keynesiano de determinación del ingreso, se tiene lo siguiente:
+`$$C_t = \beta_0 + \beta_1 Y_t + u_t$$`
+`$$Y_t = C_t + I_t$$`
+`\(C_t:\)` consumo agregado &lt;br&gt;
+`\(Y_t:\)` producción agregada&lt;br&gt;
+`\(I_t:\)` inversión agregada&lt;br&gt;
+
+Lo anterior implica que 
+
+`$$Y_t = \frac{\beta_0}{1-\beta_1} + \frac{1}{1-\beta_1} I_t + \frac{1}{1-\beta_1} u_t$$`
+
+Es así que `\(Cov(Y_t , u_t) = \frac{\sigma^2}{1-\beta_1} \neq 0\)`. Con lo cual la estimación por MCO del consumo agregado sobre la producción agregada no estima el parámetro `\(\beta_1\)` consistentemente. El *feedback* entre `\(u_t\)` y `\(Y_t\)` genera un &lt;font color="blue"&gt;sesgo de ecuaciones simultáneas&lt;/font&gt; en los estimadores MCO
+
+---
+# &lt;span style="font-size:80%"&gt;Causas: &lt;font color = "blue"&gt;sesgo de selección&lt;/font&gt;&lt;/span&gt;
+Si la muestra con la que se trabaja es no aleatoria y es seleccionada para un grupo de individuos muy particular se puede incurrir en un sesgo de selección al estimar por MCO
+
+La no aleatoriedad de la muestra se traslada a una forma de sesgo por variables omitidas conocida como &lt;font color = "blue"&gt;sesgo por selección muestra&lt;/font&gt;
+
+&lt;font color = "blue"&gt;Ejemplo&lt;/font&gt;: Si la muestra seleccionada se basa en los valores que toma la variable dependiente se presenta sesgo de selección. Esto obedece a auto-selección o muestra seleccionada. Se tiene entonces que:
+
+`$$y^* = \textbf{x}'\pmb{\beta} + u$$`
+
+
+$$
+y =
+`\begin{cases}
+y^*,
+&amp; \text{si } y^* &gt; 0,\\
+-, &amp; \text{si } y^* \leq 0
+\end{cases}`
+$$
+Esto implica que `\(E(y) = E(y^* | y^* &gt; 0) = \textbf{x}'\pmb{\beta} + E(u|u&gt;-\textbf{x}'\pmb{\beta})\)`, con lo que
+
+
+`$$\frac{\partial E(y)}{\partial\textbf{x}} = \pmb{\beta} + \frac{\partial(E(u|u&gt;-\textbf{x}'\pmb{\beta}))}{\partial\textbf{x}} \neq \pmb{\beta}$$`
+No es posible identificar el vector de parámetros `\(\pmb{\beta}\)` por MCO 
+
+---
+# &lt;span style="font-size:80%"&gt;Causas: &lt;font color = "blue"&gt;modelos dinámicos y perturbaciones autocorrelacionadas&lt;/font&gt;&lt;/span&gt;
+&lt;font size = "5"&gt;
+En el contexto de un modelo dinámico cuyas perturbaciones están correlacionadas se tiene:
+
+
+`$$y_t = \rho y_{t-1} + \textbf{x}'\pmb{\beta} + u_t$$`
+`$$u_t = \sum_{i=1}^p \phi_i u_{t-i} + \epsilon_t$$`
+
+En este modelo es posible demostrar que `\(Cov(y_{t-1},u_t)\neq 0\)`, es decir que hay problemas de endogeneidad
+
+---
+# &lt;span style="font-size:80%"&gt;Causas&lt;/span&gt;
+&lt;font size="5"&gt;
+
+La distinción entre estas posibles formas de endogeneidad no son siempre fácil `\(\Longrightarrow\)` &lt;font color = "blue"&gt;una ecuación puede tener más de una fuente de endogeneidad
+
+&lt;font color = "black"&gt;Ejemplo: efecto del consumo de alcohol `\((x)\)` sobre la productividad laboral  `\((y\)`, medida por los salarios)
+- el consumo de alcohol esta correlacionado con factores inobservables (por ejemplo, el background familiar) que también afecta el salario `\(\Longrightarrow\)` &lt;font color = "blue"&gt;problema de variables omitidas&lt;/font&gt;&lt;br&gt;&lt;br&gt;
+- el consumo de alcohol depende del salario, pero se puede consumir más o menos alcohol si se tienen más o menos salario `\(\Longrightarrow\)` &lt;font color = "blue"&gt;problema de simultaneidad
+
+---
+name: iv
+# &lt;span style="font-size:80%"&gt;El estimador por variables instrumentales&lt;/span&gt;
+&lt;font size = "5"&gt;
+
+- &lt;font color = "blue"&gt;Consecuencias&lt;/font&gt;: la estimación de un modelo por MCO con problemas de endogeneidad lleva a &lt;ins&gt;estimadores inconsistentes de todos los `\(\beta_j\)`&lt;/ins&gt;&lt;br&gt;&lt;br&gt;
+- El método de variables instrumentales (IV) provee una solución general para el problema de variables explicatorias endógenas&lt;br&gt;&lt;br&gt;
+- Si un &lt;font color = "blue"&gt;instrumento&lt;/font&gt; es disponible, el método de IV puede ser utilizado para corregir el problema de endogeneidad y provee consistentes estimadores de los parámetros estructurales `\(\beta_j\)`&lt;br&gt;&lt;br&gt;
+- &lt;font color = "blue"&gt;Note que, inicialmente nos vamos a concentrar en el caso donde existe una variable explicatoria endógena y un instrumento
+
+---
+# &lt;span style="font-size:80%"&gt;El estimador por variables instrumentales&lt;/span&gt;
+&lt;font size = "3"&gt;
+
+Considere el siguiente modelo lineal
+ 
+`$$y = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + ... + \beta_k x_k + u \tag{1}$$`
+`$$E(u)=0, Cov(x_j,u)=0, j=1,2,...,k-1$$`
+donde `\(x_k\)` puede estar correlacionada con `\(u\)`, esto es `\(x_1,...,x_{k-1}\)` son exógenas, pero `\(x_k\)` es potencialmente endógena
+
+Para que el estimador IV sea consistente, es necesario una variable observable, `\(z_1\)`, (el instrumento) que no se encuentre en la ecuación (1) y que satisfaga dos condiciones:
+
+1. `\(z_1\)` debe estar incorrelacionado con `\(u\)`
+$$
+Cov(z_1,u)=0 \tag{2}
+$$ 
+En otras palabras, &lt;font color="blue"&gt; `\(z_1\)` es exógeno o válido&lt;/font&gt;. Esto a menudo es referido como una &lt;font color="blue"&gt;restricción de exclusión &lt;font color="black"&gt;
+
+2. El instrumento debe ser &lt;font color="blue"&gt;informativo o relevante &lt;/font&gt;. Esto es, el instrumento &lt;font color="blue"&gt; `\(z_1\)` debe estar correlacionado con el regresor endógeno `\(x_k\)`&lt;/font&gt;, condicional a todas las variable exógenas en el modelo `\((x_2,...,x_{k-1})\)`. Si se escribe la proyección lineal de `\(x_k\)` sobre todas las variables exógenas:
+`$$x_k = \delta_0 + \delta_1 x_{1} + \delta_2 x_{2} + ... +\delta_{k-1} x_{k-1} + \theta_1 z_1 + \epsilon_k \tag{3}$$`
+`$$E(\epsilon_k)=0, Cov(x_j,\epsilon_k)=0, Cov(z_1,\epsilon_k)=0, j=1,2,...,k-1$$`
+el principal supuesto en esta proyección lineal es que 
+&lt;font color="blue"&gt;$$\theta_1 \neq  0\tag{4}$$
+
+---
+# &lt;span style="font-size:80%"&gt;El estimador por variables instrumentales&lt;/span&gt;
+&lt;font size = "5"&gt;
+
+- Cuando `\(z_1\)` satisface (2) y (4) entonces se dice que `\(z_1\)` es una variable instrumental o un instrumento para `\(x_k\)` &lt;br&gt; &lt;br&gt;
+- Si `\(z_1\)` es un instrumento válido y relevante, y `\(\theta_1 \neq 0\)`, &lt;font color="blue"&gt; `\(z_1\)` impacta sobre `\(y\)` pero sólo indirectamente a través de la variable `\(x_k\)`&lt;/font&gt; &lt;br&gt; &lt;br&gt;
+- Ya que `\(x_1,x_2,...,x_{k-1}\)` están incorrelacionadas con `\(u\)`, ellas son sus propias variables instrumentales en la ecuación principal `\(\Longrightarrow\)` &lt;font color="blue"&gt;la lista completa de variables instrumentales es la misma que la lista de variables exógenas&lt;/font&gt; &lt;br&gt; &lt;br&gt;
+- La proyección lineal en la ecuación (3) es llamada la &lt;font color="blue"&gt;ecuación de la forma reducida&lt;/font&gt;, mientras que la ecuación (1) es llamada la &lt;font color="blue"&gt;ecuación estructural
+
+---
+# &lt;span style="font-size:80%"&gt;El estimador por variables instrumentales&lt;/span&gt;
+&lt;font size = "5"&gt;
+&lt;p style="line-height: .1em;"&gt;
+Los supuestos (2) y (4) (validez y relevancia) permiten identificar los parámetros del modelo
+
+&lt;font color="blue"&gt;Identificación&lt;/font&gt;: es posible escribir los `\(\beta_j\)` de la ecuación estructural (1) en términos de los momentos poblacionales en las variables observables
+
+Entonces, ya que se ha asumido que `\(x_2,...,x_{k-1}\)` son exógenas, entonces los momentos poblacionales serán:
+`$$E(1\cdot u)=0$$`
+`$$E(x_2 u)=0$$`
+`$$E(x_3 u)=0 \tag{5}$$`
+`$$...$$`
+`$$E(x_{k-1} u)=0$$`
+Ahora, si todo lo que se tiene son los momentos en (5), los parámetros del modelo &lt;font color="blue"&gt;no son identificables&lt;/font&gt;. La razón es simple, con sólo `\(k-1\)` momentos, no se pueden estimar los `\(k\)` parámetros. Este modelo es por tanto &lt;font color="blue"&gt;subidentificado (*underidentified*)
+
+---
+# &lt;span style="font-size:80%"&gt;El estimador por variables instrumentales&lt;/span&gt;
+&lt;font size = "5"&gt;
+&lt;p style="line-height: 1em;"&gt;
+Si el instrumento `\(z_1\)` es disponible (es observable, válido y relevante), entonces &lt;font color="blue"&gt;el supuesto de instrumento válido provee el momento adicional&lt;/font&gt;, esto es, `\(E(z_1 u)=0\)`. Para ver cómo, la ecuación (1) puede ser escrita en términos matriciales de la forma
+`$$y=\textbf{x}\pmb{\beta} + u \tag{6}$$`
+donde `\(\textbf{x}=(1,x_2,...,x_k)\)`. El vector `\(1\times K\)` de todas las variables exógenas es `\(\textbf{z}=(1,x_2,...,x_{k-1}, z_1)\)`
+
+Los supuestos `\(Cov(x_j,u)=0\)` y `\(Cov(z_1,u)=0\)` implica `\(k\)` momentos o condiciones de ortogonalidad, esto es
+`$$E(\textbf{z}'u)=0 \tag{7}$$`
+De (6) y (7) es posible llegar a que
+`$$[E(\textbf{z}'\textbf{x})]\pmb{\beta}=E(\textbf{z}'y) \tag{8}$$`
+lo cual es un sistema de `\(K\)` ecuaciones linealies (note que `\(\textbf{z}'\)` es `\(k\times N\)`, `\(\textbf{x}\)` es `\(N\times k\)`, `\(\pmb{\beta}\)` es `\(k\times 1\)`, y `\(y\)` es `\(N\times 1\)`)
+
+---
+# &lt;span style="font-size:80%"&gt;El estimador por variables instrumentales&lt;/span&gt;
+&lt;font size = "5"&gt;
+
+La ecuación (8) representa un sistema de `\(k\)` ecuaciones lineales con `\(k\)` parámetros desconocidos  `\((\beta_1,\beta_2,...,\beta_k)\)`, por lo tanto, el modelo está &lt;font color = "blue"&gt;exactamente identificado
+
+&lt;font color = "black"&gt;
+
+Este sistema tiene única solución si y sólo si la matriz `\(E(\textbf{z}'\textbf{x})\)` tiene rango completo:
+
+`\begin{equation}
+	\hbox{rango} \  \ E(\textbf{z}'\textbf{x})=k \tag{9}
+\end{equation}`
+
+&lt;font color = "blue"&gt;esto implica que las columnas son linealmente independientes, que no existe multicolinealidad perfecta o que `\(E(\textbf{z}'\textbf{x})\)` es invertible} y este supuesto se llama condición de rango
+
+&lt;font color = "black"&gt;
+
+La solución es
+	&lt;font color = "blue"&gt; `$$\pmb{\beta}=[E(\textbf{z}'\textbf{x})]^{-1}E(\textbf{z}'y) \tag{10}$$`
+
+---
+# &lt;span style="font-size:80%"&gt;El estimador por variables instrumentales&lt;/span&gt;
+&lt;font size = "5"&gt;
+
+Mientras `\(\pmb{\beta}\)` en la ecuación anterior es expresado en función de los momentos poblacionales, se puede usar los momentos muestrales (los datos), para consistente estimar `\(\pmb{\beta}\)`. Se tiene entonces que el &lt;font color = "blue"&gt;estimador de variables instrumentales&lt;/font&gt; es
+
+&lt;font color = "blue"&gt;
+`\begin{equation}
+	\pmb{\widehat{\beta}}^{IV}=\left(N^{-1} \sum_{i=1}^{N}\textbf{z}_i'\textbf{x}_i\right)^{-1}\left(N^{-1}\sum_{i=1}^{N}\textbf{z}_i'y_i\right)=(\textbf{Z}'\textbf{X})^{-1}(\textbf{Z}'\textbf{Y}) \tag{11}
+\end{equation}`
+
+---
+# &lt;span style="font-size:80%"&gt;El estimador por variables instrumentales&lt;/span&gt;
+&lt;font size = "5"&gt;
+
+- Mientras que es claro como la condición de validez nos permite identificar el modelo, el rol de la segunda condición (relevancia) puede parecer menos clara &lt;br&gt; &lt;br&gt;
+- La condición de relevancia es necesaria, ya que de otra forma el rango de la matriz `\(E(\textbf{z}'\textbf{x})\)` será menos que `\(k\)` y el modelo estará subidentificado &lt;br&gt; &lt;br&gt;
+- No se hace la demostración (problema 5.12 en Wooldridge provee algunas ayudas), ya que la intuición es muy clara: si `\(\theta_1 = 0\)` en
+	
+	`$$	x_k = \delta_0 + \delta_1 x_{1} + \delta_2 x_{2} + ... +  + \delta_{k-1} x_{k-1} + \theta_1 z_1 + \epsilon_k,$$`
+entonces eso equivale a no tener un instrumento, con lo cual el modelo es subidentificado como ya lo hemos visto 
+
+---
+# &lt;span style="font-size:80%"&gt;El estimador por variables instrumentales&lt;/span&gt;
+&lt;font size = "5"&gt;
+
+En este punto podemos probar entonces si el estimador IV definido en (11) es consistente bajo los supuestos que se han hecho. No te que
+
+`$$\pmb{\widehat{\beta}}^{IV}=(\textbf{Z}'\textbf{X})^{-1}(\textbf{Z}'\textbf{Y})$$`
+`$$\pmb{\widehat{\beta}}^{IV}=(\textbf{Z}'\textbf{X})^{-1}(\textbf{Z}'(\textbf{X}\pmb{\beta} + u))$$`
+`$$\pmb{\widehat{\beta}}^{IV}=\pmb{\beta} + (\textbf{Z}'\textbf{X})^{-1}(\textbf{Z}'u)$$`
+
+y entonces se tiene que
+
+`$$plim \  \ \pmb{\widehat{\beta}}^{IV}=\pmb{\beta}$$`
+por tanto, &lt;font color="blue"&gt;consistente: cuando el tamaño de la muestra `\(N\)` va ha infinito, el estimador IV converge en probabilidad al verdadero valor poblacional `\(\pmb{\beta}\)` 
+
+---
+# &lt;span style="font-size:80%"&gt;El estimador por variables instrumentales&lt;/span&gt;
+&lt;font size = "4"&gt;
+
+&lt;ins&gt;&lt;font color = "blue"&gt;Procedimiento en dos etapas para obtener el estimador IV&lt;/font&gt;&lt;/ins&gt;
+
+Se tiene el siguiente modelo (ecuación estructural)
+`$$y = \beta_1 + \beta_2 x_2 + u$$`
+donde `\(x_2\)` es endógena y existe un instrumento `\(z_1\)` disponible (satisfaciendo las condiciones de validez y relevancia). La ecuación de la forma reducida es
+
+`$$x_2 = \theta_0 + \theta_1 z_1 + \epsilon$$`
+
+Es posible obtener el estimador IV de `\(\beta_2\)` por medio del siguiente procedimiento en dos etapas
+
+1. Regrese la variable endógena `\(x_2\)` sobre el instrumento `\(z_1\)` usando MCO. Calcule el valor predicho de `\(x_2\)` `\((\widehat{x}_2)\)` &lt;br&gt; &lt;br&gt;
+2. Use `\(\widehat{x}_2\)` como variable explicatoria en la ecuación estructural y estime por MCO. La estimación resultante del coeficiente sobre `\(\widehat{x}_2\)` es el estimador IV de `\(\beta_2\)`. Este término por tanto esta ''purgado'' de la correlación de la variable endógena con los residuales
+
+Note que si se usa `\(x_2\)` como su propio instrumento en la primera etapa, estos es `\(z_1=x_2\)`, se obtendrían las estimaciones MCO en la segunda etapa. Por tanto, &lt;font color="blue"&gt;MCO puede verse como un estimador IV en el que se asume que todas las variables explicatorias son exógenas
+
+---
+# &lt;span style="font-size:80%"&gt;El estimador por variables instrumentales&lt;/span&gt;
+&lt;font size = "5"&gt;
+
+Como se ha mostrado, las condiciones de validez y relevancia del instrumento son igualmente importantes en la identificación de los parámetros estructurales `\(\beta_j\)`. Sin embargo, existe una importante diferencia entre ellos:
+- la condición de relevancia puede ser testeada, por ejemplo calculando un `\(t\)`-statistic asociado a `\(\widehat{\theta}_1\)` en la regresión de la ecuación reducida (primera etapa) &lt;br&gt; &lt;br&gt;
+- la condición de validez, sin embargo, no puede ser probada, ya que esta condición involucra los errores inobservados `\(u\)` `\((Cov(z_1,u)=0)\)`. Por tanto, esta condición debe asumirse y es importante entonces relacionar la condición de validez con la teoría económica para que el análisis sea convincente
+
+---
+name: 2sls
+# &lt;span style="font-size:70%"&gt;Múltiples instrumentos: mínimos cuadrados en dos etapas (MC2E - *2SLS*)&lt;/span&gt;
+&lt;font size = "5"&gt;
+- Se ha considerado el estimador simple IV con una variable explicativa endógena y un instrumento `\(\Longrightarrow\)` este es el caso de &lt;font color="blue"&gt;identificación exacta&lt;/font&gt;. Similarmente se puede tener dos variables explicatorias endógenas con dos instrumentos y el modelo seguiría estando exactamente identificado &lt;br&gt; &lt;br&gt;
+- Si se tienen menos instrumentos que regresores endógenos, el modelo está &lt;font color="blue"&gt;subidentificado (*underidentified*)&lt;/font&gt; &lt;br&gt; &lt;br&gt;
+- Si se tienen más instrumentos que regresores endógenos, el modelo está &lt;font color="blue"&gt;sobreidentificado (*overidentified*)&lt;/font&gt; &lt;br&gt; &lt;br&gt;
+- En la práctica es a menudo una buena idea tener más instrumentos que los estrictamente necesarios, ya que instrumentos adicionales pueden ser usados para incrementar la precisión de las estimaciones y para construir tests de validez de las restricciones de sobreidentificación (lo cual da luces sobre la validez de los instrumentos). Pero hay que ser moderado en la inclusión de instrumentos
+
+---
+# &lt;span style="font-size:70%"&gt;Múltiples instrumentos: mínimos cuadrados en dos etapas (MC2E - *2SLS*)&lt;/span&gt;
+&lt;font size = "5"&gt;
+
+Supongamos que se tienen `\(M\)` variables instrumentales para `\(x_k\)`: `\(z_1,z_2,...,z_M\)`. Además, que cada uno de estos instrumentos satisface la condición de validez
+
+`$$Cov(z_h,u)=0$$`
+para todo `\(h\)`. Si cada uno de estos instrumentos tiene alguna correlación parcial con `\(x_k\)` (condición de relevancia), se podría entonces en principio calcular `\(M\)` diferentes estimadores IV. Así que &lt;font color="blue"&gt;cuál estimador IV debería ser usado?
+
+&lt;font color="black"&gt;
+
+De acuerdo al teórema 5.3 en Wooldridge (2010) el estimador de mínimos cuadrados en dos etapas (MC2E) o *Two-Stage Least Squares* (2SLS) es el estimador IV más eficiente
+
+&lt;font color="blue"&gt;El estimador 2SLS es obtenido usando todos los instrumentos simultáneamente en la primera etapa:
+
+`$$x_k = \delta_1 + \delta_2 x_2 + ... + \delta_{k-1} x_{k-1} + \theta_1 z_1 + \theta_2 z_2 + ... + \theta_M z_M + \epsilon_k$$`
+---
+# &lt;span style="font-size:70%"&gt;Múltiples instrumentos: mínimos cuadrados en dos etapas (MC2E - *2SLS*)&lt;/span&gt;
+&lt;font size = "5"&gt;
+
+Por definición, el estimador MCO de la primera etapa construirá la combinación lineal de los instrumentos más altamente correlacionada con `\(x_k\)`
+
+Asumiendo que todos los instrumentos son exógenos, entonces &lt;font color="blue"&gt;este procedimiento conserva más variación exógena en `\(x_k\)` de lo que conservaría cualquier otra combinación lineal de los instrumentos
+
+&lt;font color="black"&gt;
+
+Otra forma de decir esto es que los instrumentos producen exógena variación en la predicción de `\(x_k\)`
+
+`$$\widehat{x}_k = \widehat{\delta}_1 + \widehat{\delta}_2 x_2 + ... + \widehat{\delta}_{k-1} x_{k-1} + \widehat{\theta}_1 z_1 + \widehat{\theta}_2 z_2 + ... + \widehat{\theta}_M z_M$$` 
+
+y la estimación MCO en la primera etapa asegura que haya tanta variación exógena como sea posible
+
+&lt;font color="blue"&gt;Con pocos instrumentos podría existir menos variación exógena en `\(\widehat{x}_k\)`, por tanto los estimadores podrían no ser eficientes
+
+---
+# &lt;span style="font-size:70%"&gt;Múltiples instrumentos: mínimos cuadrados en dos etapas (MC2E - *2SLS*)&lt;/span&gt;
+&lt;font size = "5"&gt;
+
+Surge entonces la pregunta: cómo es la condición de relevancia en este caso donde existen más instrumentos que regresores endógenos? &lt;font color="blue"&gt;La respuesta es que al menos uno de los `\(\theta_j\)` en la primera etapa debe ser diferente de cero para que el modelo esté identificado
+
+&lt;font color="black"&gt;
+
+Dado todo lo anterior, se podría estar tentado incluir tantos instrumentos como fuera posible, ya que más instrumentos mejora la eficiencia de los estimadores 2SLS
+
+Sin embargo, se sabe que teniendo muchos instrumentos, relativo al tamaño de la muestra, se generan potencialmente importantes sesgos, más aún si algunos/muchos/todos los instrumentos son débilmente correlacionados con las variables explicativas endógenas
+
+Usando muchos instrumentos (débiles) tiende a sesgar los estimadores 2SLS hacia los estimadores MCO
+
+El concejo sobre cómo proceder en el ejercicio empírico es usar un modelo moderadamente sobreidenficado `\(\Longrightarrow\)` menos eficiencia pero con menos sesgo  
+
+---
+name: 2slsg
+# &lt;span style="font-size:80%"&gt;2SLS: el caso general&lt;/span&gt;
+&lt;font size = "5"&gt;
+
+Ahora se discute el caso en el que existen varias variables explicativas endógenas, pero los mecanismos principales cuando se tiene sólo un regresor endógeno se mantienen
+
+Las condiciones de validez y relevancia en el caso general, donde varios elementos de `\(\textbf{x}\)` pueden estar correlacionados con `\(u\)`, son como sigue:
+
+`$$E(\textbf{z}'u)=0 \tag{Validez}$$`
+`\begin{equation}
+	\hbox{rango} \  \ E(\textbf{z}'\textbf{x})=k \tag{Relevancia}
+\end{equation}`
+
+donde `\(\textbf{z}\)` es `\(1\times L\)` y el rango `\((\textbf{z}'\textbf{z})=L\)`, descartando la colinealidad entre los instrumentos. En esta notación, cualquier elemento exógeno de `\(\textbf{x}\)`, incluyendo la constante, están incluidos en `\(\textbf{z}\)`
+
+---
+# &lt;span style="font-size:80%"&gt;2SLS: el caso general&lt;/span&gt;
+&lt;font size = "5"&gt;
+La condición de validez es fácil de entender, pero la condición de relevancia quizás no
+
+Claramente para que la condición de relevancia (definida como condición de rango) se mantenga, se necesita al menos tantos instrumentos como variables explicatorias existan: `\(L\geq k\)` `\(\Longrightarrow\)` esta condición es conocida como &lt;font color = "blue"&gt;condición de orden &lt;font color = "black"&gt;
+
+Sin embargo, aunque la condición de orden es necesaria, &lt;font color = "blue"&gt;no es suficiente&lt;/font&gt; para que el	rango `\(E(\textbf{z}'\textbf{x})=k\)`
+
+&lt;font color = "blue"&gt;También es necesario que los elementos de `\(\textbf{z}\)` estén correlacionados con los elementos de `\(\textbf{x}\)` &lt;font color = "black"&gt;
+
+Probar formalmente la condición de rango es tedioso y algo complicado, así que no nos meteremos con esto (Wooldridge tampoco lo hace). &lt;font color = "blue"&gt;Lo que si es útil es mirar cuidadosamente los resultados de la primera etapa&lt;font color = "black"&gt;
+
+Se va a tener tantas regresiones en el primera etapa como variables explicatorias endógenas haya, y es &lt;font color = "blue"&gt;necesario (no suficiente) al menos un coeficiente significante en los instrumentos en cada regresión de la forma reducida para que el modelo este identificado
+
+---
+# &lt;span style="font-size:80%"&gt;2SLS: el caso general&lt;/span&gt;
+&lt;font size = "5"&gt;
+ 
+Para ver lo anterior, consideremos el siguiente modelo
+`$$y = \beta_1 + \beta_2 x_2 + \beta_3 x_3 + \beta_4 x_4 + u$$`
+donde `\(x_3\)` y `\(x_4\)` son endógenos y, por tanto, se necesitan al menos 2 instrumentos, `\(z_1\)` y `\(z_2\)`
+
+Estos instrumentos entran en las ecuaciones de la forma reducida para `\(x_3\)` y `\(x_4\)`
+
+`$$x_3 = \pi_1 + \pi_2 x_2 + \pi_3 z_1 + \pi_4 z_2 + \epsilon_1$$`
+`$$x_4 = \gamma_1 + \gamma_2 x_2 + \gamma_3 z_1 + \gamma_4 z_2 + \epsilon_2$$`
+- Si `\(\pi_3=0\)`, `\(\pi_4\neq 0\)`, `\(\gamma_3=0\)`, `\(\gamma_4\neq 0\)`: la ecuación estructural &lt;font color="blue"&gt; no estará identificada&lt;/font&gt;, ya que el instrumento `\(z_1\)` no es relevante en ambas ecuaciones y, por tanto, efectivamente sólo se tendrá un instrumento
+
+- Si `\(\pi_3=0\)`, `\(\pi_4\neq 0\)`, `\(\gamma_3\neq 0\)`, `\(\gamma_4= 0\)`: la ecuación estructural &lt;font color="blue"&gt;estará identificada&lt;/font&gt;, ya que el instrumento `\(z_1\)` es relevante en la ecuación determinando `\(x_4\)`, mientras que `\(z_2\)` es relevante para `\(x_3\)`
+
+---
+# &lt;span style="font-size:80%"&gt;2SLS: el caso general&lt;/span&gt;
+&lt;font size = "5"&gt;
+
+- Desde un punto de vista práctico, es posible identificar rápidamente si la identificación falla. Si el modelo no está identificado, debido a que tiene pocos instrumentos o por que los instrumentos son colineales, un software como R o Stata reportará esto y no estimará nada &lt;br&gt; &lt;br&gt;
+- Si los instrumentos tiene una correlación muy débil con las variables explicatorias endógenas, los coeficientes de los instrumentos en la primera etapa pueden ser insignificantes, y los errores estándar 2SLS serán muy grandes `\(\Longrightarrow\)` en otras palabras, &lt;font color="blue"&gt;no estaríamos aprendiendo nada del modelo planteado
+
+---
+name: expresion
+# &lt;span style="font-size:80%"&gt;Expresión general para el estimador 2SLS&lt;/span&gt;
+&lt;font size = "5"&gt;
+
+El álgebra del estimador 2SLS es más complicado que el del estimador IV. Usando álgebra matricial nos ayuda a entender los mecanismos generales
+
+Recordemos que el estimador IV tiene la siguiente estructura
+`$$\pmb{\widehat{\beta}}^{IV}=(\textbf{Z}'\textbf{X})^{-1}(\textbf{Z}'\textbf{Y})$$`
+Es fácil mostrar que esta expresión puede ser expresada como
+`$$\pmb{\widehat{\beta}}^{IV}=(\widehat{\textbf{X}}'\textbf{X})^{-1}(\widehat{\textbf{X}}'\textbf{Y})$$`
+es decir, MCO usando la predicción en lugar de los valores reales de las variables explicatorias (para las variables exógenas en `\(\textbf{X}\)`, los valores predicho y reales coinciden)
+
+La misma expresión se mantiene para los estimadores 2SLS
+&lt;font color="blue"&gt;$$\pmb{\widehat{\beta}}^{2SLS}=(\widehat{\textbf{X}}'\textbf{X})^{-1}(\widehat{\textbf{X}}'\textbf{Y})$$
+
+---
+# &lt;span style="font-size:80%"&gt;Expresión general para el estimador 2SLS&lt;/span&gt;
+&lt;font size = "5"&gt;
+&lt;p style="line-height: 1em;"&gt;
+Sin embargo, ya que el modelo esta sobreidenficado (*overidentified*) la expresión del estimador 2SLS no es igual a la del estimador IV
+
+Para ver qué se obtiene si se escribe el estimador 2SLS en términos de las matrices `\(\textbf{Z}\)` y `\(\textbf{X}\)`, note que
+
+`$$\widehat{\textbf{X}}=\textbf{Z}(\textbf{Z}'\textbf{Z})^{-1}\textbf{Z}'\textbf{X}=\textbf{P}_Z\textbf{X}$$`
+donde `\(\textbf{P}_Z = \textbf{Z}(\textbf{Z}'\textbf{Z})^{-1}\textbf{Z}'\)` (conocida como la &lt;font color="blue"&gt;matriz de proyección&lt;/font&gt;) es idempotente `\((\textbf{P}_Z \textbf{P}_Z = \textbf{P}_Z)\)` y simétrica `\((\textbf{P}_Z '=\textbf{P}_Z)\)`. Por tanto,
+
+`$$\widehat{\textbf{X}}'\textbf{X}=(\textbf{P}_Z\textbf{X})'\textbf{X}=\textbf{X}'\textbf{P}_Z\textbf{X}=\textbf{X}'\textbf{P}_Z\textbf{P}_Z\textbf{X}=\textbf{X}'\textbf{P}_Z'\textbf{P}_Z\textbf{X}=(\textbf{P}_Z\textbf{X})'\textbf{P}_Z\textbf{X}=\widehat{\textbf{X}}'\widehat{\textbf{X}}$$`
+
+Incorporando esta expresión en el estimador 2SLS se tiene que la expresión de éste estimador es
+
+&lt;font color="blue"&gt; `$$\pmb{\widehat{\beta}}^{2SLS}=(\widehat{\textbf{X}}'\widehat{\textbf{X}})^{-1}(\widehat{\textbf{X}}'\textbf{Y})$$`
+
+&lt;font color="black"&gt;
+que es el estimador IV cuando usa como instrumento `\(\widehat{\textbf{X}}\)`
+
+---
+# &lt;span style="font-size:80%"&gt;Expresión general para el estimador 2SLS&lt;/span&gt;
+&lt;font size = "5"&gt;
+
+El estimador 2SLS puede ser obtenido de los siguientes pasos
+1. Obtenga los valores estimados `\(x_k\)` de la regresión 
+&lt;div style="text-align: center"&gt; `\(x_K\)` sobre `\(1,x_1,...,x_{k-1},z_1,...,z_M\)` &lt;br&gt; 
+&lt;div style="text-align: justify"&gt;La anterior ecuación es llamada &lt;font color = "blue"&gt;regresión de la primera etapa &lt;font color = "black"&gt;
+
+2. Corra por MCO la regresión
+&lt;div style="text-align: center"&gt; `\(y\)` sobre `\(1,x_1,...,x_{K-1},\widehat{x}_k\)` &lt;br&gt;
+&lt;div style="text-align: justify"&gt; La anterior ecuación es llamada &lt;font color="blue"&gt;regresión de la segunda etapa&lt;font color="black"&gt;, y con esta se obtienen los `\(\widehat{\beta}_j\)`
+
+
+En términos prácticos, es mejor utilizar un software con un comando o paquete 2SLS, en lugar de hacerlo manualmente. Esto por dos principales razones
+- errores en la especificaciones en alguna de las dos etapas
+- los errores estándar MCO con incorrectos cuando se tienen variables explicativas predichas
+
+---
+name: ejercicio
+# &lt;span style="font-size:70%"&gt;Ejercicio aplicado: efectos de la educación de la mujer sobre la fertilidad&lt;/span&gt;
+
+**Las mujeres más educadas tienen menos hijos?**
+
+Numerosos estudios indican que la educación de las mujeres tiene un efecto negativo sobre la fertilidad. Varias son las posibles explicaciones:
+- la escolarización aumenta el coste de oportunidad de tener un hijo
+- aumenta la eficiencia del control de fertilidad  
+- simplemente reduce la preferencia por los hijos
+
+En este ejercicio vamos a estudiar este posible efecto negativo.  El siguiente ejercicio se basa en el paper: McCrary, J y Royer, H. (2011). "The Effect of Female Education on Fertility and Infant Health: Evidence from School Entry Policies Using Exact Date of Birth". *American Economic Review*, 101: 158-195.
+
+Los datos para este ejercicio proviene de la *General Social Survey (GSS)* de los Estados Unidos. En los siguientes links se encuentran los datos, la descripción dellada de los datos y el código utilizado en R:
+- [Datos](https://eafit-my.sharepoint.com/:u:/g/personal/ggarci24_eafit_edu_co/ETZ8xAWasYpAs9fInpcWijgBCT-B2iBV-wV_Kb62uCGP1g?e=a2o3fn)
+- [Descripción de la información](https://gss.norc.org/get-the-data/stata)
+- [Código en R](https://eafit-my.sharepoint.com/:u:/g/personal/ggarci24_eafit_edu_co/EWN9FtgNsFxMjh7SeRpBILABCzvwKTnbtAPdiaxau2QVMg?e=P5NbN2)
+
+---
+# &lt;span style="font-size:70%"&gt;Ejercicio aplicado: efectos de la educación de la mujer sobre la fertilidad&lt;/span&gt;
+.small-code[
+Cargando las librerías
+
+
+```r
+library(devtools); library(haven); library(dplyr); library(cragg); library(AER); library(tidyverse); library(stargazer); library(modelsummary)
+library(gt); library(knitr); library(kableExtra); library(tibble)
+```
+
+Leyendo los datos y procesando la información
+
+
+```r
+setwd("C:/Users/ggarci24/OneDrive - Universidad EAFIT/EAFIT/Cursos EAFIT/Econometria II/R/Tema 9")
+
+data &lt;- read_dta("GSS2012_2018.DTA") %&gt;% # Leyendo el archivo .dta
+  select(year, age, sex, race, educ, childs, paeduc, maeduc, wrkstat, marital) %&gt;% # Seleccionando variables de la base      
+  filter(sex==2, year&gt;=2014 &amp; year&lt;=2018, age&gt;=35 &amp; age&lt;=55) %&gt;% # Filtrando la base para mujeres y años
+  mutate(age2 = age*age, afroa = case_when(race == 1 ~ 1,
+                                           race == 2 ~ 0), 
+                         working = case_when(wrkstat &gt;= 1 &amp; wrkstat&lt;= 2 ~ 1,
+                                             wrkstat &gt;= 3 &amp; wrkstat&lt;= 8 ~ 0),
+                         casado = case_when(marital == 1 ~ 1,
+                                            marital != 1 ~ 0)) %&gt;% # Creando variables 
+  drop_na() # Borrando missings de toda la base
+```
+
+.pull-left-30[
+
+```r
+data[,c("race","afroa")]
+```
+
+```
+# A tibble: 935 x 2
+        race afroa
+   &lt;dbl+lbl&gt; &lt;dbl&gt;
+ 1 1 [white]     1
+ 2 1 [white]     1
+ 3 1 [white]     1
+ 4 1 [white]     1
+ 5 2 [black]     0
+ 6 1 [white]     1
+ 7 1 [white]     1
+ 8 1 [white]     1
+ 9 1 [white]     1
+10 2 [black]     0
+# ... with 925 more rows
+```
+]
+
+.pull-left-30[
+
+```r
+data[,c("wrkstat","working")]
+```
+
+```
+# A tibble: 935 x 2
+                wrkstat working
+              &lt;dbl+lbl&gt;   &lt;dbl&gt;
+ 1 7 [keeping house]          0
+ 2 1 [working fulltime]       1
+ 3 3 [temp not working]       0
+ 4 1 [working fulltime]       1
+ 5 1 [working fulltime]       1
+ 6 1 [working fulltime]       1
+ 7 1 [working fulltime]       1
+ 8 1 [working fulltime]       1
+ 9 1 [working fulltime]       1
+10 1 [working fulltime]       1
+# ... with 925 more rows
+```
+]
+
+.pull-left-30[
+
+```r
+data[,c("marital","casado")]
+```
+
+```
+# A tibble: 935 x 2
+             marital casado
+           &lt;dbl+lbl&gt;  &lt;dbl&gt;
+ 1 5 [never married]      0
+ 2 5 [never married]      0
+ 3 5 [never married]      0
+ 4 4 [separated]          0
+ 5 5 [never married]      0
+ 6 1 [married]            1
+ 7 5 [never married]      0
+ 8 1 [married]            1
+ 9 1 [married]            1
+10 5 [never married]      0
+# ... with 925 more rows
+```
+]
+]
+---
+# &lt;span style="font-size:70%"&gt;Ejercicio aplicado: efectos de la educación de la mujer sobre la fertilidad&lt;/span&gt;
+.small-code[
+.pull-left-50[
+Estimación por OLS
+
+```r
+ols &lt;- lm(childs ~ educ+age+I(age2)+casado+afroa+working, data=data)
+
+
+
+summary(ols)
+```
+
+```
+
+Call:
+lm(formula = childs ~ educ + age + I(age2) + casado + afroa + 
+    working, data = data)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-3.6795 -0.8997 -0.0462  0.7965  5.6386 
+
+Coefficients:
+             Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept) -0.231814   2.675422  -0.087  0.93097    
+educ        -0.136673   0.015867  -8.614  &lt; 2e-16 ***
+age          0.204314   0.119975   1.703  0.08891 .  
+I(age2)     -0.002341   0.001328  -1.763  0.07820 .  
+casado       0.471561   0.091202   5.171 2.86e-07 ***
+afroa       -0.196362   0.124672  -1.575  0.11559    
+working     -0.259425   0.098934  -2.622  0.00888 ** 
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 1.345 on 928 degrees of freedom
+Multiple R-squared:  0.1132,	Adjusted R-squared:  0.1075 
+F-statistic: 19.75 on 6 and 928 DF,  p-value: &lt; 2.2e-16
+```
+]
+
+.pull-right-50[
+Estimación por 2SLS
+
+```r
+iv &lt;- ivreg(childs ~ educ+age+I(age2)+casado+afroa+working |
+                           age+I(age2)+casado+afroa+working+paeduc+maeduc, data=data)
+
+summary(iv)
+```
+
+```
+
+Call:
+ivreg(formula = childs ~ educ + age + I(age2) + casado + afroa + 
+    working | age + I(age2) + casado + afroa + working + paeduc + 
+    maeduc, data = data)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-4.01831 -0.89164 -0.05782  0.79643  5.53646 
+
+Coefficients:
+             Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)  0.176497   2.699724   0.065   0.9479    
+educ        -0.179672   0.032775  -5.482 5.42e-08 ***
+age          0.212482   0.120572   1.762   0.0784 .  
+I(age2)     -0.002446   0.001335  -1.832   0.0672 .  
+casado       0.506371   0.094453   5.361 1.04e-07 ***
+afroa       -0.200423   0.125194  -1.601   0.1097    
+working     -0.196300   0.107859  -1.820   0.0691 .  
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 1.351 on 928 degrees of freedom
+Multiple R-Squared: 0.1062,	Adjusted R-squared: 0.1004 
+Wald test: 12.33 on 6 and 928 DF,  p-value: 2.171e-13 
+```
+]
+]
+---
+# &lt;span style="font-size:70%"&gt;Ejercicio aplicado: efectos de la educación de la mujer sobre la fertilidad&lt;/span&gt;
+&lt;font size = "3"&gt;
+.medium-code[
+Utilizamos el paquete [```modelsummary```](https://vincentarelbundock.github.io/modelsummary/articles/modelsummary.html) para generar tablas editadas (Word, tex, text, png, html...)
+
+```r
+modelos &lt;- list("OLS" = lm(childs ~ educ+age+I(age2)+casado+afroa+working, data=data),
+                "IV"  = ivreg(childs ~ educ+age+I(age2)+casado+afroa+working |
+                              age+I(age2)+casado+afroa+working+paeduc+maeduc, data=data))
+cm &lt;- c( '(Intercept)' = 'Constante', 'educ' = 'Educación', 'age' = 'Edad', 'I(age2)' = 'Edad2', 'casado' = 'Casado', 'afroa' = 'Afroamericano', 'working' = 'Empleado (=1)')
+cap &lt;- 'Tabla 1. Determinantes de la fertilidad'
+modelsummary(modelos, output = 'gt', coef_map = cm, stars = c('*'=.1, '**'=.05, '***'=.01), statistic = "std.error", title = cap,
+             gof_omit = 'IC|Log', coef_omit = "[^educ]") %&gt;%
+    tab_style(style = cell_text(size = 'medium'), locations = cells_body(rows = 1:6)) %&gt;%
+    tab_style(style = cell_text(color = 'red'), locations = cells_body(rows = 1)) %&gt;% 
+    tab_source_note(source_note = "Nota: Errores estándar en paréntesis") %&gt;%
+    tab_style(style = cell_text(color = "black", size = "x-small"), locations = cells_source_notes())
+```
+
+<div id="bbovzmvrjr" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>html {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
+}
+
+#bbovzmvrjr .gt_table {
+  display: table;
+  border-collapse: collapse;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#bbovzmvrjr .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#bbovzmvrjr .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#bbovzmvrjr .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 0;
+  padding-bottom: 6px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#bbovzmvrjr .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#bbovzmvrjr .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#bbovzmvrjr .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#bbovzmvrjr .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#bbovzmvrjr .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#bbovzmvrjr .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#bbovzmvrjr .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#bbovzmvrjr .gt_group_heading {
+  padding: 8px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#bbovzmvrjr .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#bbovzmvrjr .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#bbovzmvrjr .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#bbovzmvrjr .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#bbovzmvrjr .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 12px;
+}
+
+#bbovzmvrjr .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#bbovzmvrjr .gt_first_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+}
+
+#bbovzmvrjr .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#bbovzmvrjr .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#bbovzmvrjr .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#bbovzmvrjr .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#bbovzmvrjr .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#bbovzmvrjr .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding: 4px;
+}
+
+#bbovzmvrjr .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#bbovzmvrjr .gt_sourcenote {
+  font-size: 90%;
+  padding: 4px;
+}
+
+#bbovzmvrjr .gt_left {
+  text-align: left;
+}
+
+#bbovzmvrjr .gt_center {
+  text-align: center;
+}
+
+#bbovzmvrjr .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#bbovzmvrjr .gt_font_normal {
+  font-weight: normal;
+}
+
+#bbovzmvrjr .gt_font_bold {
+  font-weight: bold;
+}
+
+#bbovzmvrjr .gt_font_italic {
+  font-style: italic;
+}
+
+#bbovzmvrjr .gt_super {
+  font-size: 65%;
+}
+
+#bbovzmvrjr .gt_footnote_marks {
+  font-style: italic;
+  font-weight: normal;
+  font-size: 65%;
+}
+</style>
+<table class="gt_table">
+  &lt;caption&gt;Tabla 1. Determinantes de la fertilidad&lt;/caption&gt;
+  
+  <thead class="gt_col_headings">
+    <tr>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1"> </th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1">OLS</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1">IV</th>
+    </tr>
+  </thead>
+  <tbody class="gt_table_body">
+    <tr><td class="gt_row gt_left" style="font-size: medium; color: #FF0000;">Educación</td>
+<td class="gt_row gt_center" style="font-size: medium; color: #FF0000;">-0.137***</td>
+<td class="gt_row gt_center" style="font-size: medium; color: #FF0000;">-0.180***</td></tr>
+    <tr><td class="gt_row gt_left" style="border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #000000; font-size: medium;"></td>
+<td class="gt_row gt_center" style="border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #000000; font-size: medium;">(0.016)</td>
+<td class="gt_row gt_center" style="border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #000000; font-size: medium;">(0.033)</td></tr>
+    <tr><td class="gt_row gt_left" style="font-size: medium;">Num.Obs.</td>
+<td class="gt_row gt_center" style="font-size: medium;">935</td>
+<td class="gt_row gt_center" style="font-size: medium;">935</td></tr>
+    <tr><td class="gt_row gt_left" style="font-size: medium;">R2</td>
+<td class="gt_row gt_center" style="font-size: medium;">0.113</td>
+<td class="gt_row gt_center" style="font-size: medium;">0.106</td></tr>
+    <tr><td class="gt_row gt_left" style="font-size: medium;">R2 Adj.</td>
+<td class="gt_row gt_center" style="font-size: medium;">0.107</td>
+<td class="gt_row gt_center" style="font-size: medium;">0.100</td></tr>
+    <tr><td class="gt_row gt_left" style="font-size: medium;">F</td>
+<td class="gt_row gt_center" style="font-size: medium;">19.747</td>
+<td class="gt_row gt_center" style="font-size: medium;"></td></tr>
+  </tbody>
+  <tfoot class="gt_sourcenotes">
+    <tr>
+      <td class="gt_sourcenote" style="color: #000000; font-size: x-small;" colspan="3">* p &lt; 0.1, ** p &lt; 0.05, *** p &lt; 0.01</td>
+    </tr>
+    <tr>
+      <td class="gt_sourcenote" style="color: #000000; font-size: x-small;" colspan="3">Nota: Errores estándar en paréntesis</td>
+    </tr>
+  </tfoot>
+  
+</table>
+</div>
+]
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "16:9"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

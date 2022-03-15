@@ -1,0 +1,686 @@
+---
+title: "Estimación por variables instrumentales (IV)"
+author: Gustavo A. García <br> <span style="font-size:65%" class='notbold'>ggarci24@eafit.edu.co</span> <br> <br> <br> <br> <br> <br> <br> <br> <br>
+date: <span style="font-size:65%" class='notbold'>Econometría II <br> Programa de Economía <br> Universidad EAFIT</span>
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: xaringan-themer.css
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      ratio: "16:9"
+---
+
+```{r setup, include = F}
+# This is the recommended set up for flipbooks
+# you might think about setting cache to TRUE as you gain practice --- building flipbooks from scratch can be time consuming
+options(width = 70)
+knitr::opts_chunk$set(
+  dev.args = list(bg = 'transparent'),
+  fig.width = 12, message = TRUE,
+  warning = FALSE, comment = "", cache = TRUE, fig.retina = 3
+)
+knitr::opts_knit$set(global.par = TRUE)
+Sys.setenv(`_R_S3_METHOD_REGISTRATION_NOTE_OVERWRITES_` = "false")
+# remotes::install_github("luukvdmeer/sfnetworks")
+# remotes::install_github("EvaMaeRey/flipbookr")
+# remotes::install_github("rlesur/klippy")
+# devtools::install_github("gadenbuie/xaringanExtra")
+library(flipbookr)
+library(xaringanthemer)
+library(tidyverse)
+library(klippy)
+library(xaringanExtra)
+```
+
+<style>
+.notbold{
+    font-weight:normal
+}
+
+body {
+text-align: justify;
+}
+
+h1{
+      margin-top: -1px;
+      margin-bottom: -3px;
+}
+
+.small-code pre{
+  margin-bottom: -10px;
+  
+}  
+
+.medium-code pre{
+  margin-bottom: 2px;
+  
+} 
+</style>
+
+```{r xaringan-scribble, echo=FALSE}
+#xaringanExtra::use_scribble()
+```
+
+```{r xaringanExtra-clipboard, echo=FALSE}
+htmltools::tagList(
+  xaringanExtra::use_clipboard(
+    button_text = "<i class=\"fa fa-clipboard\"></i>",
+    success_text = "<i class=\"fa fa-check\" style=\"color: #90BE6D\"></i>",
+    error_text = "<i class=\"fa fa-times-circle\" style=\"color: #F94144\"></i>"
+  ),
+  rmarkdown::html_dependency_font_awesome()
+)
+```
+
+```{r xaringan-extra-styles, echo=FALSE}
+xaringanExtra::use_extra_styles(
+  hover_code_line = TRUE,         #<<
+  mute_unhighlighted_code = TRUE  #<<
+)
+```
+<font size = "5">
+
+<br>
+<br>
+<br>
+<br>
+<br>
+
+Link slides en formato [html](https://gusgarciacruz.github.io/EconometriaII/IV/IV.html)
+
+Link slides en formato [PDF](https://gusgarciacruz.github.io/EconometriaII/IV/IV.pdf)
+---
+# <span style="font-size:80%">En este tema</span>
+
+- <span style="font-size:150%">[<span style="color:black">Motivación](#motivacion)</span> <br> <br>
+
+- <span style="font-size:150%"> [<span style="color:black">Causas](#causas)</span> <br> <br>
+
+- <span style="font-size:150%"> [<span style="color:black">El estimador por variables instrumentales](#iv)</span> <br> <br>
+
+- <span style="font-size:150%"> [<span style="color:black">Múltiples instrumentos: mínimos cuadrados en dos etapas (MC2E - *2SLS*)](#2sls)</span> <br> <br>
+
+- <span style="font-size:150%"> [<span style="color:black">2SLS: el caso general](#2slsg)</span> <br> <br>
+
+- <span style="font-size:150%"> [<span style="color:black">Expresión general para el estimador 2SLS](#expresion)</span> <br> <br>
+
+- <span style="font-size:150%"> [<span style="color:black">Ejercicio aplicado en R: efectos de la educación de la mujer sobre la fertilidad](#ejercicio)</span>
+
+---
+# <span style="font-size:80%">Lecturas</span>
+- <span style="font-size:150%">Wooldridge, J. (2010). *Econometric Analysis of Cross Section and Panel Data*. 2a edición. MA: MIT Press. <span style="color:blue">Cap 5 <br> <br>
+
+- <span style="font-size:150%"> Greene, W. H. (2018). *Econometric Analysis*. 8th ed. NY: Pearson. <span style="color:blue">Cap 8
+
+---
+name: motivacion
+# <span style="font-size:80%">Motivación</span>
+Recordemos que el modelo de RLM tiene la siguiente estructura y supuestos: 
+
+$$\textbf{Y} = \textbf{X}\pmb{\beta} + \textbf{u}$$
+- Modelo completo: $E(\textbf{u})=\textbf{0}$
+- <span style="color:blue">Exogeneidad: $E(\textbf{X}'\textbf{u})=\textbf{0}$</span>
+- Perturbaciones esféricas: $Cov(\textbf{u})=E(\textbf{u}\textbf{u}')=\sigma_{u}^2\textbf{I}_{n}$
+	(homocedasticidad y no autocorrelación)
+-	No multicolinealidad perfecta: $\rho(\textbf{X}_{n\text{x}k})=k<n$
+-	Normalidad: $\textbf{u}_{n\text{x}1}\sim \textbf{N}(\textbf{0}_{n\text{x}1},\sigma_{u}^2\textbf{I}_{n})$
+
+El estimador por MCO es:
+
+$$\widehat{\pmb{\beta}}_{MCO}=(\textbf{X}'\textbf{X})^{-1}\textbf{X}'\textbf{Y}$$
+Ahora, la existencia de correlación entre los regresores y las perturbaciones estocásticas del modelo genera sesgo e inconsistencia en los parámetros estimados por MCO:
+- Para que $E(\widehat{\pmb{\beta}}_{MCO})=\pmb{\beta}$ se requiere que $E(\textbf{X}'\textbf{u})=\textbf{0}$
+- Para que $plim(\widehat{\pmb{\beta}}_{MCO})=\pmb{\beta}$ se requiere que $plim(N^{-1}\textbf{X}'\textbf{u})=0$
+
+---
+# <span style="font-size:80%">Motivación</span>
+<font size = "5">
+<p style="line-height: 2em;">
+Como existe correlación entre $\textbf{u}$ y $\textbf{X}$ entonces se genera un <font color = "blue">problema de identificación</font>, ya que $\frac{\partial\textbf{Y}}{\partial\textbf{X}} = \pmb{\beta} + \frac{\partial\textbf{u}}{\partial\textbf{X}}$, lo que implica que la estimación por MCO será $\pmb{\beta} + \frac{\partial\textbf{u}}{\partial\textbf{X}}$ y no $\pmb{\beta}$
+
+---
+name: causas
+# <span style="font-size:80%">Causas</span>
+<font size = "5">
+En econometría aplicada, la endogeneidad puede usualmente venir por las siguientes causas:
+<font color = "blue">
+- Omisión de variables relevantes <br><br>
+- Errores de medida en los regresores <br><br>
+- Simultaneidad <br><br>
+- Sesgo de selección <br><br>
+- Modelos dinámicos y perturbaciones autocorrelacionadas
+
+---
+# <span style="font-size:80%">Causas: <font color = "blue">omisión de variables relevantes</font></span>
+Se está interesado en la siguiente esperanza condicional <font color = "blue"> $E(y|\textbf{x}, q)$</font>, pero $q$ no es observable
+
+No habría problema si $q$ y $\textbf{x}$ no estuvieran correlacionados, pero ya que $q$ no es observable haría parte del término de error y, por tanto, $\textbf{x}$ y $u$ estarán correlacionados a través de $q$, es decir, que <font color = "blue"> $\textbf{x}$ sería endógena</font>
+
+<font color = "blue"> Ejemplo</font>: El salario de un individuo está dado por la siguiente ecuación:
+
+$$w_i = \beta_1 + \beta_2 Educ_i + \beta_3 Habil_i + u_i$$
+donde
+$$Educ_i = \alpha_1 + \alpha_2 Habil_i + \epsilon_i$$
+
+$w_i:$ salario; $Educ_i:$ nivel educativo; $Habil_i:$ habilidad (variable no observable)
+
+Dado que $Habil_i$ es no observable se termina estimando el siguiente modelo:
+$$w_i = \beta_1 + \beta_2 Educ_i + \eta_i$$
+así que, $\eta_i = \beta_3 Habil_i + u_i$, lo que implica que
+
+$$E(Educ_i \eta_i) = E((\alpha_1 + \alpha_2 Habil_i + \epsilon_i)(\beta_3 Habil_i + u_i)) \neq 0$$
+
+---
+# <span style="font-size:80%">Causas: <font color = "blue">errores de medida en los regresores</font></span>
+
+En este caso nos gustaría medir el efecto de una variable $x_k^*$, pero sólo se puede observar una <font color = "blue">medida imperfecta de ésta, $x_k$</font>. Cuando se utiliza como regresor esta medida imperfecta, la medida de error se <font color = "blue">transmitiría a los errores</font>. <font color = "blue">En la medida que $x_k^*$ y $x_k$ estén más correlacionadas o no, $x_K$ será o no endógena</font>
+
+<font color = "blue">Ejemplo</font>: Volviendo sobre la ecuación de salarios del anterior ejemplo:
+
+$$w_i = \beta_1 + \beta_2 Educ_i + u_i$$
+La educación $(Educ_i)$ es una variable que no se puede medir completamente y los años de educación es típicamente la mejor <font color = "blue">variable proxy</font> disponible. Entonces los años de escolaridad $(Schooling_i)$ que es lo que observamos viene determinada por:
+
+$$Schooling_i = Educ_i + \epsilon_i$$
+
+donde $\epsilon_i$ es la medida de error. Por simple sustitución se tiene:
+
+$$w_i = \beta_1 + \beta_2 Schooling_i + \eta_i$$
+donde $\eta_i = u_i - \beta_2 \epsilon_i$. $Schooling_i$ está claramente correlacionada con $\eta_i$, por lo que esta variables es endógena en la ecuación de salarios 
+
+---
+# <span style="font-size:80%">Causas: <font color = "blue">simultaneidad</font></span>
+Este problema ocurre cuando al menos uno de las variables explicativas, es determinada simultáneamente junto con $y$. Si $x_k$ es determinada parcialmente como función de $y$, entonces $x_k$ y $u$ estarán correlacionadas
+
+Ejemplo</font>: En el modelo keynesiano de determinación del ingreso, se tiene lo siguiente:
+$$C_t = \beta_0 + \beta_1 Y_t + u_t$$
+$$Y_t = C_t + I_t$$
+$C_t:$ consumo agregado <br>
+$Y_t:$ producción agregada<br>
+$I_t:$ inversión agregada<br>
+
+Lo anterior implica que 
+
+$$Y_t = \frac{\beta_0}{1-\beta_1} + \frac{1}{1-\beta_1} I_t + \frac{1}{1-\beta_1} u_t$$
+
+Es así que $Cov(Y_t , u_t) = \frac{\sigma^2}{1-\beta_1} \neq 0$. Con lo cual la estimación por MCO del consumo agregado sobre la producción agregada no estima el parámetro $\beta_1$ consistentemente. El *feedback* entre $u_t$ y $Y_t$ genera un <font color="blue">sesgo de ecuaciones simultáneas</font> en los estimadores MCO
+
+---
+# <span style="font-size:80%">Causas: <font color = "blue">sesgo de selección</font></span>
+Si la muestra con la que se trabaja es no aleatoria y es seleccionada para un grupo de individuos muy particular se puede incurrir en un sesgo de selección al estimar por MCO
+
+La no aleatoriedad de la muestra se traslada a una forma de sesgo por variables omitidas conocida como <font color = "blue">sesgo por selección muestra</font>
+
+<font color = "blue">Ejemplo</font>: Si la muestra seleccionada se basa en los valores que toma la variable dependiente se presenta sesgo de selección. Esto obedece a auto-selección o muestra seleccionada. Se tiene entonces que:
+
+$$y^* = \textbf{x}'\pmb{\beta} + u$$
+
+
+$$
+y =
+\begin{cases}
+y^*,
+& \text{si } y^* > 0,\\
+-, & \text{si } y^* \leq 0
+\end{cases}
+$$
+Esto implica que $E(y) = E(y^* | y^* > 0) = \textbf{x}'\pmb{\beta} + E(u|u>-\textbf{x}'\pmb{\beta})$, con lo que
+
+
+$$\frac{\partial E(y)}{\partial\textbf{x}} = \pmb{\beta} + \frac{\partial(E(u|u>-\textbf{x}'\pmb{\beta}))}{\partial\textbf{x}} \neq \pmb{\beta}$$
+No es posible identificar el vector de parámetros $\pmb{\beta}$ por MCO 
+
+---
+# <span style="font-size:80%">Causas: <font color = "blue">modelos dinámicos y perturbaciones autocorrelacionadas</font></span>
+<font size = "5">
+En el contexto de un modelo dinámico cuyas perturbaciones están correlacionadas se tiene:
+
+
+$$y_t = \rho y_{t-1} + \textbf{x}'\pmb{\beta} + u_t$$
+$$u_t = \sum_{i=1}^p \phi_i u_{t-i} + \epsilon_t$$
+
+En este modelo es posible demostrar que $Cov(y_{t-1},u_t)\neq 0$, es decir que hay problemas de endogeneidad
+
+---
+# <span style="font-size:80%">Causas</span>
+<font size="5">
+
+La distinción entre estas posibles formas de endogeneidad no son siempre fácil $\Longrightarrow$ <font color = "blue">una ecuación puede tener más de una fuente de endogeneidad
+
+<font color = "black">Ejemplo: efecto del consumo de alcohol $(x)$ sobre la productividad laboral  $(y$, medida por los salarios)
+- el consumo de alcohol esta correlacionado con factores inobservables (por ejemplo, el background familiar) que también afecta el salario $\Longrightarrow$ <font color = "blue">problema de variables omitidas</font><br><br>
+- el consumo de alcohol depende del salario, pero se puede consumir más o menos alcohol si se tienen más o menos salario $\Longrightarrow$ <font color = "blue">problema de simultaneidad
+
+---
+name: iv
+# <span style="font-size:80%">El estimador por variables instrumentales</span>
+<font size = "5">
+
+- <font color = "blue">Consecuencias</font>: la estimación de un modelo por MCO con problemas de endogeneidad lleva a <ins>estimadores inconsistentes de todos los $\beta_j$</ins><br><br>
+- El método de variables instrumentales (IV) provee una solución general para el problema de variables explicatorias endógenas<br><br>
+- Si un <font color = "blue">instrumento</font> es disponible, el método de IV puede ser utilizado para corregir el problema de endogeneidad y provee consistentes estimadores de los parámetros estructurales $\beta_j$<br><br>
+- <font color = "blue">Note que, inicialmente nos vamos a concentrar en el caso donde existe una variable explicatoria endógena y un instrumento
+
+---
+# <span style="font-size:80%">El estimador por variables instrumentales</span>
+<font size = "3">
+
+Considere el siguiente modelo lineal
+ 
+$$y = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + ... + \beta_k x_k + u \tag{1}$$
+$$E(u)=0, Cov(x_j,u)=0, j=1,2,...,k-1$$
+donde $x_k$ puede estar correlacionada con $u$, esto es $x_1,...,x_{k-1}$ son exógenas, pero $x_k$ es potencialmente endógena
+
+Para que el estimador IV sea consistente, es necesario una variable observable, $z_1$, (el instrumento) que no se encuentre en la ecuación (1) y que satisfaga dos condiciones:
+
+1. $z_1$ debe estar incorrelacionado con $u$
+$$
+Cov(z_1,u)=0 \tag{2}
+$$ 
+En otras palabras, <font color="blue"> $z_1$ es exógeno o válido</font>. Esto a menudo es referido como una <font color="blue">restricción de exclusión <font color="black">
+
+2. El instrumento debe ser <font color="blue">informativo o relevante </font>. Esto es, el instrumento <font color="blue"> $z_1$ debe estar correlacionado con el regresor endógeno $x_k$</font>, condicional a todas las variable exógenas en el modelo $(x_2,...,x_{k-1})$. Si se escribe la proyección lineal de $x_k$ sobre todas las variables exógenas:
+$$x_k = \delta_0 + \delta_1 x_{1} + \delta_2 x_{2} + ... +\delta_{k-1} x_{k-1} + \theta_1 z_1 + \epsilon_k \tag{3}$$
+$$E(\epsilon_k)=0, Cov(x_j,\epsilon_k)=0, Cov(z_1,\epsilon_k)=0, j=1,2,...,k-1$$
+el principal supuesto en esta proyección lineal es que 
+<font color="blue">$$\theta_1 \neq  0\tag{4}$$
+
+---
+# <span style="font-size:80%">El estimador por variables instrumentales</span>
+<font size = "5">
+
+- Cuando $z_1$ satisface (2) y (4) entonces se dice que $z_1$ es una variable instrumental o un instrumento para $x_k$ <br> <br>
+- Si $z_1$ es un instrumento válido y relevante, y $\theta_1 \neq 0$, <font color="blue"> $z_1$ impacta sobre $y$ pero sólo indirectamente a través de la variable $x_k$</font> <br> <br>
+- Ya que $x_1,x_2,...,x_{k-1}$ están incorrelacionadas con $u$, ellas son sus propias variables instrumentales en la ecuación principal $\Longrightarrow$ <font color="blue">la lista completa de variables instrumentales es la misma que la lista de variables exógenas</font> <br> <br>
+- La proyección lineal en la ecuación (3) es llamada la <font color="blue">ecuación de la forma reducida</font>, mientras que la ecuación (1) es llamada la <font color="blue">ecuación estructural
+
+---
+# <span style="font-size:80%">El estimador por variables instrumentales</span>
+<font size = "5">
+<p style="line-height: .1em;">
+Los supuestos (2) y (4) (validez y relevancia) permiten identificar los parámetros del modelo
+
+<font color="blue">Identificación</font>: es posible escribir los $\beta_j$ de la ecuación estructural (1) en términos de los momentos poblacionales en las variables observables
+
+Entonces, ya que se ha asumido que $x_2,...,x_{k-1}$ son exógenas, entonces los momentos poblacionales serán:
+$$E(1\cdot u)=0$$
+$$E(x_2 u)=0$$
+$$E(x_3 u)=0 \tag{5}$$
+$$...$$
+$$E(x_{k-1} u)=0$$
+Ahora, si todo lo que se tiene son los momentos en (5), los parámetros del modelo <font color="blue">no son identificables</font>. La razón es simple, con sólo $k-1$ momentos, no se pueden estimar los $k$ parámetros. Este modelo es por tanto <font color="blue">subidentificado (*underidentified*)
+
+---
+# <span style="font-size:80%">El estimador por variables instrumentales</span>
+<font size = "5">
+<p style="line-height: 1em;">
+Si el instrumento $z_1$ es disponible (es observable, válido y relevante), entonces <font color="blue">el supuesto de instrumento válido provee el momento adicional</font>, esto es, $E(z_1 u)=0$. Para ver cómo, la ecuación (1) puede ser escrita en términos matriciales de la forma
+$$y=\textbf{x}\pmb{\beta} + u \tag{6}$$
+donde $\textbf{x}=(1,x_2,...,x_k)$. El vector $1\times K$ de todas las variables exógenas es $\textbf{z}=(1,x_2,...,x_{k-1}, z_1)$
+
+Los supuestos $Cov(x_j,u)=0$ y $Cov(z_1,u)=0$ implica $k$ momentos o condiciones de ortogonalidad, esto es
+$$E(\textbf{z}'u)=0 \tag{7}$$
+De (6) y (7) es posible llegar a que
+$$[E(\textbf{z}'\textbf{x})]\pmb{\beta}=E(\textbf{z}'y) \tag{8}$$
+lo cual es un sistema de $K$ ecuaciones linealies (note que $\textbf{z}'$ es $k\times N$, $\textbf{x}$ es $N\times k$, $\pmb{\beta}$ es $k\times 1$, y $y$ es $N\times 1$)
+
+---
+# <span style="font-size:80%">El estimador por variables instrumentales</span>
+<font size = "5">
+
+La ecuación (8) representa un sistema de $k$ ecuaciones lineales con $k$ parámetros desconocidos  $(\beta_1,\beta_2,...,\beta_k)$, por lo tanto, el modelo está <font color = "blue">exactamente identificado
+
+<font color = "black">
+
+Este sistema tiene única solución si y sólo si la matriz $E(\textbf{z}'\textbf{x})$ tiene rango completo:
+
+\begin{equation}
+	\hbox{rango} \  \ E(\textbf{z}'\textbf{x})=k \tag{9}
+\end{equation}
+
+<font color = "blue">esto implica que las columnas son linealmente independientes, que no existe multicolinealidad perfecta o que $E(\textbf{z}'\textbf{x})$ es invertible} y este supuesto se llama condición de rango
+
+<font color = "black">
+
+La solución es
+	<font color = "blue"> $$\pmb{\beta}=[E(\textbf{z}'\textbf{x})]^{-1}E(\textbf{z}'y) \tag{10}$$
+
+---
+# <span style="font-size:80%">El estimador por variables instrumentales</span>
+<font size = "5">
+
+Mientras $\pmb{\beta}$ en la ecuación anterior es expresado en función de los momentos poblacionales, se puede usar los momentos muestrales (los datos), para consistente estimar $\pmb{\beta}$. Se tiene entonces que el <font color = "blue">estimador de variables instrumentales</font> es
+
+<font color = "blue">
+\begin{equation}
+	\pmb{\widehat{\beta}}^{IV}=\left(N^{-1} \sum_{i=1}^{N}\textbf{z}_i'\textbf{x}_i\right)^{-1}\left(N^{-1}\sum_{i=1}^{N}\textbf{z}_i'y_i\right)=(\textbf{Z}'\textbf{X})^{-1}(\textbf{Z}'\textbf{Y}) \tag{11}
+\end{equation}
+
+---
+# <span style="font-size:80%">El estimador por variables instrumentales</span>
+<font size = "5">
+
+- Mientras que es claro como la condición de validez nos permite identificar el modelo, el rol de la segunda condición (relevancia) puede parecer menos clara <br> <br>
+- La condición de relevancia es necesaria, ya que de otra forma el rango de la matriz $E(\textbf{z}'\textbf{x})$ será menos que $k$ y el modelo estará subidentificado <br> <br>
+- No se hace la demostración (problema 5.12 en Wooldridge provee algunas ayudas), ya que la intuición es muy clara: si $\theta_1 = 0$ en
+	
+	$$	x_k = \delta_0 + \delta_1 x_{1} + \delta_2 x_{2} + ... +  + \delta_{k-1} x_{k-1} + \theta_1 z_1 + \epsilon_k,$$
+entonces eso equivale a no tener un instrumento, con lo cual el modelo es subidentificado como ya lo hemos visto 
+
+---
+# <span style="font-size:80%">El estimador por variables instrumentales</span>
+<font size = "5">
+
+En este punto podemos probar entonces si el estimador IV definido en (11) es consistente bajo los supuestos que se han hecho. No te que
+
+$$\pmb{\widehat{\beta}}^{IV}=(\textbf{Z}'\textbf{X})^{-1}(\textbf{Z}'\textbf{Y})$$
+$$\pmb{\widehat{\beta}}^{IV}=(\textbf{Z}'\textbf{X})^{-1}(\textbf{Z}'(\textbf{X}\pmb{\beta} + u))$$
+$$\pmb{\widehat{\beta}}^{IV}=\pmb{\beta} + (\textbf{Z}'\textbf{X})^{-1}(\textbf{Z}'u)$$
+
+y entonces se tiene que
+
+$$plim \  \ \pmb{\widehat{\beta}}^{IV}=\pmb{\beta}$$
+por tanto, <font color="blue">consistente: cuando el tamaño de la muestra $N$ va ha infinito, el estimador IV converge en probabilidad al verdadero valor poblacional $\pmb{\beta}$ 
+
+---
+# <span style="font-size:80%">El estimador por variables instrumentales</span>
+<font size = "4">
+
+<ins><font color = "blue">Procedimiento en dos etapas para obtener el estimador IV</font></ins>
+
+Se tiene el siguiente modelo (ecuación estructural)
+$$y = \beta_1 + \beta_2 x_2 + u$$
+donde $x_2$ es endógena y existe un instrumento $z_1$ disponible (satisfaciendo las condiciones de validez y relevancia). La ecuación de la forma reducida es
+
+$$x_2 = \theta_0 + \theta_1 z_1 + \epsilon$$
+
+Es posible obtener el estimador IV de $\beta_2$ por medio del siguiente procedimiento en dos etapas
+
+1. Regrese la variable endógena $x_2$ sobre el instrumento $z_1$ usando MCO. Calcule el valor predicho de $x_2$ $(\widehat{x}_2)$ <br> <br>
+2. Use $\widehat{x}_2$ como variable explicatoria en la ecuación estructural y estime por MCO. La estimación resultante del coeficiente sobre $\widehat{x}_2$ es el estimador IV de $\beta_2$. Este término por tanto esta ''purgado'' de la correlación de la variable endógena con los residuales
+
+Note que si se usa $x_2$ como su propio instrumento en la primera etapa, estos es $z_1=x_2$, se obtendrían las estimaciones MCO en la segunda etapa. Por tanto, <font color="blue">MCO puede verse como un estimador IV en el que se asume que todas las variables explicatorias son exógenas
+
+---
+# <span style="font-size:80%">El estimador por variables instrumentales</span>
+<font size = "5">
+
+Como se ha mostrado, las condiciones de validez y relevancia del instrumento son igualmente importantes en la identificación de los parámetros estructurales $\beta_j$. Sin embargo, existe una importante diferencia entre ellos:
+- la condición de relevancia puede ser testeada, por ejemplo calculando un $t$-statistic asociado a $\widehat{\theta}_1$ en la regresión de la ecuación reducida (primera etapa) <br> <br>
+- la condición de validez, sin embargo, no puede ser probada, ya que esta condición involucra los errores inobservados $u$ $(Cov(z_1,u)=0)$. Por tanto, esta condición debe asumirse y es importante entonces relacionar la condición de validez con la teoría económica para que el análisis sea convincente
+
+---
+name: 2sls
+# <span style="font-size:70%">Múltiples instrumentos: mínimos cuadrados en dos etapas (MC2E - *2SLS*)</span>
+<font size = "5">
+- Se ha considerado el estimador simple IV con una variable explicativa endógena y un instrumento $\Longrightarrow$ este es el caso de <font color="blue">identificación exacta</font>. Similarmente se puede tener dos variables explicatorias endógenas con dos instrumentos y el modelo seguiría estando exactamente identificado <br> <br>
+- Si se tienen menos instrumentos que regresores endógenos, el modelo está <font color="blue">subidentificado (*underidentified*)</font> <br> <br>
+- Si se tienen más instrumentos que regresores endógenos, el modelo está <font color="blue">sobreidentificado (*overidentified*)</font> <br> <br>
+- En la práctica es a menudo una buena idea tener más instrumentos que los estrictamente necesarios, ya que instrumentos adicionales pueden ser usados para incrementar la precisión de las estimaciones y para construir tests de validez de las restricciones de sobreidentificación (lo cual da luces sobre la validez de los instrumentos). Pero hay que ser moderado en la inclusión de instrumentos
+
+---
+# <span style="font-size:70%">Múltiples instrumentos: mínimos cuadrados en dos etapas (MC2E - *2SLS*)</span>
+<font size = "5">
+
+Supongamos que se tienen $M$ variables instrumentales para $x_k$: $z_1,z_2,...,z_M$. Además, que cada uno de estos instrumentos satisface la condición de validez
+
+$$Cov(z_h,u)=0$$
+para todo $h$. Si cada uno de estos instrumentos tiene alguna correlación parcial con $x_k$ (condición de relevancia), se podría entonces en principio calcular $M$ diferentes estimadores IV. Así que <font color="blue">cuál estimador IV debería ser usado?
+
+<font color="black">
+
+De acuerdo al teórema 5.3 en Wooldridge (2010) el estimador de mínimos cuadrados en dos etapas (MC2E) o *Two-Stage Least Squares* (2SLS) es el estimador IV más eficiente
+
+<font color="blue">El estimador 2SLS es obtenido usando todos los instrumentos simultáneamente en la primera etapa:
+
+$$x_k = \delta_1 + \delta_2 x_2 + ... + \delta_{k-1} x_{k-1} + \theta_1 z_1 + \theta_2 z_2 + ... + \theta_M z_M + \epsilon_k$$
+---
+# <span style="font-size:70%">Múltiples instrumentos: mínimos cuadrados en dos etapas (MC2E - *2SLS*)</span>
+<font size = "5">
+
+Por definición, el estimador MCO de la primera etapa construirá la combinación lineal de los instrumentos más altamente correlacionada con $x_k$
+
+Asumiendo que todos los instrumentos son exógenos, entonces <font color="blue">este procedimiento conserva más variación exógena en $x_k$ de lo que conservaría cualquier otra combinación lineal de los instrumentos
+
+<font color="black">
+
+Otra forma de decir esto es que los instrumentos producen exógena variación en la predicción de $x_k$
+
+$$\widehat{x}_k = \widehat{\delta}_1 + \widehat{\delta}_2 x_2 + ... + \widehat{\delta}_{k-1} x_{k-1} + \widehat{\theta}_1 z_1 + \widehat{\theta}_2 z_2 + ... + \widehat{\theta}_M z_M$$ 
+
+y la estimación MCO en la primera etapa asegura que haya tanta variación exógena como sea posible
+
+<font color="blue">Con pocos instrumentos podría existir menos variación exógena en $\widehat{x}_k$, por tanto los estimadores podrían no ser eficientes
+
+---
+# <span style="font-size:70%">Múltiples instrumentos: mínimos cuadrados en dos etapas (MC2E - *2SLS*)</span>
+<font size = "5">
+
+Surge entonces la pregunta: cómo es la condición de relevancia en este caso donde existen más instrumentos que regresores endógenos? <font color="blue">La respuesta es que al menos uno de los $\theta_j$ en la primera etapa debe ser diferente de cero para que el modelo esté identificado
+
+<font color="black">
+
+Dado todo lo anterior, se podría estar tentado incluir tantos instrumentos como fuera posible, ya que más instrumentos mejora la eficiencia de los estimadores 2SLS
+
+Sin embargo, se sabe que teniendo muchos instrumentos, relativo al tamaño de la muestra, se generan potencialmente importantes sesgos, más aún si algunos/muchos/todos los instrumentos son débilmente correlacionados con las variables explicativas endógenas
+
+Usando muchos instrumentos (débiles) tiende a sesgar los estimadores 2SLS hacia los estimadores MCO
+
+El concejo sobre cómo proceder en el ejercicio empírico es usar un modelo moderadamente sobreidenficado $\Longrightarrow$ menos eficiencia pero con menos sesgo  
+
+---
+name: 2slsg
+# <span style="font-size:80%">2SLS: el caso general</span>
+<font size = "5">
+
+Ahora se discute el caso en el que existen varias variables explicativas endógenas, pero los mecanismos principales cuando se tiene sólo un regresor endógeno se mantienen
+
+Las condiciones de validez y relevancia en el caso general, donde varios elementos de $\textbf{x}$ pueden estar correlacionados con $u$, son como sigue:
+
+$$E(\textbf{z}'u)=0 \tag{Validez}$$
+\begin{equation}
+	\hbox{rango} \  \ E(\textbf{z}'\textbf{x})=k \tag{Relevancia}
+\end{equation}
+
+donde $\textbf{z}$ es $1\times L$ y el rango $(\textbf{z}'\textbf{z})=L$, descartando la colinealidad entre los instrumentos. En esta notación, cualquier elemento exógeno de $\textbf{x}$, incluyendo la constante, están incluidos en $\textbf{z}$
+
+---
+# <span style="font-size:80%">2SLS: el caso general</span>
+<font size = "5">
+La condición de validez es fácil de entender, pero la condición de relevancia quizás no
+
+Claramente para que la condición de relevancia (definida como condición de rango) se mantenga, se necesita al menos tantos instrumentos como variables explicatorias existan: $L\geq k$ $\Longrightarrow$ esta condición es conocida como <font color = "blue">condición de orden <font color = "black">
+
+Sin embargo, aunque la condición de orden es necesaria, <font color = "blue">no es suficiente</font> para que el	rango $E(\textbf{z}'\textbf{x})=k$
+
+<font color = "blue">También es necesario que los elementos de $\textbf{z}$ estén correlacionados con los elementos de $\textbf{x}$ <font color = "black">
+
+Probar formalmente la condición de rango es tedioso y algo complicado, así que no nos meteremos con esto (Wooldridge tampoco lo hace). <font color = "blue">Lo que si es útil es mirar cuidadosamente los resultados de la primera etapa<font color = "black">
+
+Se va a tener tantas regresiones en el primera etapa como variables explicatorias endógenas haya, y es <font color = "blue">necesario (no suficiente) al menos un coeficiente significante en los instrumentos en cada regresión de la forma reducida para que el modelo este identificado
+
+---
+# <span style="font-size:80%">2SLS: el caso general</span>
+<font size = "5">
+ 
+Para ver lo anterior, consideremos el siguiente modelo
+$$y = \beta_1 + \beta_2 x_2 + \beta_3 x_3 + \beta_4 x_4 + u$$
+donde $x_3$ y $x_4$ son endógenos y, por tanto, se necesitan al menos 2 instrumentos, $z_1$ y $z_2$
+
+Estos instrumentos entran en las ecuaciones de la forma reducida para $x_3$ y $x_4$
+
+$$x_3 = \pi_1 + \pi_2 x_2 + \pi_3 z_1 + \pi_4 z_2 + \epsilon_1$$
+$$x_4 = \gamma_1 + \gamma_2 x_2 + \gamma_3 z_1 + \gamma_4 z_2 + \epsilon_2$$
+- Si $\pi_3=0$, $\pi_4\neq 0$, $\gamma_3=0$, $\gamma_4\neq 0$: la ecuación estructural <font color="blue"> no estará identificada</font>, ya que el instrumento $z_1$ no es relevante en ambas ecuaciones y, por tanto, efectivamente sólo se tendrá un instrumento
+
+- Si $\pi_3=0$, $\pi_4\neq 0$, $\gamma_3\neq 0$, $\gamma_4= 0$: la ecuación estructural <font color="blue">estará identificada</font>, ya que el instrumento $z_1$ es relevante en la ecuación determinando $x_4$, mientras que $z_2$ es relevante para $x_3$
+
+---
+# <span style="font-size:80%">2SLS: el caso general</span>
+<font size = "5">
+
+- Desde un punto de vista práctico, es posible identificar rápidamente si la identificación falla. Si el modelo no está identificado, debido a que tiene pocos instrumentos o por que los instrumentos son colineales, un software como R o Stata reportará esto y no estimará nada <br> <br>
+- Si los instrumentos tiene una correlación muy débil con las variables explicatorias endógenas, los coeficientes de los instrumentos en la primera etapa pueden ser insignificantes, y los errores estándar 2SLS serán muy grandes $\Longrightarrow$ en otras palabras, <font color="blue">no estaríamos aprendiendo nada del modelo planteado
+
+---
+name: expresion
+# <span style="font-size:80%">Expresión general para el estimador 2SLS</span>
+<font size = "5">
+
+El álgebra del estimador 2SLS es más complicado que el del estimador IV. Usando álgebra matricial nos ayuda a entender los mecanismos generales
+
+Recordemos que el estimador IV tiene la siguiente estructura
+$$\pmb{\widehat{\beta}}^{IV}=(\textbf{Z}'\textbf{X})^{-1}(\textbf{Z}'\textbf{Y})$$
+Es fácil mostrar que esta expresión puede ser expresada como
+$$\pmb{\widehat{\beta}}^{IV}=(\widehat{\textbf{X}}'\textbf{X})^{-1}(\widehat{\textbf{X}}'\textbf{Y})$$
+es decir, MCO usando la predicción en lugar de los valores reales de las variables explicatorias (para las variables exógenas en $\textbf{X}$, los valores predicho y reales coinciden)
+
+La misma expresión se mantiene para los estimadores 2SLS
+<font color="blue">$$\pmb{\widehat{\beta}}^{2SLS}=(\widehat{\textbf{X}}'\textbf{X})^{-1}(\widehat{\textbf{X}}'\textbf{Y})$$
+
+---
+# <span style="font-size:80%">Expresión general para el estimador 2SLS</span>
+<font size = "5">
+<p style="line-height: 1em;">
+Sin embargo, ya que el modelo esta sobreidenficado (*overidentified*) la expresión del estimador 2SLS no es igual a la del estimador IV
+
+Para ver qué se obtiene si se escribe el estimador 2SLS en términos de las matrices $\textbf{Z}$ y $\textbf{X}$, note que
+
+$$\widehat{\textbf{X}}=\textbf{Z}(\textbf{Z}'\textbf{Z})^{-1}\textbf{Z}'\textbf{X}=\textbf{P}_Z\textbf{X}$$
+donde $\textbf{P}_Z = \textbf{Z}(\textbf{Z}'\textbf{Z})^{-1}\textbf{Z}'$ (conocida como la <font color="blue">matriz de proyección</font>) es idempotente $(\textbf{P}_Z \textbf{P}_Z = \textbf{P}_Z)$ y simétrica $(\textbf{P}_Z '=\textbf{P}_Z)$. Por tanto,
+
+$$\widehat{\textbf{X}}'\textbf{X}=(\textbf{P}_Z\textbf{X})'\textbf{X}=\textbf{X}'\textbf{P}_Z\textbf{X}=\textbf{X}'\textbf{P}_Z\textbf{P}_Z\textbf{X}=\textbf{X}'\textbf{P}_Z'\textbf{P}_Z\textbf{X}=(\textbf{P}_Z\textbf{X})'\textbf{P}_Z\textbf{X}=\widehat{\textbf{X}}'\widehat{\textbf{X}}$$
+
+Incorporando esta expresión en el estimador 2SLS se tiene que la expresión de éste estimador es
+
+<font color="blue"> $$\pmb{\widehat{\beta}}^{2SLS}=(\widehat{\textbf{X}}'\widehat{\textbf{X}})^{-1}(\widehat{\textbf{X}}'\textbf{Y})$$
+
+<font color="black">
+que es el estimador IV cuando usa como instrumento $\widehat{\textbf{X}}$
+
+---
+# <span style="font-size:80%">Expresión general para el estimador 2SLS</span>
+<font size = "5">
+
+El estimador 2SLS puede ser obtenido de los siguientes pasos
+1. Obtenga los valores estimados $x_k$ de la regresión 
+<div style="text-align: center"> $x_K$ sobre $1,x_1,...,x_{k-1},z_1,...,z_M$ <br> 
+<div style="text-align: justify">La anterior ecuación es llamada <font color = "blue">regresión de la primera etapa <font color = "black">
+
+2. Corra por MCO la regresión
+<div style="text-align: center"> $y$ sobre $1,x_1,...,x_{K-1},\widehat{x}_k$ <br>
+<div style="text-align: justify"> La anterior ecuación es llamada <font color="blue">regresión de la segunda etapa<font color="black">, y con esta se obtienen los $\widehat{\beta}_j$
+
+
+En términos prácticos, es mejor utilizar un software con un comando o paquete 2SLS, en lugar de hacerlo manualmente. Esto por dos principales razones
+- errores en la especificaciones en alguna de las dos etapas
+- los errores estándar MCO con incorrectos cuando se tienen variables explicativas predichas
+
+---
+name: ejercicio
+# <span style="font-size:70%">Ejercicio aplicado: efectos de la educación de la mujer sobre la fertilidad</span>
+
+**Las mujeres más educadas tienen menos hijos?**
+
+Numerosos estudios indican que la educación de las mujeres tiene un efecto negativo sobre la fertilidad. Varias son las posibles explicaciones:
+- la escolarización aumenta el coste de oportunidad de tener un hijo
+- aumenta la eficiencia del control de fertilidad  
+- simplemente reduce la preferencia por los hijos
+
+En este ejercicio vamos a estudiar este posible efecto negativo.  El siguiente ejercicio se basa en el paper: McCrary, J y Royer, H. (2011). "The Effect of Female Education on Fertility and Infant Health: Evidence from School Entry Policies Using Exact Date of Birth". *American Economic Review*, 101: 158-195.
+
+Los datos para este ejercicio proviene de la *General Social Survey (GSS)* de los Estados Unidos. En los siguientes links se encuentran los datos, la descripción dellada de los datos y el código utilizado en R:
+- [Datos](https://eafit-my.sharepoint.com/:u:/g/personal/ggarci24_eafit_edu_co/ETZ8xAWasYpAs9fInpcWijgBCT-B2iBV-wV_Kb62uCGP1g?e=a2o3fn)
+- [Descripción de la información](https://gss.norc.org/get-the-data/stata)
+- [Código en R](https://eafit-my.sharepoint.com/:u:/g/personal/ggarci24_eafit_edu_co/EWN9FtgNsFxMjh7SeRpBILABCzvwKTnbtAPdiaxau2QVMg?e=P5NbN2)
+
+---
+# <span style="font-size:70%">Ejercicio aplicado: efectos de la educación de la mujer sobre la fertilidad</span>
+.small-code[
+Cargando las librerías
+
+```{r message=FALSE, warning=FALSE}
+library(devtools); library(haven); library(dplyr); library(cragg); library(AER); library(tidyverse); library(stargazer); library(modelsummary)
+library(gt); library(knitr); library(kableExtra); library(tibble)
+```
+
+Leyendo los datos y procesando la información
+
+```{r message=FALSE, warning=FALSE}
+setwd("C:/Users/ggarci24/OneDrive - Universidad EAFIT/EAFIT/Cursos EAFIT/Econometria II/R/Tema 9")
+
+data <- read_dta("GSS2012_2018.DTA") %>% # Leyendo el archivo .dta
+  select(year, age, sex, race, educ, childs, paeduc, maeduc, wrkstat, marital) %>% # Seleccionando variables de la base      
+  filter(sex==2, year>=2014 & year<=2018, age>=35 & age<=55) %>% # Filtrando la base para mujeres y años
+  mutate(age2 = age*age, afroa = case_when(race == 1 ~ 1,
+                                           race == 2 ~ 0), 
+                         working = case_when(wrkstat >= 1 & wrkstat<= 2 ~ 1,
+                                             wrkstat >= 3 & wrkstat<= 8 ~ 0),
+                         casado = case_when(marital == 1 ~ 1,
+                                            marital != 1 ~ 0)) %>% # Creando variables 
+  drop_na() # Borrando missings de toda la base
+```
+
+.pull-left-30[
+```{r}
+data[,c("race","afroa")]
+```
+]
+
+.pull-left-30[
+```{r}
+data[,c("wrkstat","working")]
+```
+]
+
+.pull-left-30[
+```{r}
+data[,c("marital","casado")]
+```
+]
+]
+---
+# <span style="font-size:70%">Ejercicio aplicado: efectos de la educación de la mujer sobre la fertilidad</span>
+.small-code[
+.pull-left-50[
+Estimación por OLS
+```{r}
+ols <- lm(childs ~ educ+age+I(age2)+casado+afroa+working, data=data)
+
+
+
+summary(ols)
+```
+]
+
+.pull-right-50[
+Estimación por 2SLS
+```{r}
+iv <- ivreg(childs ~ educ+age+I(age2)+casado+afroa+working |
+                           age+I(age2)+casado+afroa+working+paeduc+maeduc, data=data)
+
+summary(iv)
+```
+]
+]
+---
+# <span style="font-size:70%">Ejercicio aplicado: efectos de la educación de la mujer sobre la fertilidad</span>
+<font size = "3">
+.medium-code[
+Utilizamos el paquete [```modelsummary```](https://vincentarelbundock.github.io/modelsummary/articles/modelsummary.html) para generar tablas editadas (Word, tex, text, png, html...)
+```{r}
+modelos <- list("OLS" = lm(childs ~ educ+age+I(age2)+casado+afroa+working, data=data),
+                "IV"  = ivreg(childs ~ educ+age+I(age2)+casado+afroa+working |
+                              age+I(age2)+casado+afroa+working+paeduc+maeduc, data=data))
+cm <- c( '(Intercept)' = 'Constante', 'educ' = 'Educación', 'age' = 'Edad', 'I(age2)' = 'Edad2', 'casado' = 'Casado', 'afroa' = 'Afroamericano', 'working' = 'Empleado (=1)')
+cap <- 'Tabla 1. Determinantes de la fertilidad'
+modelsummary(modelos, output = 'gt', coef_map = cm, stars = c('*'=.1, '**'=.05, '***'=.01), statistic = "std.error", title = cap,
+             gof_omit = 'IC|Log', coef_omit = "[^educ]") %>%
+    tab_style(style = cell_text(size = 'medium'), locations = cells_body(rows = 1:6)) %>%
+    tab_style(style = cell_text(color = 'red'), locations = cells_body(rows = 1)) %>% 
+    tab_source_note(source_note = "Nota: Errores estándar en paréntesis") %>%
+    tab_style(style = cell_text(color = "black", size = "x-small"), locations = cells_source_notes())
+```
+]
