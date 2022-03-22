@@ -13,3 +13,5 @@ Profesor: [Gustavo A. García](https://gusgarciacruz.github.io/cv)
 [Modelos de datos panel](https://gusgarciacruz.github.io/EconometriaII/Tema12/Tema12.html)<br>
 
 [Modelos de elección discreta](https://gusgarciacruz.github.io/EconometriaII/Tema11/Tema11.html)
+
+[Instrucciones trabajo de investigación](https://gusgarciacruz.github.io/EconometriaII/TrabajoInvestigacion/TrabajoInvestigacion.html#1)
