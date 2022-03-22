@@ -1,0 +1,164 @@
+---
+title: "Instrucciones trabajo de investigación"
+author: Gustavo A. García <br> <span style="font-size:65%" class='notbold'>ggarci24@eafit.edu.co</span> <br> <br> <br> <br> <br> <br> <br> <br> <br>
+date: <span style="font-size:65%" class='notbold'>Econometría II <br> Programa de Economía <br> Universidad EAFIT</span>
+output:
+  xaringan::moon_reader:
+    seal: false
+    lib_dir: libs
+    css: xaringan-themer.css
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      ratio: "16:9"
+---
+
+```{r setup, include = F}
+# This is the recommended set up for flipbooks
+# you might think about setting cache to TRUE as you gain practice --- building flipbooks from scratch can be time consuming
+options(width = 70)
+knitr::opts_chunk$set(
+  dev.args = list(bg = 'transparent'),
+  fig.width = 12, message = TRUE,
+  warning = FALSE, comment = "", cache = TRUE, fig.retina = 3
+)
+knitr::opts_knit$set(global.par = TRUE)
+Sys.setenv(`_R_S3_METHOD_REGISTRATION_NOTE_OVERWRITES_` = "false")
+# remotes::install_github("luukvdmeer/sfnetworks")
+# remotes::install_github("EvaMaeRey/flipbookr")
+# remotes::install_github("rlesur/klippy")
+# devtools::install_github("gadenbuie/xaringanExtra")
+library(flipbookr)
+library(xaringanthemer)
+library(tidyverse)
+library(klippy)
+library(xaringanExtra)
+library(gt); library(knitr); library(kableExtra); library(tibble)
+library(summarytools)
+```
+
+<style>
+.notbold{
+    font-weight:normal
+}
+
+body {
+text-align: justify;
+}
+
+h1{
+      margin-top: -1px;
+      margin-bottom: -3px;
+}
+
+.small-code pre{
+  margin-bottom: -10px;
+  
+}  
+
+.medium-code pre{
+  margin-bottom: 2px;
+  
+}
+
+</style>
+
+```{r xaringan-scribble, echo=FALSE}
+xaringanExtra::use_scribble()
+```
+
+```{r xaringanExtra-clipboard, echo=FALSE}
+htmltools::tagList(
+  xaringanExtra::use_clipboard(
+    button_text = "<i class=\"fa fa-clipboard\"></i>",
+    success_text = "<i class=\"fa fa-check\" style=\"color: #90BE6D\"></i>",
+    error_text = "<i class=\"fa fa-times-circle\" style=\"color: #F94144\"></i>"
+  ),
+  rmarkdown::html_dependency_font_awesome()
+)
+```
+
+```{r xaringan-extra-styles, echo=FALSE}
+xaringanExtra::use_extra_styles(
+  hover_code_line = TRUE,         #<<
+  mute_unhighlighted_code = TRUE  #<<
+)
+```
+# <span style="font-size:80%">Trabajo de investigación</span>
+<font size = "5">
+<p style="margin-bottom: -1em">
+- Instrucciones en [html](https://gusgarciacruz.github.io/EconometriaII/TrabajoInvestigacion/TrabajoInvestigacion.html) y [PDF](https://gusgarciacruz.github.io/EconometriaII/TrabajoInvestigacion/TrabajoInvestigacion.pdf)
+<p style="margin-bottom: -0.6em">
+- El objetivo de este trabajo es evaluar las capacidades de los estudiantes para enfrentarse autónomamente a un proceso de investigación
+<p style="margin-bottom: -0.6em">
+- El trabajo se debe llevar a cabo en grupos máximo de 4 estudiantes
+<p style="margin-bottom: -0.6em">
+- Cada uno de los grupos debe inscribirse en el siguiente [link](https://docs.google.com/document/d/1j6-gWrxWz6baoZ0DuN3v_H_aCRGa3t44JKrtwVQflfE/edit?usp=sharing)
+<p style="margin-bottom: -0.6em">
+- Cada grupo debe seleccionar algún tema de interés y se espera que el tema abordado haga uso de alguna de las técnicas econométricas vistas a lo largo del curso
+<p style="margin-bottom: -0.6em">
+- En el desarrollo del trabajo de investigación, cada grupo debe:
+<p style="margin-bottom: -0.8em">
+ 1. seleccionar un tema de interés
+ 2. buscar y armar la base de datos que de respuesta al problema o tema seleccionado
+ 3. hacer una búsqueda de la literatura en la cual se encuentra enmarcado el problema o tema seleccionado
+ 4. realizar un ejercicio estadístico que apunten a validar el problema o tema que se está trabajando
+ 5. plantear el modelo econométrico que ayude estudiar el tema seleccionado
+ 6. realizar las interpretaciones, recomendaciones y/o conclusiones que se desprenden del ejercicio empírico 
+
+---
+# <span style="font-size:80%">Estructura del documento</span>
+<font size = "4">
+
+La entrega final del trabajo de investigación debe tener la estructura de un documento de investigación con las siguientes secciones (mirar algún *paper* de las referencias que se están utlizando de soporte en la investigación o como ejemplo mirar el siguiente [documento](https://revistas.udea.edu.co/index.php/lecturasdeeconomia/article/view/2645/2104)):
+
+1. El documento debe tener un título
+
+2. <span style="color:blue">Introducción</span>: se plantea una motivación del tema a trabajar, en particular se menciona por qué es importante el tema y cuál es el objetivo principal del estudio. Se debe mencionar los datos con los se van a trabajar (país o ciudad, período o año, población
+analizada...). En el último párrafo de la introducción se debe mencionar la estructura del documento, esto es, las secciones que componen el documento
+
+3. <span style="color:blue">Revisión de literatura</span>: se debe hacer una revisión de literatura y en último párrafo mencionar cuál es el principal aporte del documento respecto a la literatura existente
+
+4. <span style="color:blue">Datos y evidencia descriptiva</span>: Se mencionan los datos utilizados con más detalle y se describen las estadísticas descriptivas de las variables más importantes a analizar
+
+5. <span style="color:blue">Modelo econométrico</span>: plantear la ecuación del modelo a estimar y describir éste modelo: variable dependiente, independientes y error
+
+6. <span style="color:blue">Resultados</span>: descripción de los de resultados, deduciendo implicaciones
+
+7. <span style="color:blue">Conclusiones</span>: descripción de los principales resultados encontrados, implicaciones y discusión (implicaciones de política...)
+
+8. <span style="color:blue">Referencias</span>: se debe relacionar los *papers* citados en el documento
+
+---
+# <span style="font-size:80%">Formato del documento</span>
+<font size = "5">
+
+- Puede ser entregar en documento Word (máx 15 pág), Latex (máx 15 pág) o Blog de [Rmarkdown](https://datacarpentry.org/r-socialsci/05-rmarkdown/index.html)
+
+- Cada sección y sub-secciones (si existen) del documento deben ser enumeradas
+
+- Los cuadros y gráficas deben tener titulo y ser enumeradas (por ejemplo, Cuadro 1, Cuadro 2, Gráfico 1, Gráfico 2,...) y llevar la fuente (por ejemplo, Fuente: Cálculos propios a partir del Censo Económico Cali, 2005; Fuente: Censo Económico Cali, 2005; Fuente: GEIH, 2010)
+	
+**<span style="color:red">El trabajo debe ser entregado y presentado el miércoles (jueves) 11 (12) de mayo**
+
+---
+# <span style="font-size:80%">Estructura de la presentación</span>
+<spam style="font-size:95%">
+
+
+El trabajo de investigación debe ser presentado y cada uno de los integrantes del grupo deben participar en la presentación. La estructura de las diapositivas o *slides* debe ser la siguiente:
+
+- **Una slide de presentación**: título del paper y autores
+- **Una slide de estructura de la presentación**
+- **Motivación**: una o dos slides mostrando la importancia de estudio. Objetivo, contexto, planteamiento del problema, motivación, justificación (descripción de la importancia del problema analizado, para qué, por qué es importante el tema? Cifras?... etc)
+- **Contribución**: una slide mencionando cuál es la potencial contribución del estudio
+- **Revisión de literatura**: una o dos slides donde se referencien los estudios encontrados, cómo estos se relacionan con lo que usted hace y el hueco en esta literatura que se quiere llenar o qué puede ser diferente lo que usted hace respecto a la literatura
+- **Datos**: una o dos slides describiendo de los datos utilizados en el análisis, el nombre de la encuesta o fuentes de información, el año, cuál es la unidad de observación a analizar (individuos, países, regiones, empresas...), algunos aspectos metodológicos (urbano-rural, países, ciudades…), si se piensa trabajar con una muestra particular (trabajadores entre 20 y 60 años…), el número de observaciones, plantear cuál sería la variable dependiente, la(s) variable(s) explicativa(s) relevante(s) y los controles
+- **Estadísticas descriptivas**: dos o tres slides. Presentar estadísticas descriptivas que ayuden a entender el problema analizado. También se puede presentar estadísticas descriptivas generales (media, desviación estándar, min, max...) pero en el análisis se debe hacer una interpretación que ayuden a entender el problema analizado
+- **Modelo econométrico**: Se debe describir matemáticamente el modelo econométrico, la var Y, las Xs y el método de estimación. Cual es la hipótesis o argumento al incluir las variables que eligió para explicar las variables dependiente
+- **Resultados**: una o dos slides. Tablas de resultados. Describir los principales resultados, argumentar, ¿es coherente con lo que encontró en la revisión de literatura?
+- **Conclusiones**: una o dos slides. Conclusiones más importantes de la investigación. Implicaciones en términos de efectos sobre la economía en general. Limitaciones, cómo puede mejorar lo que hizo, para hacer en un futuro
+
+
+**<span style="color:red">Duración máxima de la presentación: 15min**
