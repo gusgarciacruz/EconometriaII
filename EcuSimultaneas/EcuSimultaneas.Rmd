@@ -1,0 +1,963 @@
+---
+title: "Modelos de ecuaciones simultáneas"
+author: Gustavo A. García <br> <span style="font-size:65%" class='notbold'>ggarci24@eafit.edu.co</span> <br> <br> <br> <br> <br> <br> <br> <br> <br>
+date: <span style="font-size:65%" class='notbold'>Econometría II <br> Programa de Economía <br> Universidad EAFIT</span>
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: xaringan-themer.css
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      ratio: "16:9"
+---
+
+```{r setup, include = F}
+# This is the recommended set up for flipbooks
+# you might think about setting cache to TRUE as you gain practice --- building flipbooks from scratch can be time consuming
+options(width = 70)
+knitr::opts_chunk$set(
+  dev.args = list(bg = 'transparent'),
+  fig.width = 12, message = TRUE,
+  warning = FALSE, comment = "", cache = TRUE, fig.retina = 3
+)
+knitr::opts_knit$set(global.par = TRUE)
+Sys.setenv(`_R_S3_METHOD_REGISTRATION_NOTE_OVERWRITES_` = "false")
+# remotes::install_github("luukvdmeer/sfnetworks")
+# remotes::install_github("EvaMaeRey/flipbookr")
+# remotes::install_github("rlesur/klippy")
+# devtools::install_github("gadenbuie/xaringanExtra")
+library(flipbookr)
+library(xaringanthemer)
+library(tidyverse)
+library(klippy)
+library(xaringanExtra)
+```
+
+<style>
+.notbold{
+    font-weight:normal
+}
+
+body {
+text-align: justify;
+}
+
+h1{
+      margin-top: -1px;
+      margin-bottom: -3px;
+}
+
+.small-code pre{
+  margin-bottom: -10px;
+  
+}  
+
+.medium-code pre{
+  margin-bottom: 2px;
+  
+} 
+</style>
+
+```{r xaringan-scribble, echo=FALSE}
+xaringanExtra::use_scribble()
+```
+
+```{r xaringanExtra-clipboard, echo=FALSE}
+htmltools::tagList(
+  xaringanExtra::use_clipboard(
+    button_text = "<i class=\"fa fa-clipboard\"></i>",
+    success_text = "<i class=\"fa fa-check\" style=\"color: #90BE6D\"></i>",
+    error_text = "<i class=\"fa fa-times-circle\" style=\"color: #F94144\"></i>"
+  ),
+  rmarkdown::html_dependency_font_awesome()
+)
+```
+
+```{r xaringan-extra-styles, echo=FALSE}
+xaringanExtra::use_extra_styles(
+  hover_code_line = TRUE,         #<<
+  mute_unhighlighted_code = TRUE  #<<
+)
+```
+<font size = "5">
+
+<br>
+<br>
+<br>
+<br>
+<br>
+
+Link slides formato [html](https://gusgarciacruz.github.io/EconometriaII/EcuSimultaneas/EcuSimultaneas.html)
+
+Link slides formato [PDF](https://gusgarciacruz.github.io/EconometriaII/EcuSimultaneas/EcuSimultaneas.pdf)
+---
+# <span style="font-size:80%">En este tema</span>
+
+- <span style="font-size:150%">[<span style="color:black">Motivación](#motivacion)</span> <br> <br>
+
+- <span style="font-size:150%"> [<span style="color:black">Sesgo de simultaneidad en MCO](#sesgo)</span> <br> <br>
+
+- <span style="font-size:150%"> [<span style="color:black">Identificación](#identificacion)</span> <br> <br>
+
+- <span style="font-size:150%"> [<span style="color:black">Prueba de simultaneidad](#prueba)</span> <br> <br>
+
+- <span style="font-size:150%"> [<span style="color:black">Estimación](#estimacion)</span> <br> <br>
+
+- <span style="font-size:150%"> [<span style="color:black">El modelo aparentemente no relacionado (SUR)](#sur)</span> <br> <br>
+
+- <span style="font-size:150%"> [<span style="color:black">Ejercicio aplicado en R: comportamiento del gasto público de US](#r)</span> <br>
+---
+# <span style="font-size:80%">Lecturas</span>
+- <span style="font-size:150%">Wooldridge, J. (2013). *Introducción a la econometría. Un enfoque moderno*. 5a edición. Cenagage Learning <span style="color:blue">Cap 16 <br>
+
+- <span style="font-size:150%">Gujarati, D. y Porter, D. (2010). *Econometría*. 5a edición, Mc Graw Hill. <span style="color:blue">Cap. 18, 19 y 20 <br>
+
+- <span style="font-size:150%"> Griffiths, W., Carter, R. y Judge, G. (1993). *Learning and practicing econometrics*. John & Sons, Inc. <span style="color:blue">Cap. 17 <br>
+
+- <span style="font-size:150%">Baltagi, B. (2011). *Econometrics*. Fifth Edition, Springer. <span style="color:blue">Cap 10
+
+---
+name: motivacion
+# <span style="font-size:80%">Motivación</span>
+<font size = "5">
+- En el tema anterior se mostró que el método de variables instrumentales puede resolver dos tipo de problemas: variables omitidas y error de medición
+
+- Otra forma importante de endogeneidad de las variables explicativas es la <span style="color:blue">simultaneidad</span>
+
+- <span style="color:blue"> <b> Simultaneidad</b></span>: ocurre cuando una o más de las variables explicativas se <span style="color:blue">determinan conjuntamente</span> con la variable dependiente
+
+- Es necesario entonces estudiar los métodos para estimar modelos de ecuaciones simultáneas (MES)
+
+---
+# <span style="font-size:80%">Motivación</span>
+<font size = "5">
+<p style="margin-bottom: -0.5em">
+El ejemplo clásico de un MES es una ecuación de oferta y demanda para algún bien o insumo de producción. Sea, por ejemplo, $h_s$ las horas anuales de trabajo y $w$ el salario por hora. Una función simple de oferta de mano de obra es
+
+$$h_s = \alpha_1 w + \beta_1 z_1 + u_1$$
+<p style="margin-bottom: -1em">
+$z_1$: variable que afecta la oferta de mano de obra (por ejemplo, el salario del sector en la región analizada)
+<p style="margin-bottom: -1em">
+$u_1$: término de error, contiene otros factores que afectan la oferta de mano de obra
+
+$\alpha_1$: mide cómo cambia la oferta de mano de obra cuando el salario cambia. Si $h_s$ y $w$ están en logaritmos, representa la elasticidad de la mano de obra
+
+
+La anterior ecuación representa una <span style="color:blue">ecuación estructura</span>. Este nombre proviene del hecho de que la función de oferta de mano de obra es <span style="color:blue">derivable de la teoría económica y tiene una interpretación causal</span>
+
+En términos económicos, esta elasticidad es importante ya que permite determinar cómo cambiará el número de horas que los trabajadores desean trabajar cuando las tasas impositiva sobre el ingreso salarial cambian
+
+---
+# <span style="font-size:80%">Motivación</span>
+<font size = "5">
+<p style="margin-bottom: -0.5em">
+La ecuación de oferta de mano de obra parece similar a las vistas antes, pero presenta una diferencia: <span style="color:blue">el salario no varia exogenamente</span>
+<p style="margin-bottom: -0.5em">
+Se debe entender que existe una interacción entre oferta y demanda de mano de obra y de acuerdo a la teoría, <span style="color:blue">se iguala esta oferta y demanda, determinando los valores de los salarios y las horas trabajadas en equilibrio</span>
+
+<p style="margin-bottom: -0.5em">
+Para describir cómo se determinan los salarios y las horas en equilibrio, es necesario introducir la función de demanda de mano de obra:
+
+<p style="margin-bottom: -0.5em">
+$$h_d = \alpha_2 w + \beta_2 z_2 + u_2$$
+<p style="margin-bottom: -1em">
+$h_d$: horas demandadas (demanda de mano de obra)
+<p style="margin-bottom: -0.5em">
+$z_2$: puede ser la extensión de tierra
+
+<p style="margin-bottom: -0.5em">
+La anterior ecuación también es una ecuación estructural, ya que proviene de la teoría: maximización de utilidad de los empleadores
+
+<p style="margin-bottom: -1em">
+Se tiene que:
+- Oferta de mano de obra: ecuación del comportamiento de los trabajadores
+- Demanda de mano de obra: ecuación del comportamiento de los empleadores
+
+---
+# <span style="font-size:80%">Motivación</span>
+<font size = "5">
+
+<p style="margin-bottom: -0.5em">
+En el análisis econométrico, las dos ecuaciones se vinculan sólo debido a que el salario y las horas observadas se determinan por la intercepción entre la oferta y la demanda. En otras palabras, para cada región $i$, las horas observadas $h_i$ y el salario observado $w_i$ están determinados por la condición de equilibrio
+
+<p style="margin-bottom: -.5em">
+$$h_{is} = h_{id}$$
+<p style="margin-bottom: -.5em">
+Dado a que se observan sólo las horas laboradas del equilibrio, entonces las horas observadas se denotan con $h_i$
+
+<p style="margin-bottom: -1.5em">
+Al combinar la condición de equilibrio con las ecuaciones de oferta y demanda se obtiene el sistema:
+
+<p style="margin-bottom: -1em">
+$$h_i = \alpha_1 w_i + \beta_1 z_{i1} + u_{i1}$$
+<p style="margin-bottom: -0.8em">
+$$h_i = \alpha_2 w_i + \beta_2 z_{i2} + u_{i2}$$
+<p style="margin-bottom: -0.7em">
+Estas dos ecuaciones constituyen un <span style="color:blue">modelo de ecuaciones simultáneas (MES)</span> 
+
+<p style="margin-bottom: -1em">
+Características del MES:
+- $h_i$ y $w_i$ son <span style="color:blue">variables endógenas</span>. Las dos ecuaciones determinan estas dos variables
+- $z_{i1}$ y $z_{i2}$ son variables exógenas al determinarse fuera del modelo. <span style="color:blue">Algo importante sobre estas variables es que si no son diferentes, las ecuaciones de oferta y demanda serán las mismas y el sistema no se podrá identificar</span>
+
+---
+# <span style="font-size:80%">Motivación</span>
+<font size = "5">
+Otro ejemplo de MES: índice de homicidios y tamaño de la fuerza policial
+
+Cuánta más fuerza policial los índices de crime disminuyen. Esta relación se puede escribir como:
+
+$$murdpc = \beta_{10} + \alpha_1 polpc + \beta_{11}incpc + u_1$$
+
+$murdpc$: homicidios<br>
+$polpc$: número de policias<br>
+$incpc$: ingreso (se asume exógeno)
+
+La pregunta que surge es: ¿es el número de policías es exógena? Probablemente no. <span style="color:blue">El gasto en policias está determinado, al menos parcialmente, por su nivel de crimen</span>. Esto implica la siguiente ecuación:
+
+$$polpc = \beta_{20} + \alpha_2 murdpc + otros\ factores$$
+
+Aunque sólo interesa la primera ecuación, es necesaria saber con precisión como se especifica la segunda con el fin de estimar la primera. Surge entonces un MES 
+
+---
+name: sesgo
+# <span style="font-size:80%">Sesgo de simultaneidad en MCO</span>
+<font size = "5">
+
+Cuando una variable explicativa se determina en forma simultánea con la variable dependiente, dicha variable explicativa estará correlacionada con el término de error, con lo cual <span style="color:blue">las estimaciones por MCO serán sesgadas e inconsistentes</span>
+
+<p style="margin-bottom: -0.5em">
+Consideremos el siguiente modelo estructural de dos ecuaciones
+
+$$y_1 = \alpha_1 y_2 + \beta_1 z_1 + u_1 \tag{1}$$
+$$y_2 = \alpha_2 y_1 + \beta_2 z_2 + u_2\tag{2}$$
+
+$z_1$ y $z_2$ son exógenas (no se correlacionan con los errores)
+
+Para mostrar que $y_2$ se correlaciona con $u_1$, se resuelven las dos ecuaciones para $y_2$ en términos de las variables exógenas y el término de error
+
+<p style="margin-bottom: -0.5em">
+Insertando (1) en (2) y despejando $y_2$ se obtiene:
+
+
+$$y_2 = \alpha_2 (\alpha_1 y_2 + \beta_1 z_1 + u_1) + \beta_2 z_2 + u_2$$
+
+$$(1-\alpha_2 \alpha_1)y_2 = \alpha_2 \beta_1 z_1 + \beta_2 z_2 + \alpha_2u_1 + u_2$$
+---
+# <span style="font-size:80%">Sesgo de simultaneidad en MCO</span>
+<font size = "5">
+<p style="margin-bottom: -1em">
+Suponiendo que $\alpha_2 \alpha_1 \neq 1$ para que se puede resolver para $y_2$ y dividiendo por $1-\alpha_2 \alpha_1$, se tiene:
+<p style="margin-bottom: -0.5em">
+$$y_2 = \pi_{21} z_1 + \pi_{22} z_2 + \nu_2 \tag{3}$$
+
+
+$\pi_{21}=\alpha_2 \beta_1 /(1-\alpha_2 \alpha_1)$, $\pi_{22}=\alpha_2 /(1-\alpha_2 \alpha_1)$ y $\nu_2 = (\alpha_2 u_1 + u_2)/(1-\alpha_2 \alpha_1)$
+
+$y_2$ está expresada en términos de las variables exógenas y los términos de error, y representa la <span style="color:blue">ecuación de la forma reducida</span> para $y_2$
+
+$\pi_{21}$ y $\pi_{22}$ representan los <span style="color:blue">parámetros de la forma reducida</span> y están en función, no lineal, de los <span style="color:blue">parámetros estructurales</span>. El <span style="color:blue">error de la forma reducida</span> $\nu_2$ es una función lineal de los términos de error estructurales $u_1$ y $u_2$
+
+Recordemos que el interés principal es estimar consistentemente la ecuación (1) a partir de los MCO y esto sólo se lograría si $y_2$ y $u_1$ no están correlacionados. Sin embargo, como muestra la ecuación (3), $y_2$ y $u_1$ están correlacionados, ya que $\nu_2$ es una función lineal de $u_1$ y $u_2$
+
+Cuando $y_2$ está correlacionado con $u_1$ debido a la simultaneidad, se dice que MCO sufre de <span style="color:blue">sesgo de simultaneidad</span>
+
+---
+name: identificacion
+# <span style="font-size:80%">Identificación</span>
+<font size = "5">
+
+Sabemos que MCO es sesgado e inconsistente cuando se aplica a una ecuación estructural en un sistema de ecuaciones
+
+Del tema anterior se explicó que el método de MC2E se puede utilizar para resolver el problema de variables explicativas endógenas
+
+<span style="color:blue">La pregunta que surge al aplicar MC2E a un MES, teniendo en cuenta que se tiene una ecuación estructural para cada variable endógena, es si hay suficientes variables instrumentales para estimar el sistema $\Longrightarrow$ si el sistema se encuentra identificado</span> 
+
+---
+# <span style="font-size:80%">Identificación</span>
+<font size = "5">
+
+Cuando se estima un modelo mediante MCO, la condición clave de identificación es que ninguna variable explicativa esté correlacionada con el término de error
+
+No obstante, si se tiene algunas variables instrumentales, aún se pueden identificar (o estimar de manera consistente) los parámetros en una ecuación de MES, tal como con las variables omitidas o el error de medición
+
+Supongamos que tenemos un sistema de oferta y demanda en equilibrio (esto es, $q_s = q_d = q$)
+
+$$q = \alpha_1 p + \beta_1 z_1 + u_1\      \  \text{oferta}$$
+
+$$q = \alpha_2 p + u_2\      \  \text{demanda}$$ 
+La pregunta entonces es ¿cuál de estas dos ecuaciones está identificada? La ecuación de demanda está identificada, mientras que la ecuación de oferta no
+
+<span style="color:blue">La idea es que se puede emplear $z_1$ (esta variable se supone exógena a las ecuaciones de oferta y demanda) como VI para el precio en la ecuación de demanda. Pero ya que $z_1$ aparece en la ecuación de oferta, no se tiene VI alguna para el precio en la ecuación de oferta</span>
+
+---
+# <span style="font-size:80%">Identificación</span>
+<font size = "5">
+
+<p style="margin-bottom: -0.5em">
+En forma general para un sistema de dos ecuaciones:
+
+<p style="margin-bottom: -1em">
+$$y_1 = \beta_{10} + \alpha_1 y_2 + \textbf{z}_1 \pmb{\beta}_1 + u_1$$
+<p style="margin-bottom: -1em">
+$$y_2 = \beta_{20} + \alpha_2 y_1 + \textbf{z}_2 \pmb{\beta}_2 + u_2$$
+<p style="margin-bottom: -0.5em">
+$y_1$ y $y_2$ son variables endógenas<br>
+$\textbf{z}_1 = (z_{11},z_{12},...,z_{1k_{1}})$ y $\textbf{z}_2 = (z_{21},z_{22},...,z_{2k_{2}})$ conjuntos de variables exógenas
+
+<p style="margin-bottom: -0.5em">
+El hecho de que $\textbf{z}_1$ y $\textbf{z}_2$ contengan, por lo general, diferentes variables exógenas significa que se tienen <span style="color:blue">restricciones de exclusión</span> en el modelo $\Longrightarrow$ variables exógenas que aparecen en la primera ecuación pero no en la segunda y viceversa
+
+<p style="margin-bottom: -0.5em">
+La pregunta, entonces, ahora es si es posible estimar los parámetros, por ejemplo, de la primera ecuación? Las <span style="color:blue">condiciones de rango y orden</spam> para la identificación nos ayuda a responder esta pregunta
+
+<p style="margin-bottom: -0.5em">
+<span style="color:blue">Condición de rango</span>: La primera ecuación en un modelo de dos ecuaciones simultáneas se identifica si, y sólo si, la segunda ecuación contiene al menos una variable exógena (con un coeficiente diferente de cero) excluida de la primera
+
+<p style="margin-bottom: -0.5em">
+<span style="color:blue">Condición de orden</span>: para identificar la primera ecuación es necesario que al menos una variable exógena se excluya de esta ecuación 
+
+---
+# <span style="font-size:80%">Identificación</span>
+<font size = "4">
+
+<span style="color:blue">La condición de rango requiere más que la condición de orden, ya que es necesario que al menos una variable exógena excluida de la primera ecuación debe tener un coeficiente diferente de cero en la segunda ecuación</span> $\Longrightarrow$ empíricamente esto se puede verificar mediante una prueba t o F
+
+Otros ejemplos:<br>
+<span style="color:blue">Oferta de mano de obra de las mujeres casadas</span>
+
+$hours = \beta_{10} + \alpha_1 log(wage) + \beta_{11} educ + \beta_{12} age + \beta_{13} kidslt6 + \beta_{14} nwifeinc + u_1$<br>
+$log(wage) = \beta_{20} + \alpha_2 hours + \beta_{21} educ + \beta_{22} exper + \beta_{23} exper^2 + u_2$
+
+La primera ecuación satisface la condición de orden, ya que las dos variables exógenas $exper$ y $exper^2$ se omiten de esta ecuación
+
+La segunda ecuación de salarios, se identifica si al menos una de las variables $age$, $kidslt6$ o $nwifeinc$ tiene coeficiente diferente de cero en la primera ecuación
+
+<span style="color:blue">Inflación y apertura</span>
+
+$inf = \beta_{10} + \alpha_1 open + \beta_{11} log(pcinc) + u_1$<br>
+$open = \beta_{20} + \alpha_2 inf + \beta_{21} log(pcinc) + \beta_{22} log(land) + u_2$
+
+Bajo la condición de rango la primera ecuación está identificada siempre y cuando $\beta_{22}\neq 0$, mientras que la segunda no. Pero lo que interesa es la primera ecuación, así que el sistema se podría estimar para determinar los efectos de la apertura sobre la inflación
+
+---
+# <span style="font-size:80%">Identificación</span>
+<font size = "4">
+
+En términos generales para un sistema de M ecuaciones las condiciones de orden y rango pueden expresarse de la siguiente forma, teniendo en cuenta la siguiente notación:
+
+M = número de variables endógenas en el modelo<br>
+m = número de variables endógenas en una ecuación dada<br>
+K = número de variables exógenas en el modelo (incluyendo el intercepto)<br>
+k = número de variables exógenas en una ecuación dada
+
+<span style="color:blue">Condición de orden (condición necesaria pero no suficiente)</span><br>
+En un modelo de M ecuaciones simultáneas, para que una ecuación esté identificada, el número de variables exógenas excluidas de esa ecuación no debe ser menor que el número de variables endógenas incluidas en la ecuación menos 1, es decir:
+
+$$K - k \geq m - 1$$
+
+Si $K - k = m - 1$, la ecuación está exactamente identificada, pero si $K - k > m - 1$, estará sobreidentificada
+
+<span style="color:blue">Condición de rango (condición necesaria y suficiente)</span><br>
+En un modelo que contiene M ecuaciones con M variables endógenas, una ecuación está identificada si y sólo si puede construirse por lo menos un determinante diferente de cero, de orden $(M-1)(M-1)$, a partir de los coeficientes de las variables (endógenas y exógenas) excluidas de esa ecuación particular, pero incluidas en las otras ecuaciones del modelo 
+
+---
+# <span style="font-size:80%">Identificación</span>
+<font size = "3">
+<p style="margin-bottom: -0.5em">
+Consideremos el siguiente ejemplo. Sea el siguiente sistema de ecuaciones donde $Y$ son las variables endógenas y $X$ las exógenas:
+
+$$\begin{array}{cccccccccccccccccc}
+Y_{1t}  &  -&\beta_{10} &  &                 &-&\beta_{12}Y_{2t} & -&\beta_{13}Y_{3t}   & -&\gamma_{11}X_{1t}  &  &                  &  &                  & =& u_{1t} & (1) \\
+Y_{2t}  &  -&\beta_{20} &  &                 & &                 & -&\beta_{23}Y_{3t}   & -&\gamma_{21}X_{1t}  & -&\gamma_{22}X_{2t} &  &                  & =& u_{2t} & (2)\\
+Y_{3t}  &  -&\beta_{30} & -& \beta_{31}Y_{1t}& &                 &  &                   & -&\gamma_{31}X_{1t}  & -&\gamma_{32}X_{2t} &  &                  & =& u_{3t} & (3)\\
+Y_{4t}  &  -&\beta_{40} & -& \beta_{41}Y_{1t}&-&\beta_{42}Y_{2t} &  &                   &  &                   &  &                  & -&\gamma_{43}X_{3t} & =& u_{4t} & (4)
+\end{array}$$
+<p style="margin-bottom: -0.1em">
+Para facilitar las identificación se construyen las siguientes tablas:
+
+ 
+Ecuación|   1          | $Y_1$| $Y_2$        | $Y_3$        | $Y_4$| $X_1$         | $X_2$         | $X_3$|
+:--------:|:------------:|:----:|:------------:|:------------:|:----:|:-------------:|:-------------:|:----:|
+$(1)$       | $-\beta_{10}$| 1    | $-\beta_{12}$| $-\beta_{13}$|  0   | $-\gamma_{11}$|0              |   0|
+$(2)$       | $-\beta_{20}$| 0    | 1            | $-\beta_{23}$| 0    | $-\gamma_{21}$| $-\gamma_{22}$|   0|
+$(3)$       | $-\beta_{30}$| $-\beta_{31}$    | 0            | 1| 0    | $-\gamma_{31}$| $-\gamma_{32}$|   0|
+$(4)$       | $-\beta_{40}$| $-\beta_{41}$    | $-\beta_{42}$            | 0| 1    | 0| 0|  $-\gamma_{43}$|
+
+<p style="margin-bottom: -0.1em">
+Condición de orden:
+
+Ecuación | # de exógenas excluidas <br> (K-k)| # de endógenas incluidas menos 1 <br> (m-1) | ¿Identificada? |
+:---------:|:-----------------------:|:----------------------------------:|:----------------:|
+(1)        | 2                       | 2                                  | Exactamente |
+(2)        | 1                       | 1                                  | Exactamente |
+(3)        | 1                       | 1                                  | Exactamente |
+(4)        | 2                       | 2                                  | Exactamente |
+
+---
+# <span style="font-size:80%">Identificación</span>
+<font size = "5">
+
+<p style="margin-bottom: -0.5em">
+Se observa que desde la condición de orden todas las ecuaciones se encuentran identificadas. Ahora es necesario aplicar la condición de rango para determinar en efecto que cada ecuación esté identificada
+
+<p style="margin-bottom: -1em">
+Consideremos la primera ecuación. Para que esta ecuación esté identificada, se debe obtener por lo menos un determinante diferente de cero de orden $3 \times 3$, a partir de los coeficientes de las variables excluidas de esta ecuación, pero incluidas en otras: $Y_4$, $X_2$ y $X_3$. Se tiene entonces la siguiente matriz:
+
+<p style="margin-bottom: -0.5em; font-size:70%">
+$$A = \left[ \begin{array}{ccc}
+0 & -\gamma_{22} & 0 \\
+0 & -\gamma_{32} & 0\\
+1 & 0            & -\gamma_{43} \end{array} \right]$$
+
+<p style="margin-bottom: -0.5em">
+El determinante de A es cero, por lo que su rango es menor que 3, con lo cual <span style="color:blue">no se satisface la condición de rango y por tanto no está identificada</span>. Queda para demostrar la condición de rango para las otras ecuaciones y determinar si están o no identificadas (ayuda: la ecuacuón 2 y 3 no están identificadas, mientras que la 4 si lo está)
+
+En resumen, <span style="color:blue">la condición de rango dice si la ecuación bajo análisis está identificada o no, en tanto que la condición de orden expresa si dicha ecuación está exactamente identificada o sobreidentificada</span>
+
+---
+name: prueba
+# <span style="font-size:80%">Prueba de simultaneidad</span>
+<font size = "4">
+
+Si existe simultaneidad, los estimadores MCO serán inconsistentes, por lo que un primer análisis puede ser verificar la presencia de simultaneidad
+
+<span style="color:blue">En una prueba de simultaneidad se intenta averiguar si una variable explicativa está correlacionada con el término de error</span>. En este caso se utilizará la <span style="color:blue">prueba de error de especificación de Hausman</span>
+
+Analicemos esta prueba con el siguiente modelo del comportamiento del gasto gubernamental de Estados Unidos. Se tiene el siguiente modelo de ecuaciones simultáneas:
+
+$$EXP = \beta_1 + \beta_2 AID + \beta_3 INC + \beta_4 POP + u_i$$
+$$AID = \delta_1 + \delta_2 EXP + \delta_3 PS + v_i$$
+
+$EXP$ = gasto público de los gobiernos estatales y locales (endógena); $AID$ = nivel de ayuda mediante subsidio federal (endógena); $INC$ = ingreso de los estados (exógena); $POP$ = población estatal (exógena); $PS$ = población estudiantil de primaria y secundaria (exógena); $u$ y $v$ términos de error
+
+Aquí el interés es estimar el efecto de las ayudas federales sobre el gasto público estatal, es decir, que la ecuación principal es la primera. Sin embargo, es necesario corroborar la existencia de simultaneidad entre $EXP$ y $AID$
+
+El test de Hausman comprende los siguientes pasos:
+- **Paso 1**: Efectúe la regresión de la forma reducida de $AID$ y obtenga los residuales de esta regresión ( $\widehat{w}_i$ )
+- **Paso 2**: Efectúe la regresión de $EXP$ sobre $AID$, $INC$, $POP$ y $\widehat{w}_i$, y realice una prueba t sobre el coeficiente de $\widehat{w}_i$. Si éste es significativo, no se rechaza la hipótesis de simultaneidad  
+
+---
+name: estimacion
+# <span style="font-size:80%">Estimación</span>
+<font size = "5">
+
+<p style="margin-bottom: -1em">
+**<span style="color:blue">Mínimos Cuadrados Indirectos (MCI)</span>**
+<p style="margin-bottom: -.1em">
+Cuando una ecuación estructural se encuentra exactamente identificada, el método para obtener las estimaciones de los coeficientes estructurales a partir de las estimaciones por MCO de los coeficientes en forma reducida se conoce como <span style="color:blue">Método de Mínimos Cuadrados Indirectos (MCI)</span>
+
+<p style="margin-bottom: -1em">
+MCI comprende tres pasos:<br>
+- **Paso 1**: Se obtienen las ecuaciones en la forma reducida</br>
+- **Paso 2**: Se aplica MCO individualmente a las ecuaciones de la forma reducida. Esta operación es permisible puesto que las variables explicativas en estas ecuaciones son exógenas y, por tanto, no están correlacionadas con las perturbaciones estocásticas. Las estimaciones así obtenidas son consistentes</br>
+- **Paso 3**: Se obtienen estimaciones de los coeficientes estructurales originales a partir de los coeficientes en forma reducida estimados
+
+<p style="margin-bottom: -1em">
+<span style="color:blue">Limitaciones</span>
+- Las ecuaciones deben estar exactamente identificadas
+- En algunos casos no son posible los MCI, y en otros conducen a varias estimaciones
+
+---
+# <span style="font-size:80%">Estimación</span>
+<font size = "5">
+
+**<span style="color:blue">Mínimos Cuadrados en Dos Etapas (MC2E)</span>**
+
+- Los MC2E proporciona un procedimiento de estimación muy útil para obtener los valores de los parámetros estructurales en <span style="color:blue">ecuaciones sobreidentificadas</span><br><br>
+- La estimación de MC2E utiliza información disponible de la especificación de un sistema de ecuaciones para obtener una estimación única para cada parámetro estructural<br><br>
+- Intuición del método: la primera etapa implica la creación de un instrumento, mientras que la segunda etapa implica una variante de la estimación de variables instrumentales 
+
+---
+# <span style="font-size:80%">Estimación</span>
+<font size = "3">
+<p style="margin-bottom: -1em">
+**<span style="color:blue">Mínimos Cuadrados en Dos Etapas (MC2E)</span>**
+
+Consideremos el siguiente ejemplo de oferta y demanda para explicar el método
+
+Modelo estructural
+<p style="margin-bottom: -1em">
+$$q = \alpha_2 p + \epsilon\   \  \text{oferta}$$
+
+$$q = \beta_2 p + \beta_3 y + \beta_4 w + u\   \  \text{demanda}$$
+Forma reducida<br>
+<p style="margin-bottom: -1em">
+$$q = \pi_{12} y + \pi_{13} w + v_1$$
+
+$$p = \pi_{22} y + \pi_{23} w + v_2$$ 
+
+Se observa que la ecuación de oferta se encuentra sobreidentificada, por lo que los MCI no llevarán a estimaciones únicas de los parámetros. La ecuación de demanda no se encuentra identificada, pero asumamos que el parámetro $\alpha_2$ de la ecuación de oferta es el de interés
+
+Otro proceso de estimación de $\alpha_2$ es el de variables instrumentales. Sin embargo, si elegimos éste enfoque, tendríamos que elegir entre dos estimadores del parámetro $\alpha_2$: el primero utilizará $y$ como instrumento y el segundo usaría $w$
+
+Dado que ambos estimadores son consistentes, es necesario un criterio para elegir entre los dos. Un procedimiento razonable (y eficiente) implica elegir como un instrumento un promedio ponderado de las dos variables exógenas, eligiendo los pesos para maximizar la correlación entre el instrumento nuevo y $p$
+
+Para obtener este instrumento, se realiza la regresión de $p$ sobre $y$ y $w$, y se calculan los valores ajustados $\widehat{p}$ que sería el instrumento. Luego se obtiene el estimador de $\alpha_2$:
+
+$$\widehat{\alpha}_2 = \frac{\sum \widehat{p}q}{\sum \widehat{p} p}$$
+---
+# <span style="font-size:80%">Estimación</span>
+<font size = "4">
+<p style="margin-bottom: -1em">
+**<span style="color:blue">Mínimos Cuadrados en Dos Etapas (MC2E)</span>**
+
+De manera formal, MC2E funciona de la siguiente forma:
+- **Etapa 1**: la ecuación de la forma reducida para $p$ se estima usando MCO, esto es, la regresión de la variable endógena sobre todas las variables exógenas del sistema. A partir de esta regresión se determina los valores ajustados de la variable endógena ( $\widehat{p}$)<br><br>
+Los valores ajustados por construcción serán independientes de los términos de error $\epsilon$ y $u$. El proceso de la primera etapa permite construir una variable que se relaciona en forma lineal con la variable explicativa que es endógena y  es depurada de cualquier correlación con el término de error en la ecuación de la oferta
+
+- **Etapa 2**: Se estima la ecuación estructural de interés (ecuación de oferta) reemplezando la variable endógena ( $p$ ) con la variable ajustada calculada en la primera etapa ( $\widehat{p}$ )<br><br>
+El uso de MCO en esta segunda etapa producirá un estimador consistente del parámetro de oferta $\alpha_2$, pero es necesario ajustar los errores estándar de las estimaciones por la inclusión de variables predichas en el modelo
+
+MC2E elimina el problema de excesivos instrumentos con el uso de combinaciones de las variables exógenas para crear un nuevo instrumento
+
+Cuando una ecuación es idenficada exactamente, la estimación por MC2E es idéntica a los MCI y a la de VI
+
+<span style="color:blue">Cuando una ecuación no está identificada, MC2E no es posible</span>
+
+---
+# <span style="font-size:80%">Estimación</span>
+<font size = "5">
+
+**<span style="color:blue">Mínimos Cuadrados en Dos Etapas (MC2E)</span>**
+
+<p style="margin-bottom: -1em">
+<span style="color:blue">Limitaciones</span>
+- MC2E genera estimaciones ineficientes ya que sólo se aplican a una ecuación dentro del sistema de ecuaciones. El método toma en cuenta el hecho de que una o más variables exógenas son omitidas de la ecuación que se va a estimar, pero no se toma en cuenta el hecho de que también puede haber variables exógenas omitidas de otras ecuaciones<br><br>
+- Una fuente alternativa de ineficiencia surge debido a que la estimación de una sola ecuación no explica la correlación de ecuación cruzada entre errores
+
+---
+# <span style="font-size:80%">Estimación</span>
+<font size = "4">
+
+**<span style="color:blue">Mínimos Cuadrados en Tres Etapas (MC3E)</span>**
+
+Zellner y Theil (1962) consideran la ineficiencia de los MC2E e implementan el mecanismo denominado Mínimos Cuadrados en Tres Etapas
+
+MC3E es más eficiente asintóticamente que el estimador por MC2E
+
+MC3E implica la aplicación de estimación de mínimos cuadrados generalizados a un sistema de ecuaciones, cada una de las cuales se ha estimado primero usando MC2E
+
+<p style="margin-bottom: -1em">
+MC3E funciona de la siguiente forma:
+- **Etapa 1**: Se estima la forma reducida del sistema de modelos. Se calculan los valores ajustados de las variables endógenas y se usan luego para obtener estimaciones MC2E de todas las ecuaciones en el sistema
+- **Etapa 2**: Una vez que se han calculado los parámetros MC2E, se usan los residuales de cada ecuación para estimar las varianzas y covarianzas de ecuaciones cruzadas
+- **Etapa 3**: Se obtienen las estimaciones de parámetros de mínimos cuadrados generalizados
+
+<p style="margin-bottom: -1em">
+<span style="color:blue">Consideraciones</span>
+- La aplicación de la tercera etapa del procedimiento no alterará las estimaciones MC2E en el caso especial en el que todas las covarianzas de ecuaciones cruzadas son $0$
+- Cualquier ecuación que no esté idenificada debe eliminarse del sistema de ecuaciones antes de se apliquen los MC3E
+
+---
+name: sur
+# <span style="font-size:80%">El modelo aparentemente no relacionado (SUR)</span>
+<font size = "4">
+
+El modelo aparentemente no relacionado (SUR, *seemingly unrelated model*) consiste de una serie de variables endógenas que son consideradas como un grupo debido a que tienen una relación conceptual estrecha entre sí
+
+Como ejemplo, consideremos 5 firmas de acero: GM, Chrysler, GE, Westinghouse y US steel. Los datos consisten de series de tiempo de 20 años para las siguientes variables:
+
+$I_{it}$ = inversión bruta<br>
+$F_{it}$ = valor de mercado de la firma al final del año previo<br>
+$C_{it}$ = valor de las existencias de planta y equipo de la firma al final del año previo
+
+donde $i=1,...,5$, $t=1935,...1954$. En cualquier momento $t$ se pueden escribir las 5 ecuaciones:
+
+$$I_{1t} = \beta_{10} + \beta_{11}F_{1t} + \beta_{12}C_{1t} + \epsilon_{1t}$$
+$$................................$$
+$$I_{5t} = \beta_{50} + \beta_{51}F_{5t} + \beta_{52}C_{5t} + \epsilon_{5t}$$
+
+Cada ecuación puede ser estimada individualmente tomando $t=1935,...1954$ (cada firma lleva a cabo su propia política de inversión, por tanto se puede tratar estas ecuaciones como no relacionadas)
+
+Por otro lado, todas las actividades económicas toman lugar en el mismo ambiente económico, por tanto puede esperarse que los 5 shocks $\epsilon_{1t},...,\epsilon_{5t}$ estén correlacionados
+
+---
+# <span style="font-size:80%">El modelo aparentemente no relacionado (SUR)</span>
+<font size = "5">
+
+El procedimiento que toma en cuenta la correlación entre los errores en un sistema de ecuaciones, es llamado SUR
+
+Generalmente, éste método de estimación difiere de los MCO excepto en dos caso:
+- las ecuaciones son realmente no correlacionadas, es decir, $Cov(\epsilon_{it},\epsilon_{js})=0$, $t\neq s$
+- todas las ecuaciones en el sistema tienen la mismas variables explicatorias, es decir, $F_{1t}=...=F_{5t}=F_{t}$
+
+<span style="color:blue">Usando SUR para estimar conjuntamente las ecuaciones del sistema, permitiendo por correlación entre los errores de las ecuaciones, mejorará la eficiencia de la estimación<span>
+
+<p style="margin-bottom: -1em">
+<span style="color:blue">Limitación<span>
+
+Si existe una variable omitida o endógena en una de las ecuaciones, la estimación por SUR no será insesgada y consistente para cualquiera de las ecuaciones
+
+---
+# <span style="font-size:80%">El modelo aparentemente no relacionado (SUR)</span>
+<font size = "5">
+
+<p style="margin-bottom: -1em">
+**<span style="color:blue">El modelo general</span>**
+
+La estimación SUR es la aplicación de la estimación de mínimos cuadrados generalizados a un grupo de ecuaciones aparentemente no relacionadas
+
+Las ecuaciones están relacionadas por medio de las covarianzas no cero asociadas con los términos de error a lo largo de diferentes ecuaciones en un punto determinado en el tiempo
+
+Generalizando el modelo a un sistema de $G$ ecuaciones se tiene:
+
+$$\textbf{Y}_i = \textbf{X}_i \pmb{\beta}_i + \textbf{u}_i, i=1,2,...,G$$
+
+Combinando las $G$ ecuaciones se tiene
+
+$$\left[ \begin{array}{c}
+\textbf{Y}_{1} \\
+\textbf{Y}_{2} \\
+... \\
+\textbf{Y}_{G}\\ \end{array} \right] = \left[
+\begin{array}{cccc}
+\textbf{X}_{1} & \textbf{0}     &  ... & \textbf{0}\\
+\textbf{0}     & \textbf{X}_{2} &  ... & \textbf{0}\\
+...            & ...            & ...     & ... \\
+\textbf{0}     & \textbf{0}     &  ... & \textbf{X}_G \end{array} \right] \left[
+\begin{array}{c}
+\pmb{\beta}_{1} \\
+\pmb{\beta}_{2}  \\
+...            \\
+\pmb{\beta}_{G}  \end{array} \right] + \left[
+\begin{array}{c}
+\textbf{u}_{1} \\
+\textbf{u}_{2}  \\
+...            \\
+\textbf{u}_{G}  \end{array} \right]$$
+
+---
+# <span style="font-size:80%">El modelo aparentemente no relacionado (SUR)</span>
+<font size = "4">
+
+<p style="margin-bottom: -1em">
+**<span style="color:blue">El modelo general</span>**
+
+De acuerdo con los supuestos del modelo aparentemente no relacionado, no hay autocorrelación dentro de las ecuaciones, pero existe correlación de ecuaciones cruzadas, es decir
+
+
+$$\pmb{\Omega} = E(\textbf{u} \textbf{u}') = \left[ \begin{array}{cccc}
+E(\textbf{u}_1 \textbf{u}'_1) & E(\textbf{u}_1 \textbf{u}'_2) &  ... & EE(\textbf{u}_1 \textbf{u}'_G)\\
+E(\textbf{u}_2 \textbf{u}'_1) & E(\textbf{u}_2 \textbf{u}'_2)     &  ... & E(\textbf{u}_2 \textbf{u}'_G)\\
+...            & ...            & ...     & ...\\
+E(\textbf{u}_G \textbf{u}'_1) & E(\textbf{u}_G \textbf{u}'_2)     &  ... & E(\textbf{u}_G \textbf{u}'_G)\end{array} \right]$$
+
+$$= \left[
+\begin{array}{cccc}
+\sigma_{11}\textbf{I} & \sigma_{12}\textbf{I}     &  ... & \sigma_{1G}\textbf{I}\\
+\sigma_{21}\textbf{I} & \sigma_{22}\textbf{I}     &  ... & \sigma_{2G}\textbf{I}\\
+...            & ...            & ...     & ... \\
+\sigma_{G1}\textbf{I} & \sigma_{G2}\textbf{I}     &  ... & \sigma_{GG}\textbf{I}\\ \end{array} \right]$$
+
+Se observa que es una matriz no diagonal como en el caso de la matriz var-cov de los errores en la estimación MCO
+
+<p style="margin-bottom: -1em">
+Algunas aplicaciones importantes en economía de la estimación de modelos por SUR incluye:
+- <span style="color:blue">La estimación de un sistema de ecuaciones de demanda</span>: este sistema explica el consumo de bienes de los hogares. La correlación entre las ecuaciones podría deberse a específicos atributos no observables de los hogares que influencian el consumo de dichos bienes
+- <span style="color:blue">Función de costos translog junto con la ecuación de participación de insumos</span>: Este sistema de ecuaciones se basa en datos de firmas y la correlación entre ecuaciones podría ser debida a efectos no observables específicos a las firmas que influencias la elección de insumos y costos en las decisiones de producción
+
+---
+# <span style="font-size:80%">El modelo aparentemente no relacionado (SUR)</span>
+<font size = "3">
+
+<p style="margin-bottom: -1em">
+**<span style="color:blue">El modelo general</span>**
+
+La estimación más eficiente se obtiene aplicando la estimación de mínimos cuadrados generalizados (MCG) para obtener:
+
+$$\pmb{\widehat{\beta}}_{MCG} = (\textbf{X}'\pmb{\Omega}^{-1}\textbf{X})^{-1}(\textbf{X}'\pmb{\Omega}^{-1}\textbf{Y})$$
+
+Para un sistema de dos ecuaciones tendremos:
+
+$$\pmb{\widehat{\beta}}_{MCG} = \left[
+\begin{array}{cc}
+\sigma_{11}\textbf{X}'_1\textbf{X}_1 & \sigma_{12}\textbf{X}'_1\textbf{X}_2\\
+\sigma_{21}\textbf{X}'_2\textbf{X}_1 & \sigma_{22}\textbf{X}'_2\textbf{X}_2 \end{array} \right]^{-1} \left[\begin{array}{cc}
+\sigma_{11}\textbf{X}'_1\textbf{Y}_1 & \sigma_{12}\textbf{X}'_1\textbf{Y}_2\\
+\sigma_{21}\textbf{X}'_2\textbf{Y}_1 & \sigma_{22}\textbf{X}'_2\textbf{Y}_2 \end{array} \right]$$
+
+En la práctica, deben estimarse los elementos de $\pmb{\Omega}$. Zellner (1962) recomienda el siguiente procedimiento de estimación por <span style="color:blue">MCG factibles</span>:
+- estimar cada ecuación por MCO
+- obtener los residuales de cada ecuación
+- calcular las diferentes $\widehat{\sigma}_{ii}$ y $\widehat{\sigma}_{ij}$:
+		
+$$\widehat{\sigma}_{ii} = \sum_{n=1}^N e_{in}^2 / (N-K_i), i=1,...,G$$
+$$\widehat{\sigma}_{ij} = \sum_{n=1}^N e_{in}e_{jn} / N, i,j=1,...,G, i \neq j$$
+
+	
+donde $e_{in}$ representan los residuales MCO de la i-ésimia ecuación. $\widehat{\sigma}_{ii}$ es el estimador insesgado para $\sigma_{ii}$, y $\widehat{\sigma}_{ij}$ es el estimador consistente y asintóticamente eficiente (aunque no insesgado) de $\sigma_{ij}$
+
+---
+# <span style="font-size:80%">El modelo aparentemente no relacionado (SUR)</span>
+<font size = "5">
+
+<p style="margin-bottom: -1em">
+**<span style="color:blue">Pruebas para detectar correlación contemporánea</span>**
+
+Ya que la no diagonalidad de $\pmb{\Omega}$ es el principal supuesto del método de estimación SUR, es importante probar $H_0:\pmb{\Omega}$ es diagonal
+( $\sigma_{12}=\sigma_{13}=...=\sigma_{1G}=\sigma_{23}=...=\sigma_{(G-1)G}=0$)
+
+Breusch y Pagan (1980) derivaron una forma simple para realizar esta prueba y se basa en construir un estadístico de multiplicadores de lagrange ($LM$) sobre los coeficientes de correlación muestral de los residuales MCO. El estadístico tiene la forma:
+
+$$LM = N \sum_{i=2}^{G}\sum_{j=1}^{i-1} r_{ij}^2 \sim \chi^{2}_{G(G-1)/2}$$
+
+donde $N$ es el número de observaciones, $G$ es el número de ecuaciones y $r_{ij} = \widehat{\sigma}_{ij}/(\widehat{\sigma}_{ii}\widehat{\sigma}_{jj})^{1/2}$. Las $\widehat{\sigma}$'s son calculadas de los residuales MCO
+
+---
+name: r
+# <span style="font-size:80%">Ejercicio aplicado: comportamiento del gasto público de US</span>
+<font size = "4">
+<p style="margin-bottom: -.5em">
+En este ejercicio aplicado se va a analizar el comportamiento del gasto gubernamental para los estados de los Estados Unidos. 
+
+El sistema de ecuaciones que se va a estimar es:
+
+<p style="margin-bottom: -.8em">
+$$EXP_i = \beta_1 + \beta_2 AID_i + \beta_3 INC_i + \beta_4POP_i + u_{1i}\tag{1}$$
+
+$$AID_i = \delta_1 + \delta_2EXP_i + \delta_3PS_i + u_{2i}\tag{2}$$
+EXP: gasto público de los gobiernos estatales y locales (endógena)<br>
+AID: nivel de ayuda mediante subsidio federal (endógena)<br>
+INC: ingreso de los estados (exógena)<br>
+POP: población estatal (exógena)<br>
+PS: población estudiantil de primaria y secundaria (exógena)<br>
+$u_{1i}$ y $u_{2i}$: términos de error
+
+<p style="margin-bottom: -.8em">
+En los siguientes links se encuentran los datos y el código utilizado en R:
+- [Datos](gusgarciacruz.github.io/EconometriaII/EcuSimultaneas/EX73.xlsx)
+- [Código en R](gusgarciacruz.github.io/EconometriaII/EcuSimultaneas/Tema10.R)
+
+---
+# <span style="font-size:80%">Ejercicio aplicado: comportamiento del gasto público de US</span>
+<font size = "4">
+
+<p style="margin-bottom: -.8em">
+$$EXP_i = \beta_1 + \beta_2 AID_i + \beta_3 INC_i + \beta_4POP_i + u_{1i}\tag{1}$$
+
+$$AID_i = \delta_1 + \delta_2EXP_i + \delta_3PS_i + u_{2i}\tag{2}$$
+
+<p style="margin-bottom: -1em">
+Determinando si las ecuaciones están identificadas:<br>
+- <span style="color:blue">Condición de orden</span>: para que una ecuación esté identificada es necesario 
+que al menos una variable exógena se excluya de la ecuación analizada<br>
+La ecuación (1) satisface la condición de orden ya que $PS$ se encuentra excluida $\Longrightarrow$ exactamente identificada<br>
+La ecuación (2) satisface la condición de orden ya que $INC$ y $POP$ se encuentran excluidas $\Longrightarrow$ sobreidentificada
+
+- <span style="color:blue">Condición de rango</span>: una ecuación está identificada si, y sólo si, la segunda ecuación contiene al menos una variable exógena (con un coeficiente diferente de cero) excluida de la primera <br>
+Para corroborar esta condición se estiman por MCO las ecuaciones de la forma reducida:
+
+<p style="margin-bottom: -.8em">
+$$EXP_i = \pi_1 + \pi_22 INC_i + \pi_3 POP_i + \pi_4 PS_i + \epsilon_1$$
+
+$$AID_i = \pi_5 + \pi_6 INC_i + \pi_7 POP_i + \pi_8 PS_i + \epsilon_2$$
+
+Y luego se prueba que los coeficientes de las variables excluidas sean estadísticamente significativas 
+
+---
+# <span style="font-size:80%">Ejercicio aplicado: comportamiento del gasto público de US</span>
+<font size = "4">
+<p style="margin-bottom: -.8em">
+Cargando las librerias
+```{r echo=TRUE, message=FALSE, warning=FALSE}
+library(stargazer); library(car); library(readxl); library(AER); library(systemfit)
+```
+<p style="margin-bottom: -.8em">
+Leyendo los datos
+
+```{r echo=TRUE, message=FALSE, warning=FALSE}
+setwd("C:/Users/ggarci24/OneDrive - Universidad EAFIT/EAFIT/Cursos EAFIT/Econometria II/R/Tema 10")
+
+data <- read_excel("EX73.xlsx")
+```
+<p style="margin-bottom: -.8em">
+Estimamos por MCO la ecuación (1) y (2) en la forma reducida y corroboramos que el coeficiente asociado a $PS$, $INC$ y $POP$ sean o no estadísticamente significativos
+
+
+```{r echo=TRUE, message=FALSE, warning=FALSE}
+EXP.reducida <- lm(EXP~INC+POP+PS, data=data)
+
+AID.reducida <- lm(AID~INC+POP+PS, data=data)
+
+```
+
+<p style="margin-bottom: -1.5em">
+.pull-left-50[
+```{r}
+linearHypothesis(EXP.reducida, "PS = 0")
+```
+]
+
+.pull-left-50[
+```{r}
+linearHypothesis(AID.reducida, c("INC = 0", "POP = 0"))
+```
+]
+
+
+El coeficiente de $PS$ es estadísticamente significativo, lo cual indica que <span style="color:blue">la ecuación (1) está identificada</span>. Los coeficientes de $INC$ y $POP$ son estadísticamente significativos, lo cual indica que <span style="color:blue">la ecuación (2) está identificada</span>
+
+---
+# <span style="font-size:80%">Ejercicio aplicado: comportamiento del gasto público de US</span>
+<font size = "3">
+
+<p style="margin-bottom: -.8em">
+<span style="color:blue">Prueba de simultaneidad</span>
+
+<p style="margin-bottom: -.8em">
+El test de Hausman comprende los siguientes pasos:
+- **Paso 1**: Estime la regresión de la forma reducida de AID y obtenga  los residuales de esta regresión ( $w$)
+- **Paso 2**: Estime la regresión de $EXP$ sobre $AID$, $INC$, $POP$ y $w$, y realice una prueba t sobre el coeficiente de $w$. Si éste es significativo, no se rechaza la hipótesis de simultaneidad
+
+<p style="margin-bottom: -.5em">
+Obtenemos los residuales de las ecuaciones estimadas de la forma reducida
+```{r}
+data$w <- residuals(AID.reducida)
+
+data$v <- residuals(EXP.reducida)
+```
+
+<p style="margin-bottom: -.5em">
+Estimamos los modelos incorporando los residuales para corroborar la existencia de simultaniedad. Notamos que los coeficientes de $w$ y $v$ son estadísticamente significativos al 10%, con lo cual <span style="color:blue">hay problemas de simultaneidad</span>
+
+.pull-left-50[
+```{r}
+hausman1 <- lm(EXP~AID+INC+POP+w, data=data)
+summary(hausman1)
+```
+]
+
+.pull-right-50[
+```{r}
+hausman2 <- lm(AID~EXP+PS+v, data=data)
+summary(hausman2)
+
+```
+]
+
+---
+# <span style="font-size:80%">Ejercicio aplicado: comportamiento del gasto público de US</span>
+<font size = "3">
+
+<p style="margin-bottom: -.8em">
+<span style="color:blue">Estimación de sistemas de ecuaciones</span>
+
+<p style="margin-bottom: -.8em">
+Primero se crea el sistema
+```{r}
+eqEXP <- EXP ~ AID + INC + POP
+eqAID <- AID ~ EXP + PS
+eq.sys <- list(EXP = eqEXP,
+               AID = eqAID)
+```
+
+<p style="margin-bottom: -.8em">
+**MCO**: ignorando la estructura de sistema de ecuaciones. Estos es equivalente a estimar cada ecuación por separado
+```{r echo=T, results='hide'}
+MCO <- systemfit(eq.sys, method = "OLS", data = data)
+summary(MCO)
+```
+
+**MC2E**: equivalente a la estimación de variables instrumentales de la ecuación única. Para la estimación por MC2E es necesario tener variables instrumentales para la identificación. Los instrumentos son las variables exógenas
+
+- Mismo instrumento para las dos ecuaciones
+<p style="margin-bottom: -.8em">
+```{r echo=T, results='hide'}
+inst <- ~ INC + POP + PS
+MC2E.1 <- systemfit(eq.sys, method = "2SLS", inst = inst, data = data)
+summary(MC2E.1)
+```
+Note que lo anterior es lo mismo que hacer IV
+<p style="margin-bottom: -.8em">
+```{r echo=T, results='hide'}
+IV <- ivreg(EXP ~ AID+INC+POP | INC+POP+PS, data=data)
+summary(IV)
+```
+
+- Diferentes instrumentos por ecuación
+<p style="margin-bottom: -.8em">
+```{r echo=T, results='hide'}
+inst1 <- ~ INC + POP + PS
+inst2 <- ~ INC + POP
+instlist <- list(inst1, inst2)
+MC2E.2 <- systemfit(eq.sys, method = "2SLS", inst = instlist, data = data)
+summary(MC2E.2)
+```
+
+---
+# <span style="font-size:80%">Ejercicio aplicado: comportamiento del gasto público de US</span>
+<font size = "3">
+
+<p style="margin-bottom: -.8em">
+<span style="color:blue">Modelo SUR</span>
+
+<p style="margin-bottom: -.6em">
+En el modelo SUR los residuales son correlacionados a través de las ecuaciones. La estimación se hace la siguiente forma:
+
+```{r echo=T, results='hide'}
+SUR <- systemfit(eq.sys, method = "SUR", data = data)
+summary(SUR)
+```
+
+<p style="margin-bottom: -.8em">
+Test de Breusch-Pagan
+
+<p style="margin-bottom: -.8em">
+Ho: la matrix de covarianza de los errores es diagonal, las ecuaciones son independientes. Recordemos que el estadístico tiene la forma
+
+$$LM = N \sum_{i=2}^{G}\sum_{j=1}^{i-1} r_{ij}^2 \sim \chi^{2}_{G(G-1)/2}$$
+donde $r = \sigma_{ij} / (\sigma_{ii}\sigma_{jj})^{1/2}$
+
+<p style="margin-bottom: -.6em">
+Primero se calcula la matrix var-cov de los residuales estimados. Con la siguiente función nos muestra dicha matriz var-cov y la matriz de correlación de los residuales
+
+```{r echo=T, results='hide'}
+summary(MCO, residCov = TRUE, equations = FALSE)
+```
+
+<p style="margin-bottom: -.6em">
+Ahora calculamos el $r$ y lo comparamos con el coeficiente de correlación, deben dar igual
+
+```{r echo=T, results='hide'}
+r <- (-25845.3)/((140757.9*14996.3)^(1/2))
+```
+
+<p style="margin-bottom: -.6em">
+Y procedemos calcular el estadístico de prueba
+
+```{r echo=T, results='hide'}
+BP <- 50*((r)^2)
+BP
+pchisq(BP, df=1, lower.tail = F) # Pvalor de BP
+qchisq(0.05, df=1, lower.tail = F) # Chi de la tabla al 5% y con 1 gdl
+```
+Pvalor = 0, rechazamos Ho, es decir que la estimación SUR es adecuada
+
+---
+# <span style="font-size:80%">Ejercicio aplicado: comportamiento del gasto público de US</span>
+<font size = "4">
+
+<p style="margin-bottom: -.8em">
+<span style="color:blue">Estimando por MC3E el modelo SUR</span>
+
+En la anterior estimación del modelo SUR no se consideró el problema de la variable explicativa endógena. en particular, si las ecuaciones continen variables explicativas endógenas, SUR será sesgado e inconsistente
+
+Así que es necesario estimar por MC3E que toma en cuenta la correlación contemporanea entre los residuales y la existencia de una variable explicativa endógena. Esto es como IV en el SUR
+
+Las tres etapas serían:
+1. Regrese cada variable endógena sobre todas las varaibles exógenas y calcule los valores predichos de las varaibles endógenas
+
+2. Estime las ecuaciones estructurales por MCO, reemplazando las variables endógenas que se encuentran como explicativas por sus valores predichos de la primera etapa  
+
+3. Calcule las varianzas y covarianzas estimadas de los residuales de la etapa 2, y reestime las ecuaciones estructurales usando el método SUR
+
+La estimación la podemos hacer de la siguiente forma:
+
+```{r echo=T, results='hide'}
+MC3E <- systemfit(eq.sys, method = "3SLS", inst = inst, data = data)
+summary(MC3E)
+```
+
