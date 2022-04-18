@@ -728,8 +728,8 @@ $u_{1i}$ y $u_{2i}$: términos de error
 
 <p style="margin-bottom: -.8em">
 En los siguientes links se encuentran los datos y el código utilizado en R:
-- [Datos](gusgarciacruz.github.io/EconometriaII/EcuSimultaneas/EX73.xlsx)
-- [Código en R](gusgarciacruz.github.io/EconometriaII/EcuSimultaneas/Tema10.R)
+- [Datos](https://gusgarciacruz.github.io/EconometriaII/EcuSimultaneas/EX73.xlsx)
+- [Código en R](https://gusgarciacruz.github.io/EconometriaII/EcuSimultaneas/Tema10.R)
 
 ---
 # <span style="font-size:80%">Ejercicio aplicado: comportamiento del gasto público de US</span>
