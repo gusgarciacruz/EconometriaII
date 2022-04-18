@@ -8,7 +8,7 @@ Profesor: [Gustavo A. García](https://gusgarciacruz.github.io/cv)
 
 [Estimación por variables instrumentales (IV)](https://gusgarciacruz.github.io/EconometriaII/IV/IV.html)<br>
 
-[Modelos de ecuaciones simultáneas](https://gusgarciacruz.github.io/EconometriaII/Tema10/Tema10.html)<br>
+[Modelos de ecuaciones simultáneas](https://gusgarciacruz.github.io/EconometriaII/EcuSimultaneas/EcuSimultaneas.html)<br>
 
 [Modelos de datos panel](https://gusgarciacruz.github.io/EconometriaII/Tema12/Tema12.html)<br>
 
