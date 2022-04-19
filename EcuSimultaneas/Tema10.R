@@ -5,10 +5,12 @@
 # Se debe instalar el paquete rSymPy, que depende de los paquetes rjson y rJython 
 # En el siguiente link se puede descargar el paquete rJython https://cran.r-project.org/src/contrib/Archive/rJython/ (bajar la versión 4)
 # En el siguiente link se puede descargar el paquete rSymPy https://cran.r-project.org/src/contrib/Archive/rSymPy/ (bajar la última versión)
-# Si tienen problema con RJava pueden mirar este blog donde mencionan la soluci?n: https://www.r-statistics.com/2012/08/how-to-load-the-rjava-package-after-the-error-java_home-cannot-be-determined-from-the-registry/ 
+# Si tienen problema con RJava pueden mirar este blog donde mencionan la solución: https://www.r-statistics.com/2012/08/how-to-load-the-rjava-package-after-the-error-java_home-cannot-be-determined-from-the-registry/ 
 setwd("C:/Users/ggarci24/OneDrive - Universidad EAFIT/EAFIT/Cursos EAFIT/Econometria II/R/Tema 10")
 install.packages("rjson")
 library(rjson)
+install.packages("rJava")
+library(rJava)
 install.packages("rJython_0.0-4.tar.gz", repos = NULL, type = "source")
 library(rJython)
 install.packages("rSymPy_0.2-1.2.tar.gz", repos = NULL, type = "source")
