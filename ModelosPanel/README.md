@@ -1,7 +1,7 @@
 #Modelos de datos panel
-- <span style="font-size:150%">Generalidades</span><br><br>
+- <span style="font-size:150%">Generalidades</span>
 
-- <span style="font-size:150%">Modelo de regresión con MCO agrupados o de coeficientes constantes (*Pooling*)</span><br><br>
+- <span style="font-size:150%">Modelo de MCO agrupados (*Pooling*)</span>
 
 - <span style="font-size:150%">Generalidades</span>
 
