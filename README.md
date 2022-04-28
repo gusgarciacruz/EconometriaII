@@ -10,9 +10,9 @@ Profesor: [Gustavo A. García](https://gusgarciacruz.github.io/cv)
 
 [Modelos de ecuaciones simultáneas](https://gusgarciacruz.github.io/EconometriaII/EcuSimultaneas/EcuSimultaneas.html)<br>
 
-[Modelos de datos panel](https://gusgarciacruz.github.io/EconometriaII/Tema12/Tema12.html)<br>
+[Modelos de datos panel](https://gusgarciacruz.github.io/EconometriaII/ModelosPanel/ModelosPanel.html)<br>
 
-[Modelos de elección discreta](https://gusgarciacruz.github.io/EconometriaII/Tema11/Tema11.html)
+[Modelos de elección discreta](https://gusgarciacruz.github.io/EconometriaII/ModelosEleccion/ModelosEleccion.html)
 
 [Taller 1](https://gusgarciacruz.github.io/EconometriaII/Taller1/Taller1.pdf)
 
