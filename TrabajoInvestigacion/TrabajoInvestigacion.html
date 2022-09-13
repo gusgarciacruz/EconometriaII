@@ -4,7 +4,7 @@
     <title>Instrucciones trabajo de investigación</title>
     <meta charset="utf-8" />
     <meta name="author" content="Gustavo A. García   ggarci24@eafit.edu.co                  " />
-    <script src="libs/header-attrs-2.11/header-attrs.js"></script>
+    <script src="libs/header-attrs-2.14/header-attrs.js"></script>
     <script src="libs/fabric-4.3.1/fabric.min.js"></script>
     <link href="libs/xaringanExtra-scribble-0.0.1/scribble.css" rel="stylesheet" />
     <script src="libs/xaringanExtra-scribble-0.0.1/scribble.js"></script>
@@ -110,7 +110,7 @@ analizada...). En el último párrafo de la introducción se debe mencionar la e
 
 - Los cuadros y gráficas deben tener titulo y ser enumeradas (por ejemplo, Cuadro 1, Cuadro 2, Gráfico 1, Gráfico 2,...) y llevar la fuente (por ejemplo, Fuente: Cálculos propios a partir del Censo Económico Cali, 2005; Fuente: Censo Económico Cali, 2005; Fuente: GEIH, 2010)
 	
-**&lt;span style="color:red"&gt;El trabajo debe ser entregado y presentado el miércoles (jueves) 11 (12) de mayo**
+**&lt;span style="color:red"&gt;El trabajo debe ser entregado y presentado el viernes 4 de noviembre**
 
 ---
 # &lt;span style="font-size:80%"&gt;Estructura de la presentación&lt;/span&gt;
@@ -180,6 +180,19 @@ if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
     deleted = true;
   });
 })();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
 (function() {
   "use strict"
   // Replace <script> tags in slides area to make them executable
