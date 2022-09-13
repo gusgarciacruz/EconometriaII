@@ -576,7 +576,7 @@ En este ejercicio vamos a estudiar este posible efecto negativo.  El siguiente e
 Los datos para este ejercicio proviene de la *General Social Survey (GSS)* de los Estados Unidos. En los siguientes links se encuentran los datos, la descripción dellada de los datos y el código utilizado en R:
 - [Datos](https://gusgarciacruz.github.io/EconometriaII/IV/GSS2012_2018.dta)
 - [Descripción de la información](https://gss.norc.org/get-the-data/stata)
-- [Código en R]("https://gusgarciacruz.github.io/EconometriaII/IV/Tema9.R")
+- [Código en R](https://gusgarciacruz.github.io/EconometriaII/IV/Tema9.R)
 
 ---
 # &lt;span style="font-size:70%"&gt;Ejercicio aplicado: efectos de la educación de la mujer sobre la fertilidad&lt;/span&gt;
@@ -614,7 +614,7 @@ data[,c("race","afroa")]
 ```
 
 ```
-# A tibble: 935 × 2
+# A tibble: 935 x 2
         race afroa
    &lt;dbl+lbl&gt; &lt;dbl&gt;
  1 1 [white]     1
@@ -627,8 +627,8 @@ data[,c("race","afroa")]
  8 1 [white]     1
  9 1 [white]     1
 10 2 [black]     0
-# … with 925 more rows
-# ℹ Use `print(n = ...)` to see more rows
+# ... with 925 more rows
+# i Use `print(n = ...)` to see more rows
 ```
 ]
 
@@ -639,7 +639,7 @@ data[,c("wrkstat","working")]
 ```
 
 ```
-# A tibble: 935 × 2
+# A tibble: 935 x 2
                 wrkstat working
               &lt;dbl+lbl&gt;   &lt;dbl&gt;
  1 7 [keeping house]          0
@@ -652,8 +652,8 @@ data[,c("wrkstat","working")]
  8 1 [working fulltime]       1
  9 1 [working fulltime]       1
 10 1 [working fulltime]       1
-# … with 925 more rows
-# ℹ Use `print(n = ...)` to see more rows
+# ... with 925 more rows
+# i Use `print(n = ...)` to see more rows
 ```
 ]
 
@@ -664,7 +664,7 @@ data[,c("marital","casado")]
 ```
 
 ```
-# A tibble: 935 × 2
+# A tibble: 935 x 2
              marital casado
            &lt;dbl+lbl&gt;  &lt;dbl&gt;
  1 5 [never married]      0
@@ -677,8 +677,8 @@ data[,c("marital","casado")]
  8 1 [married]            1
  9 1 [married]            1
 10 5 [never married]      0
-# … with 925 more rows
-# ℹ Use `print(n = ...)` to see more rows
+# ... with 925 more rows
+# i Use `print(n = ...)` to see more rows
 ```
 ]
 ]
@@ -783,12 +783,12 @@ modelsummary(modelos, output = 'gt', coef_map = cm, stars = c('*'=.1, '**'=.05, 
     tab_style(style = cell_text(color = "black", size = "x-small"), locations = cells_source_notes())
 ```
 
-<div id="kdyfybimql" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<div id="zchdfnvcde" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
 <style>html {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
 }
 
-#kdyfybimql .gt_table {
+#zchdfnvcde .gt_table {
   display: table;
   border-collapse: collapse;
   margin-left: auto;
@@ -813,7 +813,7 @@ modelsummary(modelos, output = 'gt', coef_map = cm, stars = c('*'=.1, '**'=.05, 
   border-left-color: #D3D3D3;
 }
 
-#kdyfybimql .gt_heading {
+#zchdfnvcde .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -825,7 +825,7 @@ modelsummary(modelos, output = 'gt', coef_map = cm, stars = c('*'=.1, '**'=.05, 
   border-right-color: #D3D3D3;
 }
 
-#kdyfybimql .gt_title {
+#zchdfnvcde .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -837,7 +837,7 @@ modelsummary(modelos, output = 'gt', coef_map = cm, stars = c('*'=.1, '**'=.05, 
   border-bottom-width: 0;
 }
 
-#kdyfybimql .gt_subtitle {
+#zchdfnvcde .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -849,13 +849,13 @@ modelsummary(modelos, output = 'gt', coef_map = cm, stars = c('*'=.1, '**'=.05, 
   border-top-width: 0;
 }
 
-#kdyfybimql .gt_bottom_border {
+#zchdfnvcde .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#kdyfybimql .gt_col_headings {
+#zchdfnvcde .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -870,7 +870,7 @@ modelsummary(modelos, output = 'gt', coef_map = cm, stars = c('*'=.1, '**'=.05, 
   border-right-color: #D3D3D3;
 }
 
-#kdyfybimql .gt_col_heading {
+#zchdfnvcde .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -890,7 +890,7 @@ modelsummary(modelos, output = 'gt', coef_map = cm, stars = c('*'=.1, '**'=.05, 
   overflow-x: hidden;
 }
 
-#kdyfybimql .gt_column_spanner_outer {
+#zchdfnvcde .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -902,15 +902,15 @@ modelsummary(modelos, output = 'gt', coef_map = cm, stars = c('*'=.1, '**'=.05, 
   padding-right: 4px;
 }
 
-#kdyfybimql .gt_column_spanner_outer:first-child {
+#zchdfnvcde .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#kdyfybimql .gt_column_spanner_outer:last-child {
+#zchdfnvcde .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#kdyfybimql .gt_column_spanner {
+#zchdfnvcde .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -922,7 +922,7 @@ modelsummary(modelos, output = 'gt', coef_map = cm, stars = c('*'=.1, '**'=.05, 
   width: 100%;
 }
 
-#kdyfybimql .gt_group_heading {
+#zchdfnvcde .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -947,7 +947,7 @@ modelsummary(modelos, output = 'gt', coef_map = cm, stars = c('*'=.1, '**'=.05, 
   vertical-align: middle;
 }
 
-#kdyfybimql .gt_empty_group_heading {
+#zchdfnvcde .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -962,15 +962,15 @@ modelsummary(modelos, output = 'gt', coef_map = cm, stars = c('*'=.1, '**'=.05, 
   vertical-align: middle;
 }
 
-#kdyfybimql .gt_from_md > :first-child {
+#zchdfnvcde .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#kdyfybimql .gt_from_md > :last-child {
+#zchdfnvcde .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#kdyfybimql .gt_row {
+#zchdfnvcde .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -989,7 +989,7 @@ modelsummary(modelos, output = 'gt', coef_map = cm, stars = c('*'=.1, '**'=.05, 
   overflow-x: hidden;
 }
 
-#kdyfybimql .gt_stub {
+#zchdfnvcde .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1002,7 +1002,7 @@ modelsummary(modelos, output = 'gt', coef_map = cm, stars = c('*'=.1, '**'=.05, 
   padding-right: 5px;
 }
 
-#kdyfybimql .gt_stub_row_group {
+#zchdfnvcde .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1016,11 +1016,11 @@ modelsummary(modelos, output = 'gt', coef_map = cm, stars = c('*'=.1, '**'=.05, 
   vertical-align: top;
 }
 
-#kdyfybimql .gt_row_group_first td {
+#zchdfnvcde .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#kdyfybimql .gt_summary_row {
+#zchdfnvcde .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1030,16 +1030,16 @@ modelsummary(modelos, output = 'gt', coef_map = cm, stars = c('*'=.1, '**'=.05, 
   padding-right: 5px;
 }
 
-#kdyfybimql .gt_first_summary_row {
+#zchdfnvcde .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#kdyfybimql .gt_first_summary_row.thick {
+#zchdfnvcde .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#kdyfybimql .gt_last_summary_row {
+#zchdfnvcde .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1049,7 +1049,7 @@ modelsummary(modelos, output = 'gt', coef_map = cm, stars = c('*'=.1, '**'=.05, 
   border-bottom-color: #D3D3D3;
 }
 
-#kdyfybimql .gt_grand_summary_row {
+#zchdfnvcde .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1059,7 +1059,7 @@ modelsummary(modelos, output = 'gt', coef_map = cm, stars = c('*'=.1, '**'=.05, 
   padding-right: 5px;
 }
 
-#kdyfybimql .gt_first_grand_summary_row {
+#zchdfnvcde .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1069,11 +1069,11 @@ modelsummary(modelos, output = 'gt', coef_map = cm, stars = c('*'=.1, '**'=.05, 
   border-top-color: #D3D3D3;
 }
 
-#kdyfybimql .gt_striped {
+#zchdfnvcde .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#kdyfybimql .gt_table_body {
+#zchdfnvcde .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1082,7 +1082,7 @@ modelsummary(modelos, output = 'gt', coef_map = cm, stars = c('*'=.1, '**'=.05, 
   border-bottom-color: #D3D3D3;
 }
 
-#kdyfybimql .gt_footnotes {
+#zchdfnvcde .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1096,7 +1096,7 @@ modelsummary(modelos, output = 'gt', coef_map = cm, stars = c('*'=.1, '**'=.05, 
   border-right-color: #D3D3D3;
 }
 
-#kdyfybimql .gt_footnote {
+#zchdfnvcde .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-left: 4px;
@@ -1105,7 +1105,7 @@ modelsummary(modelos, output = 'gt', coef_map = cm, stars = c('*'=.1, '**'=.05, 
   padding-right: 5px;
 }
 
-#kdyfybimql .gt_sourcenotes {
+#zchdfnvcde .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1119,7 +1119,7 @@ modelsummary(modelos, output = 'gt', coef_map = cm, stars = c('*'=.1, '**'=.05, 
   border-right-color: #D3D3D3;
 }
 
-#kdyfybimql .gt_sourcenote {
+#zchdfnvcde .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -1127,36 +1127,36 @@ modelsummary(modelos, output = 'gt', coef_map = cm, stars = c('*'=.1, '**'=.05, 
   padding-right: 5px;
 }
 
-#kdyfybimql .gt_left {
+#zchdfnvcde .gt_left {
   text-align: left;
 }
 
-#kdyfybimql .gt_center {
+#zchdfnvcde .gt_center {
   text-align: center;
 }
 
-#kdyfybimql .gt_right {
+#zchdfnvcde .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#kdyfybimql .gt_font_normal {
+#zchdfnvcde .gt_font_normal {
   font-weight: normal;
 }
 
-#kdyfybimql .gt_font_bold {
+#zchdfnvcde .gt_font_bold {
   font-weight: bold;
 }
 
-#kdyfybimql .gt_font_italic {
+#zchdfnvcde .gt_font_italic {
   font-style: italic;
 }
 
-#kdyfybimql .gt_super {
+#zchdfnvcde .gt_super {
   font-size: 65%;
 }
 
-#kdyfybimql .gt_two_val_uncert {
+#zchdfnvcde .gt_two_val_uncert {
   display: inline-block;
   line-height: 1em;
   text-align: right;
@@ -1165,31 +1165,31 @@ modelsummary(modelos, output = 'gt', coef_map = cm, stars = c('*'=.1, '**'=.05, 
   margin-left: 0.1em;
 }
 
-#kdyfybimql .gt_footnote_marks {
+#zchdfnvcde .gt_footnote_marks {
   font-style: italic;
   font-weight: normal;
   font-size: 75%;
   vertical-align: 0.4em;
 }
 
-#kdyfybimql .gt_asterisk {
+#zchdfnvcde .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#kdyfybimql .gt_slash_mark {
+#zchdfnvcde .gt_slash_mark {
   font-size: 0.7em;
   line-height: 0.7em;
   vertical-align: 0.15em;
 }
 
-#kdyfybimql .gt_fraction_numerator {
+#zchdfnvcde .gt_fraction_numerator {
   font-size: 0.6em;
   line-height: 0.6em;
   vertical-align: 0.45em;
 }
 
-#kdyfybimql .gt_fraction_denominator {
+#zchdfnvcde .gt_fraction_denominator {
   font-size: 0.6em;
   line-height: 0.6em;
   vertical-align: -0.05em;

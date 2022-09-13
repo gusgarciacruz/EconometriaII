@@ -594,7 +594,7 @@ En este ejercicio vamos a estudiar este posible efecto negativo.  El siguiente e
 Los datos para este ejercicio proviene de la *General Social Survey (GSS)* de los Estados Unidos. En los siguientes links se encuentran los datos, la descripción dellada de los datos y el código utilizado en R:
 - [Datos](https://gusgarciacruz.github.io/EconometriaII/IV/GSS2012_2018.dta)
 - [Descripción de la información](https://gss.norc.org/get-the-data/stata)
-- [Código en R]("https://gusgarciacruz.github.io/EconometriaII/IV/Tema9.R")
+- [Código en R](https://gusgarciacruz.github.io/EconometriaII/IV/Tema9.R)
 
 ---
 # <span style="font-size:70%">Ejercicio aplicado: efectos de la educación de la mujer sobre la fertilidad</span>
