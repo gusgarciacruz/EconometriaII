@@ -4,7 +4,7 @@
     <title>Estimación por variables instrumentales (IV)</title>
     <meta charset="utf-8" />
     <meta name="author" content="Gustavo A. García   ggarci24@eafit.edu.co                  " />
-    <script src="libs/header-attrs-2.11/header-attrs.js"></script>
+    <script src="libs/header-attrs-2.14/header-attrs.js"></script>
     <script src="libs/clipboard-2.0.6/clipboard.min.js"></script>
     <link href="libs/xaringanExtra-clipboard-0.2.6/xaringanExtra-clipboard.css" rel="stylesheet" />
     <script src="libs/xaringanExtra-clipboard-0.2.6/xaringanExtra-clipboard.js"></script>
@@ -18,9 +18,15 @@
     <textarea id="source">
 class: center, middle, inverse, title-slide
 
+.title[
 # Estimación por variables instrumentales (IV)
+]
+.author[
 ### Gustavo A. García <br> <span class="notbold" style="font-size:65%"><a href="mailto:ggarci24@eafit.edu.co" class="email">ggarci24@eafit.edu.co</a></span> <br> <br> <br> <br> <br> <br> <br> <br> <br>
+]
+.date[
 ### <span class="notbold" style="font-size:65%">Econometría II <br> Programa de Economía <br> Universidad EAFIT</span>
+]
 
 ---
 
@@ -568,9 +574,9 @@ Numerosos estudios indican que la educación de las mujeres tiene un efecto nega
 En este ejercicio vamos a estudiar este posible efecto negativo.  El siguiente ejercicio se basa en el paper: McCrary, J y Royer, H. (2011). "The Effect of Female Education on Fertility and Infant Health: Evidence from School Entry Policies Using Exact Date of Birth". *American Economic Review*, 101: 158-195.
 
 Los datos para este ejercicio proviene de la *General Social Survey (GSS)* de los Estados Unidos. En los siguientes links se encuentran los datos, la descripción dellada de los datos y el código utilizado en R:
-- [Datos](https://eafit-my.sharepoint.com/:u:/g/personal/ggarci24_eafit_edu_co/ETZ8xAWasYpAs9fInpcWijgBCT-B2iBV-wV_Kb62uCGP1g?e=a2o3fn)
+- [Datos](https://gusgarciacruz.github.io/EconometriaII/IV/GSS2012_2018.dta)
 - [Descripción de la información](https://gss.norc.org/get-the-data/stata)
-- [Código en R](https://eafit-my.sharepoint.com/:u:/g/personal/ggarci24_eafit_edu_co/EWN9FtgNsFxMjh7SeRpBILABCzvwKTnbtAPdiaxau2QVMg?e=P5NbN2)
+- [Código en R]("https://gusgarciacruz.github.io/EconometriaII/IV/Tema9.R")
 
 ---
 # &lt;span style="font-size:70%"&gt;Ejercicio aplicado: efectos de la educación de la mujer sobre la fertilidad&lt;/span&gt;
@@ -608,7 +614,7 @@ data[,c("race","afroa")]
 ```
 
 ```
-# A tibble: 935 x 2
+# A tibble: 935 × 2
         race afroa
    &lt;dbl+lbl&gt; &lt;dbl&gt;
  1 1 [white]     1
@@ -621,7 +627,8 @@ data[,c("race","afroa")]
  8 1 [white]     1
  9 1 [white]     1
 10 2 [black]     0
-# ... with 925 more rows
+# … with 925 more rows
+# ℹ Use `print(n = ...)` to see more rows
 ```
 ]
 
@@ -632,7 +639,7 @@ data[,c("wrkstat","working")]
 ```
 
 ```
-# A tibble: 935 x 2
+# A tibble: 935 × 2
                 wrkstat working
               &lt;dbl+lbl&gt;   &lt;dbl&gt;
  1 7 [keeping house]          0
@@ -645,7 +652,8 @@ data[,c("wrkstat","working")]
  8 1 [working fulltime]       1
  9 1 [working fulltime]       1
 10 1 [working fulltime]       1
-# ... with 925 more rows
+# … with 925 more rows
+# ℹ Use `print(n = ...)` to see more rows
 ```
 ]
 
@@ -656,7 +664,7 @@ data[,c("marital","casado")]
 ```
 
 ```
-# A tibble: 935 x 2
+# A tibble: 935 × 2
              marital casado
            &lt;dbl+lbl&gt;  &lt;dbl&gt;
  1 5 [never married]      0
@@ -669,7 +677,8 @@ data[,c("marital","casado")]
  8 1 [married]            1
  9 1 [married]            1
 10 5 [never married]      0
-# ... with 925 more rows
+# … with 925 more rows
+# ℹ Use `print(n = ...)` to see more rows
 ```
 ]
 ]
@@ -774,12 +783,12 @@ modelsummary(modelos, output = 'gt', coef_map = cm, stars = c('*'=.1, '**'=.05, 
     tab_style(style = cell_text(color = "black", size = "x-small"), locations = cells_source_notes())
 ```
 
-<div id="bbovzmvrjr" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<div id="kdyfybimql" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
 <style>html {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
 }
 
-#bbovzmvrjr .gt_table {
+#kdyfybimql .gt_table {
   display: table;
   border-collapse: collapse;
   margin-left: auto;
@@ -804,7 +813,7 @@ modelsummary(modelos, output = 'gt', coef_map = cm, stars = c('*'=.1, '**'=.05, 
   border-left-color: #D3D3D3;
 }
 
-#bbovzmvrjr .gt_heading {
+#kdyfybimql .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -816,33 +825,37 @@ modelsummary(modelos, output = 'gt', coef_map = cm, stars = c('*'=.1, '**'=.05, 
   border-right-color: #D3D3D3;
 }
 
-#bbovzmvrjr .gt_title {
+#kdyfybimql .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
   padding-top: 4px;
   padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
   border-bottom-color: #FFFFFF;
   border-bottom-width: 0;
 }
 
-#bbovzmvrjr .gt_subtitle {
+#kdyfybimql .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
   padding-top: 0;
   padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
   border-top-color: #FFFFFF;
   border-top-width: 0;
 }
 
-#bbovzmvrjr .gt_bottom_border {
+#kdyfybimql .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#bbovzmvrjr .gt_col_headings {
+#kdyfybimql .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -857,7 +870,7 @@ modelsummary(modelos, output = 'gt', coef_map = cm, stars = c('*'=.1, '**'=.05, 
   border-right-color: #D3D3D3;
 }
 
-#bbovzmvrjr .gt_col_heading {
+#kdyfybimql .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -877,7 +890,7 @@ modelsummary(modelos, output = 'gt', coef_map = cm, stars = c('*'=.1, '**'=.05, 
   overflow-x: hidden;
 }
 
-#bbovzmvrjr .gt_column_spanner_outer {
+#kdyfybimql .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -889,15 +902,15 @@ modelsummary(modelos, output = 'gt', coef_map = cm, stars = c('*'=.1, '**'=.05, 
   padding-right: 4px;
 }
 
-#bbovzmvrjr .gt_column_spanner_outer:first-child {
+#kdyfybimql .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#bbovzmvrjr .gt_column_spanner_outer:last-child {
+#kdyfybimql .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#bbovzmvrjr .gt_column_spanner {
+#kdyfybimql .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -909,8 +922,11 @@ modelsummary(modelos, output = 'gt', coef_map = cm, stars = c('*'=.1, '**'=.05, 
   width: 100%;
 }
 
-#bbovzmvrjr .gt_group_heading {
-  padding: 8px;
+#kdyfybimql .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -931,7 +947,7 @@ modelsummary(modelos, output = 'gt', coef_map = cm, stars = c('*'=.1, '**'=.05, 
   vertical-align: middle;
 }
 
-#bbovzmvrjr .gt_empty_group_heading {
+#kdyfybimql .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -946,15 +962,15 @@ modelsummary(modelos, output = 'gt', coef_map = cm, stars = c('*'=.1, '**'=.05, 
   vertical-align: middle;
 }
 
-#bbovzmvrjr .gt_from_md > :first-child {
+#kdyfybimql .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#bbovzmvrjr .gt_from_md > :last-child {
+#kdyfybimql .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#bbovzmvrjr .gt_row {
+#kdyfybimql .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -973,7 +989,7 @@ modelsummary(modelos, output = 'gt', coef_map = cm, stars = c('*'=.1, '**'=.05, 
   overflow-x: hidden;
 }
 
-#bbovzmvrjr .gt_stub {
+#kdyfybimql .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -982,10 +998,29 @@ modelsummary(modelos, output = 'gt', coef_map = cm, stars = c('*'=.1, '**'=.05, 
   border-right-style: solid;
   border-right-width: 2px;
   border-right-color: #D3D3D3;
-  padding-left: 12px;
+  padding-left: 5px;
+  padding-right: 5px;
 }
 
-#bbovzmvrjr .gt_summary_row {
+#kdyfybimql .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#kdyfybimql .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#kdyfybimql .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -995,17 +1030,26 @@ modelsummary(modelos, output = 'gt', coef_map = cm, stars = c('*'=.1, '**'=.05, 
   padding-right: 5px;
 }
 
-#bbovzmvrjr .gt_first_summary_row {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
+#kdyfybimql .gt_first_summary_row {
   border-top-style: solid;
-  border-top-width: 2px;
   border-top-color: #D3D3D3;
 }
 
-#bbovzmvrjr .gt_grand_summary_row {
+#kdyfybimql .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#kdyfybimql .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#kdyfybimql .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1015,7 +1059,7 @@ modelsummary(modelos, output = 'gt', coef_map = cm, stars = c('*'=.1, '**'=.05, 
   padding-right: 5px;
 }
 
-#bbovzmvrjr .gt_first_grand_summary_row {
+#kdyfybimql .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1025,11 +1069,11 @@ modelsummary(modelos, output = 'gt', coef_map = cm, stars = c('*'=.1, '**'=.05, 
   border-top-color: #D3D3D3;
 }
 
-#bbovzmvrjr .gt_striped {
+#kdyfybimql .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#bbovzmvrjr .gt_table_body {
+#kdyfybimql .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1038,7 +1082,7 @@ modelsummary(modelos, output = 'gt', coef_map = cm, stars = c('*'=.1, '**'=.05, 
   border-bottom-color: #D3D3D3;
 }
 
-#bbovzmvrjr .gt_footnotes {
+#kdyfybimql .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1052,13 +1096,16 @@ modelsummary(modelos, output = 'gt', coef_map = cm, stars = c('*'=.1, '**'=.05, 
   border-right-color: #D3D3D3;
 }
 
-#bbovzmvrjr .gt_footnote {
+#kdyfybimql .gt_footnote {
   margin: 0px;
   font-size: 90%;
-  padding: 4px;
+  padding-left: 4px;
+  padding-right: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
 }
 
-#bbovzmvrjr .gt_sourcenotes {
+#kdyfybimql .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1072,44 +1119,80 @@ modelsummary(modelos, output = 'gt', coef_map = cm, stars = c('*'=.1, '**'=.05, 
   border-right-color: #D3D3D3;
 }
 
-#bbovzmvrjr .gt_sourcenote {
+#kdyfybimql .gt_sourcenote {
   font-size: 90%;
-  padding: 4px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
 }
 
-#bbovzmvrjr .gt_left {
+#kdyfybimql .gt_left {
   text-align: left;
 }
 
-#bbovzmvrjr .gt_center {
+#kdyfybimql .gt_center {
   text-align: center;
 }
 
-#bbovzmvrjr .gt_right {
+#kdyfybimql .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#bbovzmvrjr .gt_font_normal {
+#kdyfybimql .gt_font_normal {
   font-weight: normal;
 }
 
-#bbovzmvrjr .gt_font_bold {
+#kdyfybimql .gt_font_bold {
   font-weight: bold;
 }
 
-#bbovzmvrjr .gt_font_italic {
+#kdyfybimql .gt_font_italic {
   font-style: italic;
 }
 
-#bbovzmvrjr .gt_super {
+#kdyfybimql .gt_super {
   font-size: 65%;
 }
 
-#bbovzmvrjr .gt_footnote_marks {
+#kdyfybimql .gt_two_val_uncert {
+  display: inline-block;
+  line-height: 1em;
+  text-align: right;
+  font-size: 60%;
+  vertical-align: -0.25em;
+  margin-left: 0.1em;
+}
+
+#kdyfybimql .gt_footnote_marks {
   font-style: italic;
   font-weight: normal;
-  font-size: 65%;
+  font-size: 75%;
+  vertical-align: 0.4em;
+}
+
+#kdyfybimql .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#kdyfybimql .gt_slash_mark {
+  font-size: 0.7em;
+  line-height: 0.7em;
+  vertical-align: 0.15em;
+}
+
+#kdyfybimql .gt_fraction_numerator {
+  font-size: 0.6em;
+  line-height: 0.6em;
+  vertical-align: 0.45em;
+}
+
+#kdyfybimql .gt_fraction_denominator {
+  font-size: 0.6em;
+  line-height: 0.6em;
+  vertical-align: -0.05em;
 }
 </style>
 <table class="gt_table">
@@ -1141,6 +1224,9 @@ modelsummary(modelos, output = 'gt', coef_map = cm, stars = c('*'=.1, '**'=.05, 
     <tr><td class="gt_row gt_left" style="font-size: medium;">F</td>
 <td class="gt_row gt_center" style="font-size: medium;">19.747</td>
 <td class="gt_row gt_center" style="font-size: medium;"></td></tr>
+    <tr><td class="gt_row gt_left">RMSE</td>
+<td class="gt_row gt_center">1.34</td>
+<td class="gt_row gt_center">1.35</td></tr>
   </tbody>
   <tfoot class="gt_sourcenotes">
     <tr>
@@ -1202,6 +1288,19 @@ if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
     deleted = true;
   });
 })();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
 (function() {
   "use strict"
   // Replace <script> tags in slides area to make them executable

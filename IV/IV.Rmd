@@ -592,9 +592,9 @@ Numerosos estudios indican que la educación de las mujeres tiene un efecto nega
 En este ejercicio vamos a estudiar este posible efecto negativo.  El siguiente ejercicio se basa en el paper: McCrary, J y Royer, H. (2011). "The Effect of Female Education on Fertility and Infant Health: Evidence from School Entry Policies Using Exact Date of Birth". *American Economic Review*, 101: 158-195.
 
 Los datos para este ejercicio proviene de la *General Social Survey (GSS)* de los Estados Unidos. En los siguientes links se encuentran los datos, la descripción dellada de los datos y el código utilizado en R:
-- [Datos](https://eafit-my.sharepoint.com/:u:/g/personal/ggarci24_eafit_edu_co/ETZ8xAWasYpAs9fInpcWijgBCT-B2iBV-wV_Kb62uCGP1g?e=a2o3fn)
+- [Datos](https://gusgarciacruz.github.io/EconometriaII/IV/GSS2012_2018.dta)
 - [Descripción de la información](https://gss.norc.org/get-the-data/stata)
-- [Código en R](https://eafit-my.sharepoint.com/:u:/g/personal/ggarci24_eafit_edu_co/EWN9FtgNsFxMjh7SeRpBILABCzvwKTnbtAPdiaxau2QVMg?e=P5NbN2)
+- [Código en R]("https://gusgarciacruz.github.io/EconometriaII/IV/Tema9.R")
 
 ---
 # <span style="font-size:70%">Ejercicio aplicado: efectos de la educación de la mujer sobre la fertilidad</span>
