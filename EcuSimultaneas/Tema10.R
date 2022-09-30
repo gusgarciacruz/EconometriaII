@@ -11,9 +11,9 @@ install.packages("rjson")
 library(rjson)
 install.packages("rJava")
 library(rJava)
-install.packages("rJython_0.0-4.tar.gz", repos = NULL, type = "source")
+install.packages("rJython_0.0-4.tar.gz", repos = NULL, type = "source", INSTALL_opts = "--no-multiarch")
 library(rJython)
-install.packages("rSymPy_0.2-1.2.tar.gz", repos = NULL, type = "source")
+install.packages("rSymPy_0.2-1.2.tar.gz", repos = NULL, type = "source", INSTALL_opts = "--no-multiarch")
 library(rSymPy)
 
 Det <- function(x) Sym("(", x, ").det()")
@@ -85,7 +85,7 @@ linearHypothesis(EXP.reducida, c("INC = 0", "POP = 0"))
 
 # Prueba de simultaneidad
 # El test de Hausman comprende los siguientes pasos:
-# Paso 1. Efect?e la regresión de la forma reducida de AID y obtenga 
+# Paso 1. Efectúe la regresión de la forma reducida de AID y obtenga 
 # los residuales de esta regresión (w)
 # Paso 2. Efectúe la regresión de EXP sobre AID, INC, POP y w, y realice una 
 # prueba t sobre el coeficiente de w. Si éste es significativo, no se rechaza 
@@ -121,6 +121,14 @@ eq.sys <- list(EXP = eqEXP,
 MCO <- systemfit(eq.sys, method = "OLS", data = data)
 summary(MCO)
 
+stargazer(EXP.mco, AID.mco,
+          header = FALSE, 
+          type = "text",
+          digits = 4, 
+          out.header = T,
+          model.names = F,
+          omit.stat = c("f", "ser"))
+
 # MC2E: equivalente a la estimación de variables instrumentales de la ecuación única
 # Para la estimación por MC2E es necesario tener variables instrumentales
 # para la identificación. Los instrumentos son las variables exógenas
@@ -143,48 +151,64 @@ instlist <- list(inst1, inst2)
 MC2E.2 <- systemfit(eq.sys, method = "2SLS", inst = instlist, data = data)
 summary(MC2E.2)
 
+# MC3E: toma en cuenta la correlación contemporanea entre los residuales y
+# la existencia de una variable explicativa endógena
+MC3E <- systemfit(eq.sys, method = "3SLS", inst = inst, data = data)
+summary(MC3E)
+
 # SUR: los residuales son correlacionados a través de las ecuaciones
 # no da cuenta del problema de variable explicativa endógena
-SUR <- systemfit(eq.sys, method = "SUR", data = data)
+# Como ejemplo aplicado del SUR se van a utilizar los datos GASOLINE.DAT
+# del libro Econometrics de Baltagui (2011).
+# En este ejercicio se estima una función de demanda de gasolina para
+# 18 países de la OCDE en el periodo 1960-1978 (T=19)
+
+data <- read.csv("./Baltagi/GASOLINE.DAT", sep="") |> 
+  filter(CO %in% c("AUSTRIA","BELGIUM","CANADA")) |> # Utilizamos información para tres países
+  mutate(CO_l = case_when(CO=="AUSTRIA" ~ "A",
+                          CO=="BELGIUM" ~ "B",
+                          CO=="CANADA" ~ "C")) |> 
+  select(!CO)
+
+data_wide <- data |> 
+  pivot_wider(names_from = CO_l, 
+              values_from = c(LN.Gas.Car.,LN.Y.N.,LN.Pmg.Pgdp.,LN.Car.N.),
+              names_sep = "")
+
+eqA <- LN.Gas.Car.A ~ LN.Y.N.A + LN.Pmg.Pgdp.A + LN.Car.N.A
+eqB <- LN.Gas.Car.B ~ LN.Y.N.B + LN.Pmg.Pgdp.B + LN.Car.N.B
+eqC <- LN.Gas.Car.C ~ LN.Y.N.C + LN.Pmg.Pgdp.C + LN.Car.N.C
+
+eq.sys <- list(A = eqA,
+               B = eqB,
+               C = eqC)
+
+SUR <- systemfit(eq.sys, data = data_wide, method = "SUR")
 summary(SUR)
-
-EXP.mco <- lm(EXP ~ AID + INC + POP, data = data)
-AID.mco <- lm(AID ~ EXP + PS, data = data)
-
-stargazer(EXP.mco, AID.mco,
-          header = FALSE, 
-          type = "text",
-          digits = 4, 
-          out.header = T,
-          model.names = F,
-          omit.stat = c("f", "ser"))
 
 # Test de Breusch-Pagan. Ho: la matrix de covarianza de los errores es diagonal, 
 # las ecuaciones son independientes
 # Breusch y Pagan (1980) derivaron una forma simple para realizar esta prueba y se basa
 # en construir un estadístico de multiplicadores de lagrange (LM) sobre los coeficientes
-# de correlaci?n muestral de los residuales MCO
+# de correlación muestral de los residuales MCO
 
 # Primero calculamos la matrix var-cov de los residuales estimados. Con la siguiente
 # función nos muestra dicha matriz var-cov y la matriz de correlación de los residuales
+MCO <- systemfit(eq.sys, data = data_wide, method = "OLS")
 summary(MCO, residCov = TRUE, equations = FALSE)
 
-# Ahora calculamos el r del estadístico de prueba del test de BP y lo comparamos 
+# Ahora calculamos el rij del estadístico de prueba del test de BP y lo comparamos 
 # con el coeficiente de correlación, deben dar igual
 # r = sigma_ij / (sigma_ii * sigma_jj)^(1/2)
+# En la matrix de correlación de los residuales ya están calculados los rij
+# En este caso incluimos el estadístico (con i diferente de j) LM = T*(r21^2 + r31^2 + r32^2)
 
-(-25845.3)/((140757.9*14996.3)^(1/2))
-
-# Ahora procedemos calcular el estadístico de prueba
-
-BP <- 50*((-0.5625)^2)
+matriz_corrU <- stats::cov2cor(MCO[["residCov"]]) # Calculamos la matriz de correlación, aquí están los rij
+matriz_corrU
+index_ltri <- lower.tri(matriz_corrU) # Guardamos la diagonal inferior
+BP <- 19*sum(matriz_corrU[index_ltri]^2) # Calculamos el estadístico
 BP
-pchisq(BP, df=1, lower.tail = F) # Pvalor de BP
-qchisq(0.05, df=1, lower.tail = F) # Chi de la tabla al 5% y con 1 gdl
+pchisq(BP, df=3, lower.tail = F) # Pvalor de LM
+qchisq(0.05, df=2, lower.tail = F) # Chi de la tabla al 5% y con 3 gdl
 
-# Pvalor = 0, rechazamos Ho, es decir que la estimación SUR es adecuada
-
-# MC3E: toma en cuenta la correlación contemporanea entre los residuales y
-# la existencia de una variable explicativa endógena
-MC3E <- systemfit(eq.sys, method = "3SLS", inst = inst, data = data)
-summary(MC3E)
+# Pvalor = 0.4277, no rechazamos Ho, es decir que la estimación OLS es adecuada
