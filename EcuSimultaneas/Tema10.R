@@ -16,6 +16,11 @@ library(rJython)
 install.packages("rSymPy_0.2-1.2.tar.gz", repos = NULL, type = "source", INSTALL_opts = "--no-multiarch")
 library(rSymPy)
 
+# Si no funciona los install.packages seguir la siguiente ruta:
+# - ir a la pestaña de Packages, luego a Install
+# - En Install from: poner Package Archive file
+# - En Browse dar en el icono de R y cargar cada paquete
+
 Det <- function(x) Sym("(", x, ").det()")
 
 gamma22 <- Var("gamma22") 
