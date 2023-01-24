@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Repaso de MCG</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Gustavo A. García   ggarci24@eafit.edu.co                  " />
+    <script src="libs/header-attrs-2.14/header-attrs.js"></script>
+    <script src="libs/clipboard-2.0.6/clipboard.min.js"></script>
+    <link href="libs/xaringanExtra-clipboard-0.2.6/xaringanExtra-clipboard.css" rel="stylesheet" />
+    <script src="libs/xaringanExtra-clipboard-0.2.6/xaringanExtra-clipboard.js"></script>
+    <script>window.xaringanExtraClipboard(null, {"button":"<i class=\"fa fa-clipboard\"><\/i>","success":"<i class=\"fa fa-check\" style=\"color: #90BE6D\"><\/i>","error":"<i class=\"fa fa-times-circle\" style=\"color: #F94144\"><\/i>"})</script>
+    <link href="libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+    <link href="libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+    <link href="libs/xaringanExtra-extra-styles-0.2.6/xaringanExtra-extra-styles.css" rel="stylesheet" />
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Repaso de MCG
+]
+.author[
+### Gustavo A. García <br> <span class="notbold" style="font-size:65%"><a href="mailto:ggarci24@eafit.edu.co" class="email">ggarci24@eafit.edu.co</a></span> <br> <br> <br> <br> <br> <br> <br> <br> <br>
+]
+.date[
+### <span class="notbold" style="font-size:65%">Econometría II <br> Programa de Economía <br> Universidad EAFIT</span>
+]
+
+---
+
+
+
+
+&lt;style&gt;
+.notbold{
+    font-weight:normal
+}
+
+body {
+text-align: justify;
+}
+
+h1{
+      margin-top: -1px;
+      margin-bottom: -3px;
+}
+
+.small-code pre{
+  margin-bottom: -10px;
+  
+}  
+
+.medium-code pre{
+  margin-bottom: 2px;
+  
+} 
+&lt;/style&gt;
+
+
+
+
+
+
+&lt;font size = "5"&gt;
+
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+
+Link slides en formato [html](https://gusgarciacruz.github.io/EconometriaII/MCG/MCG.html)
+
+Link slides en formato [PDF](https://gusgarciacruz.github.io/EconometriaII/MCG/MCG.pdf)
+---
+# &lt;span style="font-size:80%"&gt;En este tema&lt;/span&gt;
+
+- &lt;span style="font-size:150%"&gt;[&lt;span style="color:black"&gt;Introducción](#introduccion)&lt;/span&gt; &lt;br&gt; &lt;br&gt;
+
+- &lt;span style="font-size:150%"&gt; [&lt;span style="color:black"&gt;Consecuencias sobre los estimadores por MCO](#consecuencias)&lt;/span&gt; &lt;br&gt; &lt;br&gt;
+
+- &lt;span style="font-size:150%"&gt; [&lt;span style="color:black"&gt;El estimador MCG](#MCG)&lt;/span&gt; &lt;br&gt; &lt;br&gt;
+
+- &lt;span style="font-size:150%"&gt; [&lt;span style="color:black"&gt;Ejercicio aplicado en R: heteroscedasticidad](#r)&lt;/span&gt;
+
+---
+# &lt;span style="font-size:80%"&gt;Lecturas&lt;/span&gt;
+- &lt;span style="font-size:150%"&gt;Wooldridge, J. (2013). *Introducción a la econometría*. 5a edición, Cengage Learning. &lt;span style="color:blue"&gt;Cap 8 &lt;br&gt; &lt;br&gt;
+
+- &lt;span style="font-size:150%"&gt; Gujarati, D. y Porter, D. (2010). *Econometría*. 5a edición, Mc Graw Hill. &lt;span style="color:blue"&gt;Cap 11 &lt;br&gt; &lt;br&gt;
+
+---
+name: introduccion
+# &lt;span style="font-size:80%"&gt;Introducción&lt;/span&gt;
+
+- Se extenderá el modelo de regresión múltiple para permitir que las perturbaciones no cumplan el supuesto de perturbaciones esféricas: &lt;font color = "blue"&gt;heteroscedasticidad&lt;/font&gt; y &lt;font color = "blue"&gt;autocorrelación&lt;/font&gt;
+
+- El &lt;font color = "blue"&gt;modelo de regresión lineal generalizado&lt;/font&gt; es
+
+`$$\textbf{Y}=\textbf{XB} + \textbf{u}$$`
+`$$E(\textbf{u})=0$$`
+`$$Cov(\textbf{u})=E(\textbf{u}\textbf{u}')=\sigma_{u}^2\boldsymbol\Omega=\boldsymbol\Sigma$$` donde `\(\boldsymbol\Omega\)` es una matriz definida positiva
+
+- Los dos casos con los que se inclumple el supuesto de perturbaciones esféricas son &lt;font color = "blue"&gt;heteroscedasticidad&lt;/font&gt; y &lt;font color = "blue"&gt;autocorrelación&lt;/font&gt;
+
+---
+# &lt;span style="font-size:80%"&gt;Introducción&lt;/span&gt;
+
+&lt;font color = "blue"&gt;Perturbaciones heteroscedásticas&lt;/font&gt;: diferente varianza
+
+- La heteroscedasticidad normalmente aparece datos de &lt;font color = "blue"&gt;sección cruzada&lt;/font&gt; (datos microeconómicos) y series de tiempo muy volátiles de alta frecuencia (datos diarios del mercado financiero)
+
+- Las perturbaciones se asumen aún incorrelacionadas entre observaciones, por tanto `\(\sigma_{u}^2\boldsymbol\Omega\)` sería
+
+`$$\sigma_{u}^2\boldsymbol\Omega = \left[ \begin{array}{cccc}
+w_{1} &amp; 0     &amp; \ldots &amp; 0\\
+0     &amp; w_{2} &amp; \ldots &amp; 0\\
+\vdots&amp; \vdots&amp; \vdots &amp; \vdots\\
+0             &amp; 0      &amp; \ldots &amp; w_{n}\\\end{array} \right] = 
+\left[ \begin{array}{cccc}
+\sigma_{u_{1}}^2 &amp; 0     &amp; \ldots &amp; 0\\
+0     &amp; \sigma_{u_{2}}^2 &amp; \ldots &amp; 0\\
+\vdots&amp; \vdots &amp; \vdots&amp; \vdots\\
+0             &amp; 0      &amp; \ldots &amp; \sigma_{u_{n}}^2\\\end{array} \right]$$`
+
+---
+# &lt;span style="font-size:80%"&gt;Introducción&lt;/span&gt;
+
+&lt;font color = "blue"&gt;Perturbaciones autocorrelacionadas&lt;/font&gt;: correlacionadas entre unas y otras
+
+- La autocorrelación normalmente se encuentra en datos de series de tiempo. Las series de tiempo económicas frecuentemente presentan una &lt;font color = "blue"&gt;memoria&lt;/font&gt; puesto que la variación alrededor de la función de regresión no es independiente entre un período y el siguiente
+
+- Se asume homocedasticidad, por lo que `\(\sigma_{u}^2\boldsymbol\Omega\)` sería
+
+`$$\sigma_{u}^2\boldsymbol\Omega = \left[ \begin{array}{cccc}
+1         &amp; \rho_{1}  &amp; \ldots &amp; \rho_{n-1}\\
+\rho_{1}  &amp; 1         &amp; \ldots &amp; \rho_{n-2}\\
+\vdots    &amp; \vdots    &amp; \vdots &amp; \vdots\\
+\rho_{n-1}&amp; \rho_{n-2}&amp; \ldots &amp; 1\\\end{array} \right]$$`
+
+---
+name: consecuencias
+# &lt;span style="font-size:80%"&gt;Consecuencias sobre los estimadores por MCO&lt;/span&gt;
+
+- Los resultados esenciales para el modelo clásico con perturbaciones esféricas
+
+`$$E(\textbf{u})=0$$`
+`$$Cov(\textbf{u})=E(\textbf{u}\textbf{u}')=\sigma_{u}^2 \textbf{I}$$`
+- El estimado MCO
+
+`$$\hat{\textbf{B}}=(\textbf{X}'\textbf{X})^{-1}\textbf{X}'\textbf{Y}$$`
+
+`$$\hat{\textbf{B}}=\textbf{B} + (\textbf{X}'\textbf{X})^{-1}\textbf{X}'\textbf{u}$$`
+
+es el mejor estimador lineal insesgado, consistente y distribuido asintóticamente como una normal (CAN) 
+
+- Los estimadores MCO mantienen sólo algunas de las propiedades deseables en este modelo. Los estimadores MCO permanecen &lt;font color = "blue"&gt;insesgados&lt;/font&gt;, &lt;font color = "blue"&gt;consistentes&lt;/font&gt;, y con &lt;font color = "blue"&gt;distribución asintótica normal&lt;/font&gt;. No serán &lt;font color = "blue"&gt;eficientes&lt;/font&gt; y los procedimientos normales de &lt;font color = "blue"&gt;inferencia no son ya apropiados&lt;/font&gt; 
+
+---
+# &lt;span style="font-size:80%"&gt;Consecuencias sobre los estimadores por MCO&lt;/span&gt;
+
+**&lt;font color = "blue"&gt;Propiedades en muestras finitas de los MCO&lt;/font&gt;**
+&lt;p style="margin-bottom: -1em"&gt;
+- Insesgadez
+
+`$$E(\hat{\textbf{B}})=\textbf{B} + E((\textbf{X}'\textbf{X})^{-1}\textbf{X}'\textbf{u}) = \textbf{B}$$`
+&lt;p style="margin-bottom: -1em"&gt;
+- Matriz de covarianzas de `\(\hat{\textbf{B}}\)`
+
+$$
+`\begin{aligned}
+Cov(\hat{\textbf{B}}) &amp; = E[(\hat{\textbf{B}}-E(\hat{\textbf{B}}))(\hat{\textbf{B}}-E(\hat{\textbf{B}}))'] \\
+                      &amp; = E[(\hat{\textbf{B}}-\textbf{B})(\hat{\textbf{B}}-\textbf{B})']\\
+                      &amp; = (\textbf{X}'\textbf{X})^{-1}\textbf{X}'E(\textbf{u}\textbf{u}')\textbf{X}(\textbf{X}'\textbf{X})^{-1}\\
+                      &amp; =\sigma_{u}^2(\textbf{X}'\textbf{X})^{-1}\textbf{X}'\boldsymbol\Omega\textbf{X}(\textbf{X}'\textbf{X})^{-1}\\
+                      &amp; = \frac{\sigma_{u}^2}{n}(\frac{1}{n}\textbf{X}'\textbf{X})^{-1}(\frac{1}{n}\textbf{X}'\boldsymbol\Omega\textbf{X})(\frac{1}{n}\textbf{X}'\textbf{X})^{-1} \neq \sigma_{u}^2(\textbf{X}'\textbf{X})^{-1}
+\end{aligned}`
+$$
+
+- Dado que la varianza del estimador MCO no es `\(\sigma_{u}^2(\textbf{X}'\textbf{X})^{-1}\)`, cualquier inferencia basada `\(\hat{\sigma}_{u}^2(\textbf{X}'\textbf{X})^{-1}\)` llevará probablemente a conclusiones erróneas
+
+- No solamente ésta es la matriz errónea, sino que `\(\hat{\sigma}_{u}^2\)` puede ser un estimador sesgado de `\(\sigma_{u}^2\)`
+
+- Normalmente no hay forma de conocer si `\(\sigma_{u}^2\)` es mayor o menor que la verdadera varianza de `\(\hat{\textbf{B}}\)` por lo que incluso con un buen estimador de `\(\sigma_{u}^2\)`, el estimador convencional de `\(Cov(\hat{\textbf{B}})\)` puede no ser particularmente útil
+
+- Dado que hemos prescindido de supuesto fundamental subyacente, los procedimientos de inferencia habituales basados en las distribuciones F y t no serán ahora apropiados
+
+---
+name: MCG
+# &lt;span style="font-size:80%"&gt;El estimador MCG&lt;/span&gt;
+
+La idea es transformar el modelo (los datos y la perturbación aleatoria) de tal forma que la perturbación aleatoria del modelo transformado, tenga esfericidad y se puedan aplicar MCO a los datos del modelo transformado
+
+`$$\textbf{Y} = \textbf{XB} + \textbf{u}$$`
+`$$E(\textbf{u})=\textbf{0}$$`
+`$$E(\textbf{X}'\textbf{u})=\textbf{0}$$`
+`$$Cov(\textbf{u})=E(\textbf{u}\textbf{u}')=\sigma_{u}^2\boldsymbol\Omega$$`
+
+Siendo `\(\boldsymbol\Omega\)` una matriz definida positiva, pues se trata de varianzas
+
+Las matrices definidas positivas pueden descomponerse como:
+
+`$$\boldsymbol\Omega = \textbf{PP}'$$`
+
+Siendo `\(\textbf{P}\)` una matriz no singular ($\textbf{P}^{-1}$ existe). En el mundo matricial, dadas las probabilidades de la inversión de matrices, se da que:
+
+`$$\boldsymbol\Omega^{-1} = (\textbf{PP}')^{-1} = \textbf{P}'^{-1}\textbf{P}^{-1} = \textbf{P}^{-1'}\textbf{P}^{-1}$$`
+
+La propuesta de los MCG es premultiplicar todo el modelo por `\(\textbf{P}^{-1}\)`
+
+`$$\textbf{P}^{-1}\textbf{Y} = \textbf{P}^{-1}\textbf{XB} + \textbf{P}^{-1}\textbf{u}$$`
+`$$\textbf{Y}^* = \textbf{X}^*\textbf{B} + \textbf{u}^*$$`
+---
+# &lt;span style="font-size:80%"&gt;El estimador MCG&lt;/span&gt;
+&lt;font size = "3"&gt;
+Si la perturbación `\(\textbf{u}^*\)` es esférica se puede aplicar MCO al modelo con base en `\(\textbf{Y}^*\)` y `\(\textbf{X}^*\)`. Hay que ver los supuestos para `\(\textbf{u}^*\)`
+
+`$$E(\textbf{u}^*) = E(\textbf{P}^{-1}\textbf{u}) = \textbf{P}^{-1}E(\textbf{u})=\textbf{0}$$`
+
+$$
+`\begin{aligned}
+Cov(\textbf{u}^*)     &amp; = E((\textbf{u}^* - E(\textbf{u}^*))((\textbf{u}^* - E(\textbf{u}^*))')= E(\textbf{u}^*\textbf{u}^*{'})\\
+                      &amp; = E(\textbf{P}^{-1}\textbf{u}\textbf{u}{'}\textbf{P}^{-1}{'}) = \textbf{P}^{-1}E(\textbf{u}\textbf{u}{'})\textbf{P}^{-1}{'}\\
+                      &amp; = \sigma_{u}^2 \textbf{P}^{-1}\boldsymbol\Omega\textbf{P}^{-1}{'}\\
+                      &amp; = \sigma_{u}^2 \textbf{P}^{-1}\textbf{P}\textbf{P}{'}\textbf{P}^{-1}{'}\\
+                      &amp; =\sigma_{u}^2\textbf{I}
+\end{aligned}`
+$$
+
+Por lo tanto, en le modelo `\(\textbf{Y}^* = \textbf{X}^*\textbf{B} + \textbf{u}^*\)`\ se cumple la hipótesis de perturbaciones esféricas y se puede aplicar MCO al modelo transformado, dando como resultado `\(\widehat{\textbf{B}}_{MCG}\)`
+
+$$
+`\begin{aligned}
+\widehat{\textbf{B}}_{MCG} &amp; = (\textbf{X}^*{'}\textbf{X}^*)^{-1}\textbf{X}^*{'}\textbf{Y}^* \\
+                           &amp; = ((\textbf{P}^{-1}\textbf{X}){'}(\textbf{P}^{-1}\textbf{X}))^{-1}(\textbf{P}^{-1}\textbf{X}){'}\textbf{P}^{-1}\textbf{Y}\\
+                           &amp; = (\textbf{X}{'}\textbf{P}^{-1}{'}\textbf{P}^{-1}\textbf{X})^{-1}\textbf{X}{'}\textbf{P}^{-1}{'}\textbf{P}^{-1}\textbf{Y}\\
+                           &amp; = (\textbf{X}'\boldsymbol\Omega^{-1}\textbf{X})^{-1}\textbf{X}'\boldsymbol\Omega^{-1}\textbf{Y}
+\end{aligned}`
+$$
+
+`\(\widehat{\textbf{B}}_{MCO}\)` son un caso particular cuando `\(\boldsymbol\Omega=\textbf{I}\)`
+
+Es inmediato plantear que en el modelo transformado
+
+`$$Cov(\widehat{\textbf{B}}_{MCG}) = \sigma_{u}^2(\textbf{X}'\boldsymbol\Omega^{-1}\textbf{X})^{-1}$$`
+Para obtener `\(\boldsymbol\Omega\)` hay que modelar el tipo de situación específica que se quiere resolver: heteroscedasticidad y/o autocorrelación
+
+---
+name: r
+# &lt;span style="font-size:80%"&gt;Ejercicio aplicado en R: heteroscedasticidad&lt;/span&gt;
+&lt;font size = "3"&gt;
+Cuando `\(\boldsymbol\Omega\)` es una matriz diagonal de varianzas de error no iguales, estamos ante problemas de heteroscedasticidad, así que `\(\widehat{\textbf{B}}_{MCG}\)` será el estimador de *mínimos cuadrados ponderados* (MCP)
+
+
+```r
+library(foreign); library(lmtest); library(sandwich)
+data &lt;- read.dta("https://stats.idre.ucla.edu/stat/stata/webbooks/reg/elemapi2.dta")
+
+ols &lt;- lm(api00 ~ meals + ell + emer, data=data, subset = data$meals&gt;0) 
+```
+
+Probando la existencia de heteroscedasticidad a partir del test de Breuch-Pagan `\((H_0: \text{ homoscedasticidad})\)`
+
+```r
+bptest(ols)
+```
+
+```
+
+	studentized Breusch-Pagan test
+
+data:  ols
+BP = 8.3913, df = 3, p-value = 0.03858
+```
+
+Ausumiendo que la variable `\(meals\)` es la cuausante de la heteroscedasticidad y que la estructura de la heteroscedasticidad es `\(Var(u) = \sigma^2meals\)`, el modelo corregido por MCP será
+
+
+```r
+mcp &lt;- lm(api00 ~ meals + ell + emer, weight = 1/meals, data=data, subset = data$meals&gt;0)
+summary(mcp)
+```
+
+```
+
+Call:
+lm(formula = api00 ~ meals + ell + emer, data = data, subset = data$meals &gt; 
+    0, weights = 1/meals)
+
+Weighted Residuals:
+    Min      1Q  Median      3Q     Max 
+-36.769  -5.402  -0.483   5.576  29.636 
+
+Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept) 884.4189     2.9546 299.336  &lt; 2e-16 ***
+meals        -3.1962     0.1467 -21.787  &lt; 2e-16 ***
+ell          -0.8705     0.2304  -3.778 0.000183 ***
+emer         -1.3257     0.3383  -3.918 0.000105 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 9.226 on 395 degrees of freedom
+Multiple R-squared:  0.8693,	Adjusted R-squared:  0.8683 
+F-statistic: 875.8 on 3 and 395 DF,  p-value: &lt; 2.2e-16
+```
+
+---
+# &lt;span style="font-size:80%"&gt;Ejercicio aplicado en R: heteroscedasticidad&lt;/span&gt;
+&lt;font size = "3"&gt;
+En las aplicaciones reales la matriz de covarianzas `\(\boldsymbol\Omega\)` es desconocida, y debe ser estimada de los datos en conjunto con los coeficientes de regresión `\(\boldsymbol\beta\)`. Sin embargo, `\(\boldsymbol\Omega\)` tiene hasta `\(n(n+1)/2\)` elementos libres, así que el modelo puede tener más parámetros que datos. Es por esto que se requieren restricciones sobre los elementos de `\(\boldsymbol\Omega\)`
+
+Otra forma de corregir el problema de heteroscedasticidad son el calculo de errores estándar robustos a la heteroscedasticidad o corrección HC (o HAC para heteroscedasticidad y autocorrelación) (*Heteroskedasticity consistent (HC) and heteroskedasticity and autocorrelation consistent (HAC) covariance matrix estimators*)
+
+&lt;p style="margin-bottom: -1em"&gt;
+**&lt;font color = "blue"&gt;El estimador HC&lt;/font&gt;**
+
+Se asume que `\(\boldsymbol\Omega\)` es una matriz diagonal (no autocorrelación). Un estimador complementario para `\(Var(\widehat{\textbf{B}}|\textbf{X})\)` podría usar `\(\widehat{\boldsymbol\Omega} = diag(w_1,...,w_n)\)` con:
+
+$$
+`\begin{aligned}
+\text{const:} &amp; &amp; w_i &amp; = \widehat{\sigma}^2 &amp; \text{estimador estándar para errores homoscedásticos}\\
+\text{HC0:}  &amp; &amp; w_i &amp; = \widehat{u}_i^2 &amp; \text{estimador básico Eicker-Huber-White}\\
+\text{HC1:}  &amp; &amp; w_i &amp; = \frac{n}{n-k}\widehat{u}_i^2 &amp; \text{mejoras en muestras pequeñas}\\
+\text{HC2:}  &amp; &amp; w_i &amp; = \frac{\widehat{u}_i^2}{1-h_{ii}} &amp; \text{mejoras en muestras pequeñas}\\
+\text{HC3:}  &amp; &amp; w_i &amp; = \frac{\widehat{u}_i^2}{(1-h_{ii})^2} &amp; \text{mejoras en muestras pequeñas}\\
+\text{HC4:}  &amp; &amp; w_i &amp; = \frac{\widehat{u}_i^2}{(1-h_{ii})^{\delta_i}} &amp; \text{mejoras en muestras pequeñas, en el caso de outiers}\\
+\end{aligned}`
+$$
+donde `\(h_{ii}\)` son los valores estimados, `\(\delta_i = min\{4,h_{ii}/\bar{h}\}\)`
+
+---
+# &lt;span style="font-size:80%"&gt;Ejercicio aplicado en R: heteroscedasticidad&lt;/span&gt;
+
+
+```r
+hc_const &lt;- coeftest(ols, vcov = vcovHC(ols, "const"))
+hc_const
+```
+
+```
+
+t test of coefficients:
+
+             Estimate Std. Error  t value  Pr(&gt;|t|)    
+(Intercept) 886.04379    6.29806 140.6852 &lt; 2.2e-16 ***
+meals        -3.14890    0.15014 -20.9736 &lt; 2.2e-16 ***
+ell          -0.91383    0.18471  -4.9474 1.115e-06 ***
+emer         -1.57162    0.29315  -5.3612 1.409e-07 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+```r
+hc0 &lt;- coeftest(ols, vcov = vcovHC(ols, "HC0"))
+hc0
+```
+
+```
+
+t test of coefficients:
+
+             Estimate Std. Error  t value  Pr(&gt;|t|)    
+(Intercept) 886.04379    5.11156 173.3413 &lt; 2.2e-16 ***
+meals        -3.14890    0.13953 -22.5679 &lt; 2.2e-16 ***
+ell          -0.91383    0.18072  -5.0566 6.547e-07 ***
+emer         -1.57162    0.32857  -4.7833 2.439e-06 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+```r
+hc1 &lt;- coeftest(ols, vcov = vcovHC(ols, "HC1"))
+hc1
+```
+
+```
+
+t test of coefficients:
+
+             Estimate Std. Error  t value  Pr(&gt;|t|)    
+(Intercept) 886.04379    5.13737 172.4702 &lt; 2.2e-16 ***
+meals        -3.14890    0.14023 -22.4545 &lt; 2.2e-16 ***
+ell          -0.91383    0.18163  -5.0312 7.417e-07 ***
+emer         -1.57162    0.33022  -4.7593 2.731e-06 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "16:9"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

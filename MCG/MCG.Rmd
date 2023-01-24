@@ -1,0 +1,331 @@
+---
+title: "Repaso de MCG"
+author: Gustavo A. García <br> <span style="font-size:65%" class='notbold'>ggarci24@eafit.edu.co</span> <br> <br> <br> <br> <br> <br> <br> <br> <br>
+date: <span style="font-size:65%" class='notbold'>Econometría II <br> Programa de Economía <br> Universidad EAFIT</span>
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: xaringan-themer.css
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      ratio: "16:9"
+---
+
+```{r setup, include = F}
+# This is the recommended set up for flipbooks
+# you might think about setting cache to TRUE as you gain practice --- building flipbooks from scratch can be time consuming
+options(width = 70)
+knitr::opts_chunk$set(
+  dev.args = list(bg = 'transparent'),
+  fig.width = 12, message = TRUE,
+  warning = FALSE, comment = "", cache = TRUE, fig.retina = 3
+)
+knitr::opts_knit$set(global.par = TRUE)
+Sys.setenv(`_R_S3_METHOD_REGISTRATION_NOTE_OVERWRITES_` = "false")
+# remotes::install_github("luukvdmeer/sfnetworks")
+# remotes::install_github("EvaMaeRey/flipbookr")
+# remotes::install_github("rlesur/klippy")
+# devtools::install_github("gadenbuie/xaringanExtra")
+library(flipbookr)
+library(xaringanthemer)
+library(tidyverse)
+library(klippy)
+library(xaringanExtra)
+```
+
+<style>
+.notbold{
+    font-weight:normal
+}
+
+body {
+text-align: justify;
+}
+
+h1{
+      margin-top: -1px;
+      margin-bottom: -3px;
+}
+
+.small-code pre{
+  margin-bottom: -10px;
+  
+}  
+
+.medium-code pre{
+  margin-bottom: 2px;
+  
+} 
+</style>
+
+```{r xaringan-scribble, echo=FALSE}
+#xaringanExtra::use_scribble()
+```
+
+```{r xaringanExtra-clipboard, echo=FALSE}
+htmltools::tagList(
+  xaringanExtra::use_clipboard(
+    button_text = "<i class=\"fa fa-clipboard\"></i>",
+    success_text = "<i class=\"fa fa-check\" style=\"color: #90BE6D\"></i>",
+    error_text = "<i class=\"fa fa-times-circle\" style=\"color: #F94144\"></i>"
+  ),
+  rmarkdown::html_dependency_font_awesome()
+)
+```
+
+```{r xaringan-extra-styles, echo=FALSE}
+xaringanExtra::use_extra_styles(
+  hover_code_line = TRUE,         #<<
+  mute_unhighlighted_code = TRUE  #<<
+)
+```
+<font size = "5">
+
+<br>
+<br>
+<br>
+<br>
+<br>
+
+Link slides en formato [html](https://gusgarciacruz.github.io/EconometriaII/MCG/MCG.html)
+
+Link slides en formato [PDF](https://gusgarciacruz.github.io/EconometriaII/MCG/MCG.pdf)
+---
+# <span style="font-size:80%">En este tema</span>
+
+- <span style="font-size:150%">[<span style="color:black">Introducción](#introduccion)</span> <br> <br>
+
+- <span style="font-size:150%"> [<span style="color:black">Consecuencias sobre los estimadores por MCO](#consecuencias)</span> <br> <br>
+
+- <span style="font-size:150%"> [<span style="color:black">El estimador MCG](#MCG)</span> <br> <br>
+
+- <span style="font-size:150%"> [<span style="color:black">Ejercicio aplicado en R: heteroscedasticidad](#r)</span>
+
+---
+# <span style="font-size:80%">Lecturas</span>
+- <span style="font-size:150%">Wooldridge, J. (2013). *Introducción a la econometría*. 5a edición, Cengage Learning. <span style="color:blue">Cap 8 <br> <br>
+
+- <span style="font-size:150%"> Gujarati, D. y Porter, D. (2010). *Econometría*. 5a edición, Mc Graw Hill. <span style="color:blue">Cap 11 <br> <br>
+
+---
+name: introduccion
+# <span style="font-size:80%">Introducción</span>
+
+- Se extenderá el modelo de regresión múltiple para permitir que las perturbaciones no cumplan el supuesto de perturbaciones esféricas: <font color = "blue">heteroscedasticidad</font> y <font color = "blue">autocorrelación</font>
+
+- El <font color = "blue">modelo de regresión lineal generalizado</font> es
+
+$$\textbf{Y}=\textbf{XB} + \textbf{u}$$
+$$E(\textbf{u})=0$$
+$$Cov(\textbf{u})=E(\textbf{u}\textbf{u}')=\sigma_{u}^2\boldsymbol\Omega=\boldsymbol\Sigma$$ donde $\boldsymbol\Omega$ es una matriz definida positiva
+
+- Los dos casos con los que se inclumple el supuesto de perturbaciones esféricas son <font color = "blue">heteroscedasticidad</font> y <font color = "blue">autocorrelación</font>
+
+---
+# <span style="font-size:80%">Introducción</span>
+
+<font color = "blue">Perturbaciones heteroscedásticas</font>: diferente varianza
+
+- La heteroscedasticidad normalmente aparece datos de <font color = "blue">sección cruzada</font> (datos microeconómicos) y series de tiempo muy volátiles de alta frecuencia (datos diarios del mercado financiero)
+
+- Las perturbaciones se asumen aún incorrelacionadas entre observaciones, por tanto $\sigma_{u}^2\boldsymbol\Omega$ sería
+
+$$\sigma_{u}^2\boldsymbol\Omega = \left[ \begin{array}{cccc}
+w_{1} & 0     & \ldots & 0\\
+0     & w_{2} & \ldots & 0\\
+\vdots& \vdots& \vdots & \vdots\\
+0             & 0      & \ldots & w_{n}\\\end{array} \right] = 
+\left[ \begin{array}{cccc}
+\sigma_{u_{1}}^2 & 0     & \ldots & 0\\
+0     & \sigma_{u_{2}}^2 & \ldots & 0\\
+\vdots& \vdots & \vdots& \vdots\\
+0             & 0      & \ldots & \sigma_{u_{n}}^2\\\end{array} \right]$$
+
+---
+# <span style="font-size:80%">Introducción</span>
+
+<font color = "blue">Perturbaciones autocorrelacionadas</font>: correlacionadas entre unas y otras
+
+- La autocorrelación normalmente se encuentra en datos de series de tiempo. Las series de tiempo económicas frecuentemente presentan una <font color = "blue">memoria</font> puesto que la variación alrededor de la función de regresión no es independiente entre un período y el siguiente
+
+- Se asume homocedasticidad, por lo que $\sigma_{u}^2\boldsymbol\Omega$ sería
+
+$$\sigma_{u}^2\boldsymbol\Omega = \left[ \begin{array}{cccc}
+1         & \rho_{1}  & \ldots & \rho_{n-1}\\
+\rho_{1}  & 1         & \ldots & \rho_{n-2}\\
+\vdots    & \vdots    & \vdots & \vdots\\
+\rho_{n-1}& \rho_{n-2}& \ldots & 1\\\end{array} \right]$$
+
+---
+name: consecuencias
+# <span style="font-size:80%">Consecuencias sobre los estimadores por MCO</span>
+
+- Los resultados esenciales para el modelo clásico con perturbaciones esféricas
+
+$$E(\textbf{u})=0$$
+$$Cov(\textbf{u})=E(\textbf{u}\textbf{u}')=\sigma_{u}^2 \textbf{I}$$
+- El estimado MCO
+
+$$\hat{\textbf{B}}=(\textbf{X}'\textbf{X})^{-1}\textbf{X}'\textbf{Y}$$
+
+$$\hat{\textbf{B}}=\textbf{B} + (\textbf{X}'\textbf{X})^{-1}\textbf{X}'\textbf{u}$$
+
+es el mejor estimador lineal insesgado, consistente y distribuido asintóticamente como una normal (CAN) 
+
+- Los estimadores MCO mantienen sólo algunas de las propiedades deseables en este modelo. Los estimadores MCO permanecen <font color = "blue">insesgados</font>, <font color = "blue">consistentes</font>, y con <font color = "blue">distribución asintótica normal</font>. No serán <font color = "blue">eficientes</font> y los procedimientos normales de <font color = "blue">inferencia no son ya apropiados</font> 
+
+---
+# <span style="font-size:80%">Consecuencias sobre los estimadores por MCO</span>
+
+**<font color = "blue">Propiedades en muestras finitas de los MCO</font>**
+<p style="margin-bottom: -1em">
+- Insesgadez
+
+$$E(\hat{\textbf{B}})=\textbf{B} + E((\textbf{X}'\textbf{X})^{-1}\textbf{X}'\textbf{u}) = \textbf{B}$$
+<p style="margin-bottom: -1em">
+- Matriz de covarianzas de $\hat{\textbf{B}}$
+
+$$
+\begin{aligned}
+Cov(\hat{\textbf{B}}) & = E[(\hat{\textbf{B}}-E(\hat{\textbf{B}}))(\hat{\textbf{B}}-E(\hat{\textbf{B}}))'] \\
+                      & = E[(\hat{\textbf{B}}-\textbf{B})(\hat{\textbf{B}}-\textbf{B})']\\
+                      & = (\textbf{X}'\textbf{X})^{-1}\textbf{X}'E(\textbf{u}\textbf{u}')\textbf{X}(\textbf{X}'\textbf{X})^{-1}\\
+                      & =\sigma_{u}^2(\textbf{X}'\textbf{X})^{-1}\textbf{X}'\boldsymbol\Omega\textbf{X}(\textbf{X}'\textbf{X})^{-1}\\
+                      & = \frac{\sigma_{u}^2}{n}(\frac{1}{n}\textbf{X}'\textbf{X})^{-1}(\frac{1}{n}\textbf{X}'\boldsymbol\Omega\textbf{X})(\frac{1}{n}\textbf{X}'\textbf{X})^{-1} \neq \sigma_{u}^2(\textbf{X}'\textbf{X})^{-1}
+\end{aligned}
+$$
+
+- Dado que la varianza del estimador MCO no es $\sigma_{u}^2(\textbf{X}'\textbf{X})^{-1}$, cualquier inferencia basada $\hat{\sigma}_{u}^2(\textbf{X}'\textbf{X})^{-1}$ llevará probablemente a conclusiones erróneas
+
+- No solamente ésta es la matriz errónea, sino que $\hat{\sigma}_{u}^2$ puede ser un estimador sesgado de $\sigma_{u}^2$
+
+- Normalmente no hay forma de conocer si $\sigma_{u}^2$ es mayor o menor que la verdadera varianza de $\hat{\textbf{B}}$ por lo que incluso con un buen estimador de $\sigma_{u}^2$, el estimador convencional de $Cov(\hat{\textbf{B}})$ puede no ser particularmente útil
+
+- Dado que hemos prescindido de supuesto fundamental subyacente, los procedimientos de inferencia habituales basados en las distribuciones F y t no serán ahora apropiados
+
+---
+name: MCG
+# <span style="font-size:80%">El estimador MCG</span>
+
+La idea es transformar el modelo (los datos y la perturbación aleatoria) de tal forma que la perturbación aleatoria del modelo transformado, tenga esfericidad y se puedan aplicar MCO a los datos del modelo transformado
+
+$$\textbf{Y} = \textbf{XB} + \textbf{u}$$
+$$E(\textbf{u})=\textbf{0}$$
+$$E(\textbf{X}'\textbf{u})=\textbf{0}$$
+$$Cov(\textbf{u})=E(\textbf{u}\textbf{u}')=\sigma_{u}^2\boldsymbol\Omega$$
+
+Siendo $\boldsymbol\Omega$ una matriz definida positiva, pues se trata de varianzas
+
+Las matrices definidas positivas pueden descomponerse como:
+
+$$\boldsymbol\Omega = \textbf{PP}'$$
+
+Siendo $\textbf{P}$ una matriz no singular ($\textbf{P}^{-1}$ existe). En el mundo matricial, dadas las probabilidades de la inversión de matrices, se da que:
+
+$$\boldsymbol\Omega^{-1} = (\textbf{PP}')^{-1} = \textbf{P}'^{-1}\textbf{P}^{-1} = \textbf{P}^{-1'}\textbf{P}^{-1}$$
+
+La propuesta de los MCG es premultiplicar todo el modelo por $\textbf{P}^{-1}$
+
+$$\textbf{P}^{-1}\textbf{Y} = \textbf{P}^{-1}\textbf{XB} + \textbf{P}^{-1}\textbf{u}$$
+$$\textbf{Y}^* = \textbf{X}^*\textbf{B} + \textbf{u}^*$$
+---
+# <span style="font-size:80%">El estimador MCG</span>
+<font size = "3">
+Si la perturbación $\textbf{u}^*$ es esférica se puede aplicar MCO al modelo con base en $\textbf{Y}^*$ y $\textbf{X}^*$. Hay que ver los supuestos para $\textbf{u}^*$
+
+$$E(\textbf{u}^*) = E(\textbf{P}^{-1}\textbf{u}) = \textbf{P}^{-1}E(\textbf{u})=\textbf{0}$$
+
+$$
+\begin{aligned}
+Cov(\textbf{u}^*)     & = E((\textbf{u}^* - E(\textbf{u}^*))((\textbf{u}^* - E(\textbf{u}^*))')= E(\textbf{u}^*\textbf{u}^*{'})\\
+                      & = E(\textbf{P}^{-1}\textbf{u}\textbf{u}{'}\textbf{P}^{-1}{'}) = \textbf{P}^{-1}E(\textbf{u}\textbf{u}{'})\textbf{P}^{-1}{'}\\
+                      & = \sigma_{u}^2 \textbf{P}^{-1}\boldsymbol\Omega\textbf{P}^{-1}{'}\\
+                      & = \sigma_{u}^2 \textbf{P}^{-1}\textbf{P}\textbf{P}{'}\textbf{P}^{-1}{'}\\
+                      & =\sigma_{u}^2\textbf{I}
+\end{aligned}
+$$
+
+Por lo tanto, en le modelo $\textbf{Y}^* = \textbf{X}^*\textbf{B} + \textbf{u}^*$\ se cumple la hipótesis de perturbaciones esféricas y se puede aplicar MCO al modelo transformado, dando como resultado $\widehat{\textbf{B}}_{MCG}$
+
+$$
+\begin{aligned}
+\widehat{\textbf{B}}_{MCG} & = (\textbf{X}^*{'}\textbf{X}^*)^{-1}\textbf{X}^*{'}\textbf{Y}^* \\
+                           & = ((\textbf{P}^{-1}\textbf{X}){'}(\textbf{P}^{-1}\textbf{X}))^{-1}(\textbf{P}^{-1}\textbf{X}){'}\textbf{P}^{-1}\textbf{Y}\\
+                           & = (\textbf{X}{'}\textbf{P}^{-1}{'}\textbf{P}^{-1}\textbf{X})^{-1}\textbf{X}{'}\textbf{P}^{-1}{'}\textbf{P}^{-1}\textbf{Y}\\
+                           & = (\textbf{X}'\boldsymbol\Omega^{-1}\textbf{X})^{-1}\textbf{X}'\boldsymbol\Omega^{-1}\textbf{Y}
+\end{aligned}
+$$
+
+$\widehat{\textbf{B}}_{MCO}$ son un caso particular cuando $\boldsymbol\Omega=\textbf{I}$
+
+Es inmediato plantear que en el modelo transformado
+
+$$Cov(\widehat{\textbf{B}}_{MCG}) = \sigma_{u}^2(\textbf{X}'\boldsymbol\Omega^{-1}\textbf{X})^{-1}$$
+Para obtener $\boldsymbol\Omega$ hay que modelar el tipo de situación específica que se quiere resolver: heteroscedasticidad y/o autocorrelación
+
+---
+name: r
+# <span style="font-size:80%">Ejercicio aplicado en R: heteroscedasticidad</span>
+<font size = "3">
+Cuando $\boldsymbol\Omega$ es una matriz diagonal de varianzas de error no iguales, estamos ante problemas de heteroscedasticidad, así que $\widehat{\textbf{B}}_{MCG}$ será el estimador de *mínimos cuadrados ponderados* (MCP)
+
+```{r}
+library(foreign); library(lmtest); library(sandwich)
+data <- read.dta("https://stats.idre.ucla.edu/stat/stata/webbooks/reg/elemapi2.dta")
+
+ols <- lm(api00 ~ meals + ell + emer, data=data, subset = data$meals>0) 
+```
+
+Probando la existencia de heteroscedasticidad a partir del test de Breuch-Pagan $(H_0: \text{ homoscedasticidad})$
+```{r}
+bptest(ols)
+```
+
+Ausumiendo que la variable $meals$ es la cuausante de la heteroscedasticidad y que la estructura de la heteroscedasticidad es $Var(u) = \sigma^2meals$, el modelo corregido por MCP será
+
+```{r}
+mcp <- lm(api00 ~ meals + ell + emer, weight = 1/meals, data=data, subset = data$meals>0)
+summary(mcp)
+```
+
+---
+# <span style="font-size:80%">Ejercicio aplicado en R: heteroscedasticidad</span>
+<font size = "3">
+En las aplicaciones reales la matriz de covarianzas $\boldsymbol\Omega$ es desconocida, y debe ser estimada de los datos en conjunto con los coeficientes de regresión $\boldsymbol\beta$. Sin embargo, $\boldsymbol\Omega$ tiene hasta $n(n+1)/2$ elementos libres, así que el modelo puede tener más parámetros que datos. Es por esto que se requieren restricciones sobre los elementos de $\boldsymbol\Omega$
+
+Otra forma de corregir el problema de heteroscedasticidad son el calculo de errores estándar robustos a la heteroscedasticidad o corrección HC (o HAC para heteroscedasticidad y autocorrelación) (*Heteroskedasticity consistent (HC) and heteroskedasticity and autocorrelation consistent (HAC) covariance matrix estimators*)
+
+<p style="margin-bottom: -1em">
+**<font color = "blue">El estimador HC</font>**
+
+Se asume que $\boldsymbol\Omega$ es una matriz diagonal (no autocorrelación). Un estimador complementario para $Var(\widehat{\textbf{B}}|\textbf{X})$ podría usar $\widehat{\boldsymbol\Omega} = diag(w_1,...,w_n)$ con:
+
+$$
+\begin{aligned}
+\text{const:} & & w_i & = \widehat{\sigma}^2 & \text{estimador estándar para errores homoscedásticos}\\
+\text{HC0:}  & & w_i & = \widehat{u}_i^2 & \text{estimador básico Eicker-Huber-White}\\
+\text{HC1:}  & & w_i & = \frac{n}{n-k}\widehat{u}_i^2 & \text{mejoras en muestras pequeñas}\\
+\text{HC2:}  & & w_i & = \frac{\widehat{u}_i^2}{1-h_{ii}} & \text{mejoras en muestras pequeñas}\\
+\text{HC3:}  & & w_i & = \frac{\widehat{u}_i^2}{(1-h_{ii})^2} & \text{mejoras en muestras pequeñas}\\
+\text{HC4:}  & & w_i & = \frac{\widehat{u}_i^2}{(1-h_{ii})^{\delta_i}} & \text{mejoras en muestras pequeñas, en el caso de outiers}\\
+\end{aligned}
+$$
+donde $h_{ii}$ son los valores estimados, $\delta_i = min\{4,h_{ii}/\bar{h}\}$
+
+---
+# <span style="font-size:80%">Ejercicio aplicado en R: heteroscedasticidad</span>
+
+```{r}
+hc_const <- coeftest(ols, vcov = vcovHC(ols, "const"))
+hc_const
+
+hc0 <- coeftest(ols, vcov = vcovHC(ols, "HC0"))
+hc0
+
+hc1 <- coeftest(ols, vcov = vcovHC(ols, "HC1"))
+hc1
+
+```
+
