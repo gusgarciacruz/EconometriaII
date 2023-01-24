@@ -6,6 +6,12 @@ Profesor: [Gustavo A. García](https://gusgarciacruz.github.io/cv)
 **Temas**<br>
 [Una breve introducción a R](https://gusgarciacruz.github.io/EbookR_introduccion/)
 
+[Repaso de MCO](https://gusgarciacruz.github.io/EconometriaII/MCO/MCO.html)<br>
+
+[Repaso de MCG](https://gusgarciacruz.github.io/EconometriaII/MCG/MCG.html)<br>
+
+[Autocorrelación](https://gusgarciacruz.github.io/EconometriaII/Autocorrelación/autocorrelacion.html)<br>
+
 [Estimación por variables instrumentales (IV)](https://gusgarciacruz.github.io/EconometriaII/IV/IV.html)<br>
 
 [Modelos de ecuaciones simultáneas](https://gusgarciacruz.github.io/EconometriaII/EcuSimultaneas/EcuSimultaneas.html)<br>
