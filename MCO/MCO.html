@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Repaso de MCO</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Gustavo A. García   ggarci24@eafit.edu.co                  " />
+    <script src="libs/header-attrs-2.14/header-attrs.js"></script>
+    <script src="libs/clipboard-2.0.6/clipboard.min.js"></script>
+    <link href="libs/xaringanExtra-clipboard-0.2.6/xaringanExtra-clipboard.css" rel="stylesheet" />
+    <script src="libs/xaringanExtra-clipboard-0.2.6/xaringanExtra-clipboard.js"></script>
+    <script>window.xaringanExtraClipboard(null, {"button":"<i class=\"fa fa-clipboard\"><\/i>","success":"<i class=\"fa fa-check\" style=\"color: #90BE6D\"><\/i>","error":"<i class=\"fa fa-times-circle\" style=\"color: #F94144\"><\/i>"})</script>
+    <link href="libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+    <link href="libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+    <link href="libs/xaringanExtra-extra-styles-0.2.6/xaringanExtra-extra-styles.css" rel="stylesheet" />
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Repaso de MCO
+]
+.author[
+### Gustavo A. García <br> <span class="notbold" style="font-size:65%"><a href="mailto:ggarci24@eafit.edu.co" class="email">ggarci24@eafit.edu.co</a></span> <br> <br> <br> <br> <br> <br> <br> <br> <br>
+]
+.date[
+### <span class="notbold" style="font-size:65%">Econometría II <br> Programa de Economía <br> Universidad EAFIT</span>
+]
+
+---
+
+
+
+
+&lt;style&gt;
+.notbold{
+    font-weight:normal
+}
+
+body {
+text-align: justify;
+}
+
+h1{
+      margin-top: -1px;
+      margin-bottom: -3px;
+}
+
+.small-code pre{
+  margin-bottom: -10px;
+  
+}  
+
+.medium-code pre{
+  margin-bottom: 2px;
+  
+} 
+&lt;/style&gt;
+
+
+
+
+
+
+&lt;font size = "5"&gt;
+
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+
+Link slides en formato [html](https://gusgarciacruz.github.io/EconometriaII/MCO/MCO.html)
+
+Link slides en formato [PDF](https://gusgarciacruz.github.io/EconometriaII/MCO/MCO.pdf)
+---
+# &lt;span style="font-size:80%"&gt;En este tema&lt;/span&gt;
+
+- &lt;span style="font-size:150%"&gt;[&lt;span style="color:black"&gt;El modelo](#modelo)&lt;/span&gt; &lt;br&gt; &lt;br&gt;
+
+- &lt;span style="font-size:150%"&gt; [&lt;span style="color:black"&gt;Estimación MCO](#estimacion)&lt;/span&gt; &lt;br&gt; &lt;br&gt;
+
+- &lt;span style="font-size:150%"&gt; [&lt;span style="color:black"&gt;Propiedades de los estimadores MCO](#propiedades)&lt;/span&gt; &lt;br&gt; &lt;br&gt;
+
+- &lt;span style="font-size:150%"&gt; [&lt;span style="color:black"&gt;Ejercicio aplicado en R: tasas de retorno a la educación](#r)&lt;/span&gt;
+
+---
+# &lt;span style="font-size:80%"&gt;Lecturas&lt;/span&gt;
+- &lt;span style="font-size:150%"&gt;Wooldridge, J. (2013). *Introducción a la econometría*. 5a edición, Cengage Learning. &lt;span style="color:blue"&gt;Caps 3, 4, 5 &lt;br&gt; &lt;br&gt;
+
+- &lt;span style="font-size:150%"&gt; Gujarati, D. y Porter, D. (2010). *Econometría*. 5a edición, Mc Graw Hill. &lt;span style="color:blue"&gt;Caps 7, 8 &lt;br&gt; &lt;br&gt;
+
+- &lt;span style="font-size:150%"&gt; Judge, G., Hill, R., Griffiths, W., Lütkepohl, H. y Lee, T. (1988). *Introduction to the theory and practice of econometrics*. 2a edición, John Wiley &amp; Sons. &lt;span style="color:blue"&gt;Cap. 5
+
+---
+name: modelo
+# &lt;span style="font-size:80%"&gt;El modelo&lt;/span&gt;
+
+Un modelo de regresión lineal múltiple tiene la siguiente estructura:
+
+`$$Y_{i} = \beta_{1} + \beta_{2}X_{i2} + \beta_{3}X_{i3}+...+ \beta_{k}X_{ik} + u_{i}$$`
+El modelo entonces contiene `\(k\)` parámetros poblacionales (desconocidos). Se trabaja, entonces, con `\(n-k\)` gdl
+
+Recordando los &lt;font color = "blue"&gt;supuestos iniciales&lt;/font&gt;:
+
+- Los coeficientes `\(\beta_{j}\)` con `\(j=1,2,3,...,k\)` son fijos y desconocidos
+
+- Las `\(X_{ij}\)` son estocásticamente fijas para `\(j=2,3,4,...,k\)`. Este es un supuesto de partida propio del laboratorio. Un supuesto más real en economía y que lleva a resultados similares es: las variables explicatorias son exógenas. Esto implica que:
+`$$Cov(X_{i2},u_{i})=0$$`
+`$$Cov(X_{i3},u_{i})=0$$`
+`$$\vdots$$`
+`$$Cov(X_{ik},u_{i})=0$$`
+- El modelo esta completo: `\(E(u_{i})=0, \forall i= 1...n\)`
+- Homoscedasticidad: `\(Var(u_{i})=E(u_{i}-E(u_{i}))^2=E(u_{i}^2)=\sigma_{u}^2\)`
+- No autocorrelación: `\(Cov(u_{i},u_{j})=E[(u_{i}-E(u_{i}))(u_{j}-E(u_{j}))]=E(u_{i}u_{j})=0, \forall i\neq j\)`
+- Normalidad: `\(u_{i}\sim NID(0,\sigma_{u}^2)\)`
+
+---
+# &lt;span style="font-size:80%"&gt;El modelo&lt;/span&gt;
+
+El modelo general es un polinomio de regresión de la forma:
+
+`$$Y_{i} = {\beta}_{1} + {\beta}_{2}X_{i2} + {\beta}_{3}X_{i3} +...+ {\beta}_{k}X_{ik} + {u}_{i}$$`
+
+Lo que el modelo dice es:
+`$$Y_{1} = {\beta}_{1} + {\beta}_{2}X_{12} + {\beta}_{3}X_{13} +...+ {\beta}_{k}X_{1k} + {u}_{1}$$`
+`$$Y_{2} = {\beta}_{1} + {\beta}_{1}X_{22} + {\beta}_{3}X_{23} +...+ {\beta}_{k}X_{2k} + {u}_{2}$$`
+`$$\vdots$$`
+`$$Y_{n} = {\beta}_{1} + {\beta}_{2}X_{n2} + {\beta}_{3}X_{n3} +...+ {\beta}_{k}X_{nk} + {u}_{n}$$`
+En matrices se tiene
+`$$\textbf{Y}_{n\mbox{x}1} = \left[ \begin{array}{c}
+Y_{1} \\
+Y_{2} \\
+\vdots \\
+Y_{n}\\ \end{array} \right] \  \ \ \ \textbf{u}_{n\mbox{x}1} = \left[ \begin{array}{c}
+u_{1} \\
+u_{2} \\
+\vdots \\
+u_{n}\\ \end{array} \right] \  \ \ \  \textbf{B}_{k\mbox{x}1} = \left[ \begin{array}{c}
+\beta_{1} \\
+\beta_{2} \\
+\vdots \\
+\beta_{k}\\ \end{array} \right] \  \ \ \ \textbf{X}_{n\mbox{x}k} = \left[ \begin{array}{cccc}
+1 &amp; X_{12} &amp; X_{23} &amp; X_{1k} \\
+1 &amp; X_{22} &amp; X_{23} &amp; X_{2k} \\
+\vdots \\
+1 &amp; X_{n2} &amp; X_{n3} &amp; X_{nk}\\ \end{array} \right]$$`
+
+En esta notación `\(X_{ij}\)` indica: fila `\(i\)` (observación), columna `\(j\)` (variable explicatoria). El polinomio de regresión en álgebra matricial se puede escribir como:
+`$$\textbf{Y}_{n\mbox{x}1} = \textbf{X}_{n\mbox{x}k}\textbf{B}_{k\mbox{x}1} + \textbf{u}_{n\mbox{x}1}$$`
+
+---
+# &lt;span style="font-size:80%"&gt;El modelo&lt;/span&gt;
+La especificación del modelo de Regresión Lineal Múltiple (RLM) haciendo uso del álgebra matricial se tiene
+
+`$$\textbf{Y} = \textbf{X}\textbf{B} + \textbf{u}$$`
+- Modelo completo: `\(E(\textbf{u})=\textbf{0}\)`
+
+- Exogeneidad: `\(E(\textbf{X}'\textbf{u})=\textbf{0}\)`
+
+- Perturbaciones esféricas: `\(Cov(\textbf{u})=E(\textbf{u}\textbf{u}')=\sigma_{u}^2\textbf{I}_{n}\)`
+	(homocedasticidad y no autocorrelación)
+- No multicolinealidad perfecta: `\(\rho(\textbf{X}_{n\mbox{x}k})=k&lt;n\)`
+
+- Normalidad: `\(\textbf{u}_{n\mbox{x}1}\sim \textbf{N}(\textbf{0}_{n\mbox{x}1},\sigma_{u}^2\textbf{I}_{n})\)`
+
+---
+name: estimacion
+# &lt;span style="font-size:80%"&gt;Estimación MCO&lt;/span&gt;
+
+Se construye matricialmente la sumatoria de cuadrados de los residuales `\((SCR)\)` y se deriva respecto a `\(\hat{\textbf{B}}\)`
+
+El modelo estimado es `\(\textbf{Y}=\textbf{X}\hat{\textbf{B}} + \hat{\textbf{u}}\)` y sin necesidad de supuestos se sabe que
+`$$\hat{\textbf{u}} = \left[ \begin{array}{c}
+\hat{u}_{1}\\
+\hat{u}_{2}\\
+\vdots\\
+\hat{u}_{n}\\ \end{array} \right]$$`
+
+y por ende la `\(SCR = \sum \hat{u}_{i}^2 = \hat{u}_{1}^2 + \hat{u}_{2}^2 +...+\hat{u}_{n}^2 = \hat{\textbf{u}}'\hat{\textbf{u}}\)`
+
+Si se transpone un vector y se premultiplica por el vector original se obtiene la suma de cuadrados de los elementos del vector 
+
+$$
+`\begin{aligned}
+SCR=\hat{\textbf{u}}'\hat{\textbf{u}} &amp; = (\textbf{Y}-\textbf{X}\hat{\textbf{B}})'(\textbf{Y}-\textbf{X}\hat{\textbf{B}})\\
+                        &amp; =(\textbf{Y}'-\hat{\textbf{B}}'\textbf{X}')(\textbf{Y}-\textbf{X}\hat{\textbf{B}})\\
+                        &amp; =\textbf{Y}'\textbf{Y} - \textbf{Y}'\textbf{X}\hat{\textbf{B}} - \hat{\textbf{B}}'\textbf{X}'\textbf{Y} + \hat{\textbf{B}}'\textbf{X}'\textbf{X}\hat{\textbf{B}}
+\end{aligned}`
+$$
+
+Se tiene que `\((\hat{\textbf{B}}'\textbf{X}'\textbf{Y})'= \textbf{Y}'\textbf{X}\hat{\textbf{B}}\)` y que `\(\hat{\textbf{B}}'\textbf{X}'\textbf{Y}\)` y `\(\textbf{Y}'\textbf{X}\hat{\textbf{B}}\)` son dos escalares iguales, entonces
+
+`$$SCR=\hat{\textbf{u}}'\hat{\textbf{u}}=\textbf{Y}'\textbf{Y} - \underbrace{2\hat{\textbf{B}}'\textbf{X}'\textbf{Y}}_{\mbox{forma lineal en } \hat{\textbf{B}}} + \underbrace{\hat{\textbf{B}}'\textbf{X}'\textbf{X}\hat{\textbf{B}}}_{\mbox{forma cuadrática en } \hat{\textbf{B}}}$$`
+
+---
+# &lt;span style="font-size:80%"&gt;Estimación MCO&lt;/span&gt;
+
+Derivando respecto a `\(\hat{\textbf{B}}\)` e igualando a cero
+
+$$
+`\begin{aligned}
+\frac{\partial \hat{\textbf{u}}'\hat{\textbf{u}}}{\partial \hat{\textbf{B}}} &amp; \Longrightarrow \frac{\partial \textbf{Y}'\textbf{Y}}{\partial \hat{\textbf{B}}}=\textbf{0}\\
+                       &amp; \Longrightarrow \frac{\partial 2\hat{\textbf{B}}'\textbf{X}'\textbf{Y}}{\partial \hat{\textbf{B}}}=2\textbf{X}'\textbf{Y}\\
+                       &amp; \Longrightarrow \frac{\partial \hat{\textbf{B}}'\textbf{X}'\textbf{X}\hat{\textbf{B}}}{\partial \hat{\textbf{B}}}=2(\textbf{X}'\textbf{X})\hat{\textbf{B}}
+\end{aligned}`
+$$
+
+`$$\frac{\partial \hat{\textbf{u}}'\hat{\textbf{u}}}{\partial \hat{\textbf{B}}} = -2\textbf{X}'\textbf{Y} + 2(\textbf{X}'\textbf{X})\hat{\textbf{B}}=\textbf{0}$$`
+
+`$$(\textbf{X}'\textbf{X})\hat{\textbf{B}}=\textbf{X}'\textbf{Y}: \text{Ecuaciones normales}$$`
+
+
+&lt;font color = "blue"&gt;$$\hat{\textbf{B}}_{MCO}=(\textbf{X}'\textbf{X})^{-1}\textbf{X}'\textbf{Y}$$
+
+---
+name: propiedades
+# &lt;span style="font-size:80%"&gt;Propiedades de los estimadores MCO&lt;/span&gt;
+&lt;p style="margin-bottom: -1em"&gt;
+**&lt;font color = "blue"&gt;Linealidad&lt;/font&gt;**
+
+Es demostrar que `\(\hat{\textbf{B}}=(\textbf{X}'\textbf{X})^{-1}\textbf{X}'\textbf{Y}\)` es lineal en `\(Y\)` y en `\(u\)`. Observando el vector `\(\hat{\textbf{B}}\)` se puede hacer lo siguiente
+	
+`$$\hat{\textbf{B}}=\textbf{(}(\textbf{X}'\textbf{X})^{-1}\textbf{X}'\textbf{)}_{k\mbox{x}n}\textbf{Y}_{n\mbox{x}1}$$`
+
+	
+Se puede definir una matriz de `\({k\mbox{x}n}\)`
+`$$\textbf{C}_{k\mbox{x}n}'=(\textbf{X}'\textbf{X})^{-1}\textbf{X}'$$`
+&lt;p style="margin-bottom: -1em"&gt;
+Entonces
+`$$\hat{\textbf{B}}=\textbf{C}'\textbf{Y}$$`
+&lt;p style="margin-bottom: -1em"&gt;
+Con
+
+`$$\textbf{C}' = \left[ \begin{array}{cccc}
+C_{11}     &amp;   C_{12}    &amp;  \cdots &amp;  C_{1n} \\
+C_{21}     &amp;   C_{22}    &amp;  \cdots &amp;  C_{2n} \\
+\vdots     &amp;   \vdots    &amp;  \vdots &amp;  \vdots \\ 
+C_{k1}     &amp;   C_{k2}    &amp;  \cdots &amp;  C_{kn} \\
+\end{array} \right]$$`
+
+Cada estimador `\(\hat{\beta}_{j}, j=1,2,...,k,\)` puede escribirse como
+`$$\hat{\beta}_{j} = \sum C_{ij}Y_{i}$$`
+combinación lineal en `\(Y_{i}\)` 
+
+---
+# &lt;span style="font-size:80%"&gt;Propiedades de los estimadores MCO&lt;/span&gt;
+&lt;p style="margin-bottom: -1em"&gt;
+**&lt;font color = "blue"&gt;Linealidad&lt;/font&gt;**
+
+De la misma forma
+`$$\hat{\textbf{B}}=\textbf{C}'\textbf{Y}=\textbf{C}'(\textbf{X}\textbf{B} + \textbf{u})=\textbf{C}'\textbf{X}\textbf{B} + \textbf{C}'\textbf{u}$$`
+
+Se observa que
+`$$\textbf{C}'\textbf{X}=(\textbf{X}'\textbf{X})^{-1}\textbf{X}'\textbf{X}=\textbf{I}_{k}$$`
+Entonces
+`$$\hat{\textbf{B}}=\textbf{B} + \textbf{C}'\textbf{u}$$`
+Expresión aleatoria de `\(\hat{\textbf{B}}\)`. Donde cada `\(\hat{\beta}_{j}\)` es
+
+`$$\hat{\beta}_{j}=\beta_{j} + \sum C_{ij}u_{i}$$`
+Una combinación lineal en `\(u_{i}\)`
+
+---
+# &lt;span style="font-size:80%"&gt;Propiedades de los estimadores MCO&lt;/span&gt;
+&lt;p style="margin-bottom: -1em"&gt;
+**&lt;font color = "blue"&gt;Insesgadez&lt;/font&gt;**
+&lt;p style="margin-bottom: -1em"&gt;
+Partiendo de la expresión aleatoria
+
+`$$E(\hat{\textbf{B}})=E(\textbf{B} + \textbf{C}'\textbf{u})=\textbf{B} + \textbf{C}'E(\textbf{u})=\textbf{B}$$`
+&lt;p style="margin-bottom: -1em"&gt;
+**&lt;font color = "blue"&gt;Mínima varianza&lt;/font&gt;**
+
+Primero calculamos la matriz de varianzas-covarianzas de `\(\hat{\textbf{B}}\)` y luego corroboramos el Teorema de Gauss-Markov para demostrar que la varianza calculada es mínima
+
+`$$Cov(\hat{\textbf{B}}) = E[(\hat{\textbf{B}}-E(\hat{\textbf{B}}))(\hat{\textbf{B}}-E(\hat{\textbf{B}}))'] = E[(\hat{\textbf{B}}-\textbf{B})(\hat{\textbf{B}}-\textbf{B})']$$`
+&lt;p style="margin-bottom: -1em"&gt;
+De la expresión aleatoria tenemos que 
+&lt;p style="margin-bottom: -1em"&gt;
+`$$\hat{\textbf{B}}=\textbf{B} + (\textbf{X}'\textbf{X})^{-1}\textbf{X}'\textbf{u}$$`
+&lt;p style="margin-bottom: -1em"&gt;
+`$$\hat{\textbf{B}}-\textbf{B}= (\textbf{X}'\textbf{X})^{-1}\textbf{X}'\textbf{u}$$`
+&lt;p style="margin-bottom: -1em"&gt;
+`$$(\hat{\textbf{B}}-\textbf{B})'= \textbf{u}'\textbf{X}(\textbf{X}'\textbf{X})^{-1}$$`
+&lt;p style="margin-bottom: -1em"&gt;
+Entonces
+
+`$$Cov(\hat{\textbf{B}}) = E[(\hat{\textbf{B}}-\textbf{B})(\hat{\textbf{B}}-\textbf{B})']= E[(\textbf{X}'\textbf{X})^{-1}\textbf{X}'\textbf{u}\textbf{u}'\textbf{X}(\textbf{X}'\textbf{X})^{-1}]
+= (\textbf{X}'\textbf{X})^{-1}\textbf{X}'E(\textbf{u}\textbf{u}')\textbf{X}(\textbf{X}'\textbf{X})^{-1}$$`
+
+Por el supuesto de perturbaciones esféricas `\(E(\textbf{u}\textbf{u}') = \sigma_{u}^2 \textbf{I}_{n}\)`
+
+`$$Cov(\hat{\textbf{B}}) = \sigma_{u}^2 (\textbf{X}'\textbf{X})^{-1}\underbrace{\textbf{X}'\textbf{X}(\textbf{X}'\textbf{X})^{-1}}_{\textbf{I}_{k}}$$`
+&lt;font color = "blue"&gt;$$Cov(\hat{\textbf{B}}) = \sigma_{u}^2 (\textbf{X}'\textbf{X})^{-1}$$
+
+---
+# &lt;span style="font-size:80%"&gt;Propiedades de los estimadores MCO&lt;/span&gt;
+&lt;p style="margin-bottom: -1em"&gt;
+**&lt;font color = "blue"&gt;Consistencia&lt;/font&gt;**
+
+- Aunque la insesgadez de los estimadores es importante, no siempre puede lograrse: por ejemplo `\(\widehat{\sigma}^2_{u}\)` es sesgado
+- Aunque no todos los estimadores útiles son insesgados, casi todos los economistas están de acuerdo en que la &lt;font color = "blue"&gt;consistencia&lt;/font&gt; es un requisito mínimo para un estimador
+- Si el estimador de un determinado parámetro poblacional no es consistente, entonces se está perdiendo el tiempo
+- `\(\widehat{\beta}_{j}\)` es un estimador de `\(\beta_{j}\)` y como es insesgado la distribución de probabilidad de `\(\widehat{\beta}_{j}\)` tiene una media de `\(\beta_{j}\)`. &lt;font color = "blue"&gt;Como estimador consistente, entonces a medida que el tamaño de la muestra aumenta, la distribución de `\(\widehat{\beta}_{j}\)` se estrechará cada vez más entorno a `\(\beta_{j}\)`&lt;/font&gt;
+- Esto significa que si es posible recolectar tantos datos como se desee, entonces puede hacerse que el estimador esté arbitrariamente cerca de `\(\beta_{j}\)`
+
+&lt;img src="n.png" width="37%" style="display: block; margin: auto;" /&gt;
+
+---
+# &lt;span style="font-size:80%"&gt;Propiedades de los estimadores MCO&lt;/span&gt;
+&lt;p style="margin-bottom: -1em"&gt;
+**&lt;font color = "blue"&gt;Normalidad asintótica&lt;/font&gt;**
+
+- Se sabe que la normalidad no juega ningún papel en la insesgadez de los estimadores MCO y tampoco afecta las conclusiones de MCO es el mejor estimador lineal insesgado bajo los supuestos estándar
+
+- Pero la inferencia exacta basada en los estadísticos `\(t\)` y F requiere el supuesto que los errores se distribuyen normal
+
+- Aunque las `\(Y_{i}\)` no provienen de una distribución normal, puede emplearse el teorema central del límite para concluir que los estimadores de MCO satisfacen la &lt;font color = "blue"&gt;normalidad asintótica&lt;/font&gt;, &lt;font color = "blue"&gt;lo cual significa que están distribuidos de manera aproximadamente norma cuando se tienen muestras de tamaño suficientemente grande&lt;/font&gt;
+
+- Este teorema indica es que, sin importar la distribución de la población de `\(u\)`, los estimadores de los MCO, cuando se estandarizan de manera apropiada, tienen distribuciones normales estándar aproximadas
+
+---
+name: r
+# &lt;span style="font-size:80%"&gt;Ejercicio aplicado en R: tasas de retorno a la educación&lt;/span&gt;
+
+
+```r
+library(wooldridge); library(tidyverse); library(summarytools); library(modelsummary); library(gt)
+```
+
+```
+
+Attaching package: 'summarytools'
+```
+
+```
+The following object is masked from 'package:tibble':
+
+    view
+```
+
+```
+
+Attaching package: 'gt'
+```
+
+```
+The following object is masked from 'package:modelsummary':
+
+    escape_latex
+```
+
+```
+The following object is masked from 'package:xaringanthemer':
+
+    google_font
+```
+
+```r
+data('wage1')
+```
+
+Estimación por OLS
+
+.small-code[
+.pull-left-50[
+
+```r
+ols1 &lt;- lm(lwage ~ educ, data = wage1)
+summary(ols1)
+```
+
+```
+
+Call:
+lm(formula = lwage ~ educ, data = wage1)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-2.21158 -0.36393 -0.07263  0.29712  1.52339 
+
+Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept) 0.583773   0.097336   5.998 3.74e-09 ***
+educ        0.082744   0.007567  10.935  &lt; 2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 0.4801 on 524 degrees of freedom
+Multiple R-squared:  0.1858,	Adjusted R-squared:  0.1843 
+F-statistic: 119.6 on 1 and 524 DF,  p-value: &lt; 2.2e-16
+```
+]
+
+.pull-right-50[
+
+```r
+ols2 &lt;- lm(lwage ~ educ + female, data = wage1)
+summary(ols2)
+```
+
+```
+
+Call:
+lm(formula = lwage ~ educ + female, data = wage1)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-2.02672 -0.27470 -0.03731  0.26219  1.34738 
+
+Coefficients:
+             Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)  0.826269   0.094054   8.785   &lt;2e-16 ***
+educ         0.077203   0.007047  10.955   &lt;2e-16 ***
+female      -0.360865   0.039024  -9.247   &lt;2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 0.4455 on 523 degrees of freedom
+Multiple R-squared:  0.3002,	Adjusted R-squared:  0.2975 
+F-statistic: 112.2 on 2 and 523 DF,  p-value: &lt; 2.2e-16
+```
+]
+]
+
+---
+# &lt;span style="font-size:80%"&gt;Ejercicio aplicado en R: tasas de retorno a la educación&lt;/span&gt;
+&lt;font size = "3"&gt;
+Utilizamos el paquete [```modelsummary```](https://vincentarelbundock.github.io/modelsummary/articles/modelsummary.html) para generar tablas editadas (Word, tex, text, png, html...)
+
+```r
+modelos &lt;- list("OLS1" = lm(lwage ~ educ, data = wage1),
+                "OLS2"  = lm(lwage ~ educ + female, data = wage1))
+                
+modelsummary(modelos, output = 'gt', coef_map = c('educ' = 'Educación', 'female' = 'Mujer (=1)'), stars = c('*'=.1, '**'=.05, '***'=.01), statistic = "std.error", title = 'Tabla 1. Determinantes de los salarios (Y = log(salario))', gof_omit = 'IC|Log|RMSE') |&gt; 
+tab_style(style = cell_text(size = "x-small"), locations = cells_source_notes()) |&gt;  tab_source_note(source_note = "Nota: Errores estándar en paréntesis")
+```
+
+<div id="kizgsgnmfs" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>html {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
+}
+
+#kizgsgnmfs .gt_table {
+  display: table;
+  border-collapse: collapse;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#kizgsgnmfs .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#kizgsgnmfs .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#kizgsgnmfs .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 0;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#kizgsgnmfs .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#kizgsgnmfs .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#kizgsgnmfs .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#kizgsgnmfs .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#kizgsgnmfs .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#kizgsgnmfs .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#kizgsgnmfs .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#kizgsgnmfs .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#kizgsgnmfs .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#kizgsgnmfs .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#kizgsgnmfs .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#kizgsgnmfs .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#kizgsgnmfs .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#kizgsgnmfs .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#kizgsgnmfs .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#kizgsgnmfs .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#kizgsgnmfs .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#kizgsgnmfs .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#kizgsgnmfs .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#kizgsgnmfs .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#kizgsgnmfs .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#kizgsgnmfs .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#kizgsgnmfs .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#kizgsgnmfs .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#kizgsgnmfs .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-left: 4px;
+  padding-right: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#kizgsgnmfs .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#kizgsgnmfs .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#kizgsgnmfs .gt_left {
+  text-align: left;
+}
+
+#kizgsgnmfs .gt_center {
+  text-align: center;
+}
+
+#kizgsgnmfs .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#kizgsgnmfs .gt_font_normal {
+  font-weight: normal;
+}
+
+#kizgsgnmfs .gt_font_bold {
+  font-weight: bold;
+}
+
+#kizgsgnmfs .gt_font_italic {
+  font-style: italic;
+}
+
+#kizgsgnmfs .gt_super {
+  font-size: 65%;
+}
+
+#kizgsgnmfs .gt_two_val_uncert {
+  display: inline-block;
+  line-height: 1em;
+  text-align: right;
+  font-size: 60%;
+  vertical-align: -0.25em;
+  margin-left: 0.1em;
+}
+
+#kizgsgnmfs .gt_footnote_marks {
+  font-style: italic;
+  font-weight: normal;
+  font-size: 75%;
+  vertical-align: 0.4em;
+}
+
+#kizgsgnmfs .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#kizgsgnmfs .gt_slash_mark {
+  font-size: 0.7em;
+  line-height: 0.7em;
+  vertical-align: 0.15em;
+}
+
+#kizgsgnmfs .gt_fraction_numerator {
+  font-size: 0.6em;
+  line-height: 0.6em;
+  vertical-align: 0.45em;
+}
+
+#kizgsgnmfs .gt_fraction_denominator {
+  font-size: 0.6em;
+  line-height: 0.6em;
+  vertical-align: -0.05em;
+}
+</style>
+<table class="gt_table">
+  &lt;caption&gt;Tabla 1. Determinantes de los salarios (Y = log(salario))&lt;/caption&gt;
+  
+  <thead class="gt_col_headings">
+    <tr>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1"> </th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1">OLS1</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1">OLS2</th>
+    </tr>
+  </thead>
+  <tbody class="gt_table_body">
+    <tr><td class="gt_row gt_left">Educación</td>
+<td class="gt_row gt_center">0.083***</td>
+<td class="gt_row gt_center">0.077***</td></tr>
+    <tr><td class="gt_row gt_left"></td>
+<td class="gt_row gt_center">(0.008)</td>
+<td class="gt_row gt_center">(0.007)</td></tr>
+    <tr><td class="gt_row gt_left">Mujer (=1)</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">-0.361***</td></tr>
+    <tr><td class="gt_row gt_left" style="border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #000000;"></td>
+<td class="gt_row gt_center" style="border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #000000;"></td>
+<td class="gt_row gt_center" style="border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #000000;">(0.039)</td></tr>
+    <tr><td class="gt_row gt_left">Num.Obs.</td>
+<td class="gt_row gt_center">526</td>
+<td class="gt_row gt_center">526</td></tr>
+    <tr><td class="gt_row gt_left">R2</td>
+<td class="gt_row gt_center">0.186</td>
+<td class="gt_row gt_center">0.300</td></tr>
+    <tr><td class="gt_row gt_left">R2 Adj.</td>
+<td class="gt_row gt_center">0.184</td>
+<td class="gt_row gt_center">0.298</td></tr>
+    <tr><td class="gt_row gt_left">F</td>
+<td class="gt_row gt_center">119.582</td>
+<td class="gt_row gt_center">112.189</td></tr>
+  </tbody>
+  <tfoot class="gt_sourcenotes">
+    <tr>
+      <td class="gt_sourcenote" style="font-size: x-small;" colspan="3">* p &lt; 0.1, ** p &lt; 0.05, *** p &lt; 0.01</td>
+    </tr>
+    <tr>
+      <td class="gt_sourcenote" style="font-size: x-small;" colspan="3">Nota: Errores estándar en paréntesis</td>
+    </tr>
+  </tfoot>
+  
+</table>
+</div>
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "16:9"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
