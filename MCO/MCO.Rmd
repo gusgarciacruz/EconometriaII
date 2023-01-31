@@ -344,7 +344,7 @@ knitr::include_graphics("n.png")
 name: r
 # <span style="font-size:80%">Ejercicio aplicado en R: tasas de retorno a la educación</span>
 
-```{r}
+```{r message=FALSE, warning=FALSE}
 library(wooldridge); library(tidyverse); library(summarytools); library(modelsummary); library(gt)
 
 data('wage1')
