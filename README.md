@@ -10,7 +10,7 @@ Profesor: [Gustavo A. García](https://gusgarciacruz.github.io/cv)
 
 [Repaso de MCG](https://gusgarciacruz.github.io/EconometriaII/MCG/MCG.html)<br>
 
-[Autocorrelación](https://gusgarciacruz.github.io/EconometriaII/Autocorrelación/autocorrelacion.html)<br>
+[Autocorrelación](https://gusgarciacruz.github.io/EconometriaII/Autocorrelacion/autocorrelacion.html)<br>
 
 [Estimación por variables instrumentales (IV)](https://gusgarciacruz.github.io/EconometriaII/IV/IV.html)<br>
 
