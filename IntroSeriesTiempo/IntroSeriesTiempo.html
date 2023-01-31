@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Introducción a series de tiempo</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Gustavo A. García   ggarci24@eafit.edu.co                  " />
+    <script src="libs/header-attrs-2.14/header-attrs.js"></script>
+    <script src="libs/clipboard-2.0.6/clipboard.min.js"></script>
+    <link href="libs/xaringanExtra-clipboard-0.2.6/xaringanExtra-clipboard.css" rel="stylesheet" />
+    <script src="libs/xaringanExtra-clipboard-0.2.6/xaringanExtra-clipboard.js"></script>
+    <script>window.xaringanExtraClipboard(null, {"button":"<i class=\"fa fa-clipboard\"><\/i>","success":"<i class=\"fa fa-check\" style=\"color: #90BE6D\"><\/i>","error":"<i class=\"fa fa-times-circle\" style=\"color: #F94144\"><\/i>"})</script>
+    <link href="libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+    <link href="libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+    <link href="libs/xaringanExtra-extra-styles-0.2.6/xaringanExtra-extra-styles.css" rel="stylesheet" />
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Introducción a series de tiempo
+]
+.author[
+### Gustavo A. García <br> <span class="notbold" style="font-size:65%"><a href="mailto:ggarci24@eafit.edu.co" class="email">ggarci24@eafit.edu.co</a></span> <br> <br> <br> <br> <br> <br> <br> <br> <br>
+]
+.date[
+### <span class="notbold" style="font-size:65%">Econometría II <br> Programa de Economía <br> Universidad EAFIT</span>
+]
+
+---
+
+
+
+
+&lt;style&gt;
+.notbold{
+    font-weight:normal
+}
+
+body {
+text-align: justify;
+}
+
+h1{
+      margin-top: -1px;
+      margin-bottom: -3px;
+}
+
+.small-code pre{
+  margin-bottom: -10px;
+  
+}  
+
+.medium-code pre{
+  margin-bottom: 2px;
+  
+} 
+&lt;/style&gt;
+
+
+
+
+
+
+&lt;font size = "5"&gt;
+
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+
+Link slides en formato [html](https://gusgarciacruz.github.io/EconometriaII/IntroSeriesTiempo/IntroSeriesTiempo.html)
+
+Link slides en formato [PDF](https://gusgarciacruz.github.io/EconometriaII/IntroSeriesTiempo/IntroSeriesTiempo.pdf)
+---
+# &lt;span style="font-size:80%"&gt;En este tema&lt;/span&gt;
+
+- &lt;span style="font-size:150%"&gt;[&lt;span style="color:black"&gt;Introducción](#introduccion)&lt;/span&gt; &lt;br&gt;
+
+- &lt;span style="font-size:150%"&gt; [&lt;span style="color:black"&gt;Procesos estocásticos estacionarios](#estacionarios)&lt;/span&gt; &lt;br&gt;
+
+- &lt;span style="font-size:150%"&gt; [&lt;span style="color:black"&gt;Procesos estocásticos no estacionarios](#noestacionarios)&lt;/span&gt; &lt;br&gt;
+
+- &lt;span style="font-size:150%"&gt; [&lt;span style="color:black"&gt;Procesos estocásticos de raíz unitaria](#raizunitaria)&lt;/span&gt; &lt;br&gt;
+
+- &lt;span style="font-size:150%"&gt; [&lt;span style="color:black"&gt;Procesos estocásticos integrados](#integrados)&lt;/span&gt; &lt;br&gt;
+
+- &lt;span style="font-size:150%"&gt; [&lt;span style="color:black"&gt;Regresión espuria](#espuria)&lt;/span&gt; &lt;br&gt;
+
+- &lt;span style="font-size:150%"&gt; [&lt;span style="color:black"&gt;Pruebas de estacionariedad](#pruebas)&lt;/span&gt; &lt;br&gt;
+
+- &lt;span style="font-size:150%"&gt; [&lt;span style="color:black"&gt;Transformación de las series de tiempo no estacionarias](#transformacion)&lt;/span&gt; &lt;br&gt;
+
+- &lt;span style="font-size:150%"&gt; [&lt;span style="color:black"&gt;En resumen](#resumen)&lt;/span&gt; &lt;br&gt;
+
+- &lt;span style="font-size:150%"&gt; [&lt;span style="color:black"&gt;Criterios de información para selección de modelos](#criterios)&lt;/span&gt; &lt;br&gt;
+
+- &lt;span style="font-size:150%"&gt; [&lt;span style="color:black"&gt;Ejercicio aplicado en R: estacionariedad del PIB](#r)&lt;/span&gt;
+
+---
+# &lt;span style="font-size:80%"&gt;Lecturas&lt;/span&gt;
+- &lt;span style="font-size:150%"&gt; Gujarati, D. y Porter, D. (2010). *Econometría*. 5a edición, Mc Graw Hill. &lt;span style="color:blue"&gt;Cap 21 &lt;br&gt;
+
+- &lt;span style="font-size:150%"&gt; Enders, W. (2014). *Applied econometric time series*. 4th edition, Wiley. &lt;span style="color:blue"&gt;Cap 4, sección 4 &lt;br&gt;
+
+- &lt;span style="font-size:150%"&gt; Pfaff, B. (2008). *Analysis integrated and cointegrated series with R*. 2th edition, Springer. &lt;span style="color:blue"&gt;Part II
+
+---
+name: introduccion
+# &lt;span style="font-size:80%"&gt;Introducción&lt;/span&gt;
+
+- Una característica obvia de los datos de series de tiempo que los distingue de aquellos de corte transversal es que tienen un orden temporal
+
+- Algunos ejemplos de series temporales:
+ - IPD = ingreso personal disponible real (miles de millones de dólares)
+ - PIB = producto interno bruto (miles de millones de dólares)
+ - GCP = gasto de consumo personal real (miles de millones de dólares)
+ - UE = utilidades empresariales (miles de millones de dólares)
+ - Dividendo = dividendos (miles de millones de dólares)
+
+- Es práctica común graficar el logaritmo de una serie de tiempo para tener una idea de la tasa de crecimiento de dicha serie. 
+
+- Una gráfica de los datos es por lo general el primer paso en el análisis de series de tiempo. Se tienen cifras trimestrales desde 1947-1 a 2007-4
+
+---
+# &lt;span style="font-size:80%"&gt;Introducción&lt;/span&gt;
+&lt;font size = "3"&gt;
+&lt;p style="margin-bottom: -1.5em"&gt;
+
+```r
+library(gujarati); library(tidyverse); library(tseries); library(lmtest); library(forecast); library(zoo)
+
+data('Table21_1')
+data &lt;- Table21_1 |&gt; 
+  mutate(time    = as.yearqtr(paste0(Quarter," ",Year), format = "%q %Y"),
+         year    = as.numeric(as.character(Year)), quarter = as.numeric(as.character(Quarter)),
+         rpd     = as.numeric(as.character(RPD)), pib     = as.numeric(as.character(PIB)),
+         dcp     = as.numeric(as.character(DCP)), lc      = as.numeric(as.character(LC))) |&gt; 
+  select(time, year, quarter, rpd, pib, dcp, lc)
+
+ggplot(data) +
+  geom_line(aes(time, log(rpd), color = "Log(IPD)"), linewidth = 1.5) + geom_line(aes(time, log(pib), color = "Log(PIB)"), linewidth = 1.5)  + geom_line(aes(time, log(dcp), color = "Log(GCP)"), linewidth = 1.5) + scale_color_manual(name = "", values = c("Log(IPD)" = "darkblue", "Log(PIB)" = "red", "Log(GCP)" = "darkgreen")) +
+  labs(x="Trimestre", y="") + theme(legend.text = element_text(size = 15), axis.title.x = element_text(size = 20), text = element_text(size=16)) + scale_x_yearqtr(format = "%YQ%q", breaks = seq(from = min(data$time), to = max(data$time), by = 5))
+```
+
+&lt;img src="IntroSeriesTiempo_files/figure-html/unnamed-chunk-1-1.png" width="45%" style="display: block; margin: auto;" /&gt;
+&lt;p style="margin-bottom: -1em"&gt;
+Características de estas series:
+- &lt;font color = "blue"&gt; tienden hacia arriba
+- &lt;font color = "blue"&gt; presentan algunas fluctuaciones
+
+---
+# &lt;span style="font-size:80%"&gt;Introducción&lt;/span&gt;
+&lt;font size = "3"&gt;
+- Si deseáramos especular sobre la forma de estas curvas más allá del período muestral, por ejemplo, para todos los trimestres de 2008, es necesario saber el mecanismos estadístico, o estocástico, o el &lt;font color = "blue"&gt;proceso de generación de datos (PGD)&lt;/font&gt;  que dio origen a estas series
+
+- Para saber cuál es ese mecanismos es necesario estudiar ciertos conceptos que se utilizan mucho en series de tiempo
+
+&lt;p style="margin-bottom: -1em"&gt;
+**&lt;font color = "blue"&gt;Procesos estocásticos&lt;/font&gt;**
+- Un proceso estocástico o aleatorio es una colección de variables aleatorias ordenadas en el tiempo
+
+- Por ejemplo, ¿en qué sentido podemos considerar al PIB un proceso estocástico? Estocástico significa aleatorio, por tanto el PIB es una variable aleatoria o proceso estocástico ya que puede tomar cualquier valor y hay incertidumbre sobre el valor que pueda tomar
+
+&lt;p style="margin-bottom: -1em"&gt;
+**&lt;font color = "blue"&gt;Procesos estocásticos estacionarios&lt;/font&gt;**
+- Es un tipo de proceso estocástico
+
+- Ha sido objeto de mucho estudio en las series de tiempo
+
+- Un proceso estocástico es estacionario si su &lt;font color = "blue"&gt;media&lt;/font&gt; y su &lt;font color = "blue"&gt;varianza&lt;/font&gt; son &lt;font color = "blue"&gt;constantes en el tiempo&lt;/font&gt; y si el valor de la &lt;font color = "blue"&gt;covarianza&lt;/font&gt; entre dos períodos &lt;font color = "blue"&gt;depende sólo de la distancia o rezago entre estos dos períodos&lt;/font&gt;, y no del tiempo en el cual se calculó la covarianza
+
+- Una serie de tiempo estacionaria es aquella cuyas propiedades no dependen del tiempo en el cual la serie es observada. Así, series de tiempo con tendencia o con estacionalidades, no son estacionarias `\(\Longrightarrow\)` la tendencia o estacionalidad afectará el valor de la serie de tiempo en diferentes momentos 
+
+- Para explicar la estacionariedad débil, sea `\(Y_{t}\)` una serie de tiempo con estas propiedades:
+ - Media: `\(E(Y_{t})=\mu\)`
+ - Varianza: `\(Var(Y_{t})=E(Y_{t}-E(Y_{t}))^2=E(Y_{t}-\mu)^2=\sigma^2_{Y}\)`
+ - Covarianza: `\(\gamma_{k}=E[(Y_{t}-\mu)(Y_{t+k}-\mu)]\)`
+
+---
+name: estacionarios
+# &lt;span style="font-size:80%"&gt;Procesos estocásticos estacionarios&lt;/span&gt;
+- Supongamos que el origen de `\(Y\)` se desplaza de `\(Y_{t}\)` a `\(Y_{t+m}\)` (por ejemplo, de 1947-1 a 1952-1 de los datos del PIB)
+
+- Si esperamos que `\(Y_{t}\)` sea estacionaria, la media, la varianza y la covarianza de `\(Y_{t+m}\)` deben ser las mismas que la de `\(Y_{t}\)`
+
+- Un proceso estacionario no se desvía demasiado de su valor medio debido a la varianza finita
+
+
+```r
+eps &lt;- rnorm(500, mean = 0, sd = 1)
+mu &lt;- 2
+Y_t &lt;- mu + eps
+ts.plot(Y_t, main = "Proceso estacionario", xlab = "Tiempo", ylab = expression(Y[t]), col = "blue", lwd = 2)
+```
+
+&lt;img src="IntroSeriesTiempo_files/figure-html/unnamed-chunk-2-1.png" width="52%" style="display: block; margin: auto;" /&gt;
+
+---
+# &lt;span style="font-size:80%"&gt;Procesos estocásticos estacionarios&lt;/span&gt;
+¿Por qué las series de tiempo estacionarias son tan importantes?
+
+- Porque si una serie de tiempo es no estacionaria, sólo podemos estudiar su comportamiento durante el período en consideración
+
+- En consecuencia, no es posible generalizar para otros períodos
+
+- Así, para propósitos de pronóstico, tales series de tiempo (no estacionarias) tienen poco valor práctico
+
+Otro proceso estocástico (o de series de tiempo) es el &lt;font color = "blue"&gt;proceso puramente aleatorio&lt;/font&gt; o de &lt;font color = "blue"&gt;ruido blanco&lt;/font&gt;: se dice que un proceso es puramente aleatorio si tiene una &lt;font color = "blue"&gt;media igual a cero&lt;/font&gt;, una &lt;font color = "blue"&gt;varianza constante `\(\sigma^2\)`&lt;/font&gt; y &lt;font color = "blue"&gt;no está serialmente correlacionado&lt;/font&gt;
+
+Una serie de tiempo ruido blanco es estacionaria, no importa cuando la observes, deberá verse igual en cuaquier momento
+
+---
+name: noestacionarios
+# &lt;span style="font-size:80%"&gt;Procesos estocásticos no estacionarios&lt;/span&gt;
+- A menudo nos encontramos con series de tiempo no estacionarias y el ejemplo más clásico es el &lt;font color = "blue"&gt;modelo de caminata aleatoria&lt;/font&gt;
+
+- Los precios de valores, como las acciones o las tasas de cambio, siguen una caminata aleatoria, es decir, son no estacionarios
+
+
+- Hay dos tipos de caminatas aleatorias
+ - caminata aleatoria sin deriva o sin desvío (es decir, sin término constante o de intercepto)
+ - caminata aleatoria con deriva o con desvío (es decir, hay término constante o de intercepto)
+
+---
+# &lt;span style="font-size:80%"&gt;Procesos estocásticos no estacionarios&lt;/span&gt;
+
+.small-code[
+.pull-left-50[
+**Caminata aleatoria sin deriva (*Random walk without drift*)**&lt;br&gt;
+La serie `\(Y_{t}\)` es una caminata aleatoria sin deriva si
+`$$Y_{t} = Y_{t-1}+u_{t}$$`
+`$$E(Y_{t})=Y_{0}, Var(Y_{t})=t\sigma^2$$`
+
+```r
+set.seed(123)
+n &lt;- 500
+rw &lt;- numeric(n)
+for (i in 2:n) {
+  rw[i] &lt;- rw[i-1] + rnorm(1)
+}
+ts.plot(rw,main="Caminata aleatoria sin deriva", col="blue", 
+        xlab = "", ylab = "")
+```
+
+&lt;img src="IntroSeriesTiempo_files/figure-html/unnamed-chunk-3-1.png" width="864" /&gt;
+]
+
+.pull-right-50[
+**Caminata aleatoria con deriva (*Random walk with drift*)**&lt;br&gt;
+La serie `\(Y_{t}\)` es una caminata aleatoria con deriva si
+`$$Y_{t} = \delta + Y_{t-1}+u_{t}$$`
+`$$E(Y_{t})=Y_{0}+t\delta, Var(Y_{t})=t\sigma^2$$`
+&lt;p style="margin-bottom: 2.65em"&gt;
+
+```r
+rw_drift &lt;- numeric(n)
+for (i in 2:n) {
+  rw_drift[i] &lt;- 3 + rw_drift[i-1] + rnorm(1)
+}
+ts.plot(rw_drift, main="Caminata aleatoria con deriva", col = "blue", 
+        xlab = "", ylab = "")
+```
+
+&lt;img src="IntroSeriesTiempo_files/figure-html/unnamed-chunk-4-1.png" width="864" /&gt;
+]
+]
+
+---
+name: raizunitaria
+# &lt;span style="font-size:80%"&gt;Procesos estocásticos de raíz unitaria&lt;/span&gt;
+
+El modelo de caminata aleatoria es un ejemplo de lo que se conoce en la bibliografía como &lt;font color = "blue"&gt;proceso de raíz unitaria&lt;/font&gt;. Como este término es ya muy común en las referencias de series de tiempo, a continuación explicaremos lo que es un proceso de raíz unitaria
+
+Escribamos el modelo de caminata aleatoria como:
+
+`$$Y_{t}=\rho Y_{t-1} + u_{t}$$`
+
+- Este modelo es lo que se llama un &lt;font color = "blue"&gt;modelo autorregresivo de primer orden (AR(1))&lt;/font&gt;
+
+- Si `\(\rho=1\)` se convierte en un modelo de caminata aleatoria sin deriva
+
+-	Si `\(\rho=1\)` tenemos lo que se conoce como &lt;font color = "blue"&gt;problema de raíz unitaria&lt;/font&gt;, es decir enfrentamos una situación de no estacionariedad
+
+- Los términos no estacionariedad, caminata aleatoria, raiz unitaria y tendencia estocástica se consideran sinónimos
+
+- Si `\(|\rho|&lt;1\)` se puede demostrar que la serie de tiempo `\(Y_{t}\)` es estacionaria
+	
+- Existen diferentes pruebas para corroborar la existencia de no estacionariedad 
+
+---
+name: integrados
+# &lt;span style="font-size:80%"&gt;Procesos estocásticos integrados&lt;/span&gt;
+
+- El modelo de caminata aleatoria sin deriva es no estacionario, pero su serie de primeras diferencias es estacionaria:
+	
+`$$Y_{t} = Y_{t-1} + u_{t}$$`
+`$$\Delta Y_{t} = Y_{t}-Y_{t-1} = u_{t}$$`
+
+- El modelo de caminata aleatoria sin deriva se llama proceso &lt;font color = "blue"&gt;integrado de orden 1&lt;/font&gt; y se denota como `\(I(1)\)`
+
+- Si una serie de tiempo tiene que diferenciarse dos veces (es decir, se toman primeras diferencias de la serie de primeras diferencias) para hacerla estacionaria, esa serie de tiempo se denomina &lt;font color = "blue"&gt;integrado de orden 2&lt;/font&gt;
+
+- En general, si una serie de tiempo (no estacionaria) debe diferenciarse d veces para hacerla estacionaria, decimos que la serie es &lt;font color = "blue"&gt;integrada de orden d&lt;/font&gt;
+
+- `\(Y_{t}\)` es integrada de orden d: `\(Y_{t} \sim I(d)\)`. Si es estacionaria entonces `\(Y_{t} \sim I(0)\)`
+
+- La mayoría de las series de tiempo económicas son `\(I(1)\)`; es decir, por lo general se convierten
+en estacionarias sólo después de tomar sus primeras diferencias
+
+---
+name: espuria
+# &lt;span style="font-size:80%"&gt;Regresión espuria&lt;/span&gt;
+&lt;p style="margin-bottom: -1em"&gt;
+&lt;font size = "3"&gt;
+Para ver por qué las series de tiempo estacionarias son tan importantes, considere los dos modelos de caminata aleatoria siguientes:
+
+`$$Y_t = Y_{t-1} + u_t$$`
+`$$X_t = X_{t-1} + v_t$$`
+Se asume que `\(u_t\)` y `\(v_t\)` no están serial ni mutuamente correlacionadas. Ya sabemos que ambas series de tiempo son no estacionarias, es decir, son `\(I(1)\)`. Supongamos que hacemos la regresión de `\(Y_t\)` sobre `\(X_t\)`. Como estas series son procesos no correlacionados `\(I(1)\)`, el `\(R^2\)` de la regresión debería tender a cero, es decir, no debería haber ninguna relación entre las dos variables. Miremos la regresión
+
+
+```r
+Y_t &lt;- numeric(n)
+X_t &lt;- numeric(n)
+for (i in 2:n) {
+  Y_t[i] &lt;- Y_t[i-1] + rnorm(1)
+  X_t[i] &lt;- X_t[i-1] + rnorm(1)
+}
+modelo1 &lt;- lm(Y_t ~ X_t)
+summary(modelo1)
+```
+
+```
+
+Call:
+lm(formula = Y_t ~ X_t)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-7.6186 -3.1349 -0.8393  3.2261 10.4912 
+
+Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)   3.4209     0.2928   11.68   &lt;2e-16 ***
+X_t          -0.2213     0.0133  -16.64   &lt;2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 4.099 on 498 degrees of freedom
+Multiple R-squared:  0.3574,	Adjusted R-squared:  0.3561 
+F-statistic:   277 on 1 and 498 DF,  p-value: &lt; 2.2e-16
+```
+
+---
+# &lt;span style="font-size:80%"&gt;Regresión espuria&lt;/span&gt;
+
+- El coeficiente de `\(X_t\)` es muy significativo estadísticamente, y aunque el `\(R^2\)` es bajo, es distinto de cero
+
+- Con estos resultados se podría estar tentado a decir que hay una relación entre `\(Y_t\)` y `\(X_t\)`. Esto es lo que llamamos &lt;font color="blue"&gt;regresión espuria o regresión sin sentido&lt;/font&gt;
+
+- La correlación espuria puede persistir en las series no estacionarias aunque la muestra sea muy grande
+
+- El DW es muy bajo lo que indica una autocorrelación muy fuerte de primer orden. De acuerdo con Granger y Newbold (1974), `\(R^2 &gt; DW\)` es una buena regla práctica para sospechar que la regresión estimada es espuria&lt;sup&gt;1&lt;/sup&gt; .footnote[[1] Granger, CWJ y Newbold, P. (1974). "Spurious regressions in econometrics". *Journal of Econometrics*, 2: 111-120.] 
+
+
+```r
+dwtest(modelo1)
+```
+
+```
+
+	Durbin-Watson test
+
+data:  modelo1
+DW = 0.058538, p-value &lt; 2.2e-16
+alternative hypothesis: true autocorrelation is greater than 0
+```
+
+- Al estimar la regresión en primeras diferencias `\((\Delta Y_t \text{ contra } \Delta X_t)\)` se nota que el modelo estimado carece de sentido 
+
+
+```r
+modelo2 &lt;- lm(diff(Y_t) ~ diff(X_t))
+dwtest(modelo2)
+```
+
+```
+
+	Durbin-Watson test
+
+data:  modelo2
+DW = 2.1533, p-value = 0.9569
+alternative hypothesis: true autocorrelation is greater than 0
+```
+
+```r
+summary(modelo2)
+```
+
+```
+
+Call:
+lm(formula = diff(Y_t) ~ diff(X_t))
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-2.94098 -0.66338  0.00451  0.60226  2.96077 
+
+Coefficients:
+             Estimate Std. Error t value Pr(&gt;|t|)
+(Intercept)  0.002688   0.043931   0.061    0.951
+diff(X_t)   -0.058634   0.042130  -1.392    0.165
+
+Residual standard error: 0.9781 on 497 degrees of freedom
+Multiple R-squared:  0.003882,	Adjusted R-squared:  0.001878 
+F-statistic: 1.937 on 1 and 497 DF,  p-value: 0.1646
+```
+
+---
+name: pruebas
+# &lt;span style="font-size:80%"&gt;Pruebas de estacionariedad&lt;/span&gt;
+
+&lt;font color = "blue"&gt;El análisis gráfico&lt;/font&gt; 
+&lt;p style="margin-bottom: -1em"&gt;
+- Antes de efectuar una prueba formal, siempre es aconsejable graficar la series de tiempo en estudio
+
+- Los gráficos proporcionan una pista inicial respeto de la posible naturaleza de las series de tiempo
+
+- Por ejemplo, la serie de tiempo del PIB crece a lo largo de todo el período, es decir que muestra una tendencia ascendente y por lo tanto no es estacionaria
+
+- Esta intuición es el comienzo de una prueba más formal de estacionariedad
+
+
+&lt;font color = "blue"&gt;Pruebas formales&lt;/font&gt;
+&lt;p style="margin-bottom: -1em"&gt;
+- Correlograma de la serie
+
+
+- Pruebas de raices unitarias
+ - Dickey-Fuller (aumentado) test `\(\Longrightarrow H_0:\)` existe una raíz unitaria, la serie no es estacionaria  
+ - Phillips-Perron test `\(\Longrightarrow H_0:\)` existe una raíz unitaria, la serie no es estacionaria
+ - KPSS test `\(\Longrightarrow H_0:\)` no existe una raíz unitaria, la serie es estacionaria
+ - Elliott-Rothenberg-Stock test
+ - Schmidt-Phillips test
+ - Zivot-Andrews test
+ 
+---
+# &lt;span style="font-size:80%"&gt;Pruebas de estacionariedad&lt;/span&gt;
+
+&lt;font color = "blue"&gt;Qué es raíz unitaria?&lt;/font&gt;
+
+- Una raíz unitaria (también llamado proceso de raíz unitaria) es una tendencia estocástica en una seri de tiempo, algunas veces llamado una caminata aleatoria
+
+- Si una seriede tiempo tiene una raiz unitaria, esta muestra un patrón sistemático que es impredecible 
+
+- Un modelo simple de series de tiempo es el AR(1):
+
+  `$$Y_t = \rho Y_{t-1} + u_t$$`
+  
+  Si `\(\rho&lt;1\)` el modelo es estacionario, si `\(\rho=1\)` el modelo no es estacionario
+
+- Los tests de raices unitarias son pruebas de estacionariedad sobre las series de tiempo. La forma de la estacionariedad es si un cambio en el tiempo no provoca un cambio en la forma de la distribución
+
+---
+# &lt;span style="font-size:80%"&gt;Pruebas de estacionariedad&lt;/span&gt;
+
+&lt;font color = "blue"&gt;El test de Dickey-Fuller (DF)&lt;/font&gt;
+
+- El punto de partida es el proceso (estocástico) de raíz unitaria que vimos anteriormente. Se inicia con:
+	
+ `$$Y_{t}=\rho Y_{t-1}+ u_{t}$$` 
+
+ donde `\(-1\leq \rho \leq1\)` y `\(u_{t}\)` es el término de error ruido blanco
+
+- Sabemos que si `\(\rho=1\)`, es decir, en el caso de la raíz unitaria, la anterior ecuación se convierte en un modelo de caminata aleatoria `\(\Longrightarrow\)` &lt;font color="blue"&gt;este es la idea general de la prueba de raíz unitaria&lt;/font&gt;
+
+- ¿Por qué no simplemente hacer la regresión de `\(Y_{t}\)` sobre su valor rezagado  `\(Y_{t-1}\)` y se averigua si la `\(\rho\)` estimada es estadísticamente igual a 1? `\(\Longrightarrow\)` &lt;font color="blue"&gt;no podemos estimar por MCO y probar `\(H_0:\rho = 1\)` por medio de la prueba `\(t\)` acostumbrada, porque esa prueba tiene un sesgo muy marcado en el caso de una raíz unitaria&lt;/font&gt;
+
+- Se debe entonces manipular la ecuación, restando `\(Y_{t-1}\)` a ambos lados:
+
+$$
+`\begin{aligned}
+Y_t - Y_{t-1} &amp; = \rho Y_{t-1} - Y_{t-1} + u_t\\
+              &amp; = (\rho - 1)Y_{t-1} + u_t\\
+  \Delta Y_t  &amp; = \delta Y_{t-1} +  u_t        
+\end{aligned}`
+$$  
+
+  donde `\(\delta = (\rho-1)\)` y `\(\Delta\)` es el operador de primeras diferencias
+  
+---
+# &lt;span style="font-size:80%"&gt;Pruebas de estacionariedad&lt;/span&gt;
+
+&lt;font color = "blue"&gt;El test de Dickey-Fuller (DF)&lt;/font&gt;
+
+- En la práctica entonces se estima por MCO y se prueba `\(H_0:\delta=0\)` y la `\(H_a:\delta&lt;0\)`. Si `\(\delta=0\)` entonces `\(\rho=1\)`, es decir, tenemos una raiz unitaria, lo que significa que la serie de tiempo es no estacionaria
+
+- La interrogante que queda es saber con qué estadístico se hace la prueba ya que no es posible utilizar la prueba `\(t\)` ya que no sigue una distribución normal asintótica
+
+- Dickey y Fuller probaron que según `\(H_0:\delta=0\)` el valor estimado `\(t\)` del coeficiente de `\(Y_{t-1}\)` sigue el &lt;font color="blue"&gt;estadístico `\(\tau\)`&lt;/font&gt; `\(\Longrightarrow\)` &lt;font color="blue"&gt;prueba Dickey-Fuller (DF)&lt;/font&gt;
+
+- El procedimiento para aplicar la prueba DF depende del modelo analizado. La prueba se estima en tres diferentes formas dependiendo del proceso asumido:
+	
+	- `\(Y_{t}\)` es una caminata aleatoria `\(\Longrightarrow \Delta Y_{t}=\delta Y_{t-1}+u_{t}\)`
+	- `\(Y_{t}\)` es una caminata aleatoria con deriva: `\(\Longrightarrow \Delta Y_{t}=\beta_{1} + \delta Y_{t-1}+u_{t}\)`
+	- `\(Y_{t}\)` es una caminata aleatoria con deriva alrededor de una tendencia determinista: `\(\Longrightarrow \Delta Y_{t}=\beta_{1} + \beta_{2}t + \delta Y_{t-1}+u_{t}\)`
+	donde `\(t\)` es una variable de tiempo o tendencia
+
+
+- &lt;font color="blue"&gt; `\(H_0:\delta=0\)` (existe una raíz unitaria, la serie no es estacionaria)&lt;br&gt;
+  `\(H_a:\delta&lt;0\)` (la serie es estacionaria)&lt;br&gt;
+  Rechazo Ho si `\(|t|&gt;|\tau|\)` o si p-value `\(&lt;\epsilon\)`
+	
+---
+# &lt;span style="font-size:80%"&gt;Pruebas de estacionariedad&lt;/span&gt;
+
+&lt;font color = "blue"&gt;El test de Dickey-Fuller Aumentado (DFA)&lt;/font&gt;
+
+- En el DFA se asume que el término de error `\(u_{t}\)` se encuentra correlacionado
+
+- Esta prueba implica aumentar las tres ecuaciones anteriores mediante la adición de los valores rezagados de la variable dependiente `\(\Delta Y_{t}\)`. Suponiendo que el proceso es una caminata aleatoria con deriva alrededor de una tendencia determinista, aplicar la prueba DFA implica estimar el siguiente modelo:
+
+`$$\Delta Y_{t}=\beta_{1} + \beta_{2}t + \delta Y_{t-1}+\sum_{i=1}^m \alpha_{i}\Delta Y_{t-i}+e_{t}$$`
+- El número de términos de diferencia rezagados que debemos incluir se determina de manera empírica utilizando los criterios de información de Akaike, Schwarz y otros
+
+&lt;p style="margin-bottom: 4em"&gt;
+
+**&lt;font color = "red"&gt;Queda de tarea estudiar los otros tests de raices unitarias**
+
+---
+name: transformacion
+# &lt;span style="font-size:80%"&gt;Transformación de las series de tiempo no estacionarias&lt;/span&gt;
+
+- Ahora que conocemos el problema asociado a las series de tiempo no estacionarias, surge la pregunta de qué hay que hacer
+
+- Para evitar el problema de regresión espuria que pudiese surgir al hacer la regresión de una serie no estacionaria contra otras series no estacionarias, se debe transformar las series de tiempo no estacionarias a estacionarias
+
+- El método de transformación depende de las series sean &lt;font color = "blue"&gt;procesos estacionarios en diferencias (PED)&lt;/font&gt; o &lt;font color = "blue"&gt;procesos estacionarios con tendencia (PET)&lt;/font&gt;
+
+---
+# &lt;span style="font-size:80%"&gt;Transformación de las series de tiempo no estacionarias&lt;/span&gt;
+
+&lt;font color = "blue"&gt;Procesos estacionarios en diferencias&lt;/font&gt;
+&lt;p style="margin-bottom: -1em"&gt;
+- Si una serie de tiempo tiene una raíz unitaria, las primera diferencia de tal serie es estacionaria
+- La solución entonces es tomar las primeras diferencias de la serie de tiempo
+- Sea la serie `\(Y_{t}\)` no estacionaria, entonces las primeras diferencias serán:
+
+`$$\Delta Y_{t} = Y_{t} - Y_{t-1}$$`
+`$$D_{t}=\Delta Y_{t}$$`
+- Veamos el ejemplo de la serie `\(Log(PIB)\)`, la cual es no estacionaria: 
+
+&lt;p style="margin-bottom: -1.5em"&gt;
+
+.small-code[
+.pull-left-50[
+&lt;p style="margin-bottom: 2.55em"&gt;
+
+```r
+ggplot(data) +
+  geom_line(aes(time, log(pib), color = "LPIB"), linewidth = 1.5) + 
+  scale_color_manual(name = "", values = c("LPIB" = "blue")) + labs(x="Trimestre", y="") + 
+  theme(legend.text = element_text(size = 15), axis.title.x = element_text(size = 20), text = element_text(size=16)) + scale_x_yearqtr(format = "%YQ%q", breaks = seq(from = min(data$time), to = max(data$time), by = 5))
+```
+
+&lt;img src="IntroSeriesTiempo_files/figure-html/unnamed-chunk-8-1.png" width="75%" style="display: block; margin: auto;" /&gt;
+]
+
+.pull-right-50[
+
+```r
+data &lt;- data |&gt; mutate(DLpib = c(NA,diff(log(pib))))
+
+ggplot(data) +
+  geom_line(aes(time, DLpib, color = "DLPIB"), linewidth = 1.5) + 
+  scale_color_manual(name = "", values = c("DLPIB" = "blue")) + labs(x="Trimestre", y="") + 
+  theme(legend.text = element_text(size = 15), axis.title.x = element_text(size = 20), text = element_text(size=16)) + scale_x_yearqtr(format = "%YQ%q", breaks = seq(from = min(data$time), to = max(data$time), by = 5))
+```
+
+&lt;img src="IntroSeriesTiempo_files/figure-html/unnamed-chunk-9-1.png" width="75%" style="display: block; margin: auto;" /&gt;
+]
+]
+
+---
+# &lt;span style="font-size:80%"&gt;Transformación de las series de tiempo no estacionarias&lt;/span&gt;
+
+&lt;font color = "blue"&gt;Procesos estacionarios en tendencia&lt;/font&gt;
+
+&lt;p style="margin-bottom: -1em"&gt;
+
+Este tipo de proceso tienen la forma:
+
+`$$Y_t = \beta_1 + \beta_2 t + u_t$$` 
+
+donde `\(t\)` es una tendencia. Aunque la media de `\(Y_t\)` es `\(\beta_1 + \beta_2t\)` —no constante—, su varianza (= `\(\sigma^2\)`) sí lo es. Si restamos la media de `\(Y_t\)` de `\(Y_t\)`, la serie resultante será estacionaria; de ahí el nombre de &lt;font color="blue"&gt;estacionario en tendencia&lt;/font&gt;
+
+Simulando un proceso estacionario en tendencia `\(Y_t = 2 + 3t + u_t\)`
+
+
+```r
+u &lt;- rnorm(100,0,40)
+t &lt;- (1:100)
+Y_t &lt;- 2 + 3*t + u
+ts.plot(Y_t, main = "Proceso estacionario en tendencia", xlab = "Tiempo", ylab = expression(Y[t]), col = "blue", lwd = 2)
+```
+
+&lt;img src="IntroSeriesTiempo_files/figure-html/unnamed-chunk-10-1.png" width="50%" style="display: block; margin: auto;" /&gt;
+
+---
+# &lt;span style="font-size:80%"&gt;Transformación de las series de tiempo no estacionarias&lt;/span&gt;
+&lt;p style="margin-bottom: -1em"&gt;
+&lt;font color = "blue"&gt;Procesos estacionarios en tendencia&lt;/font&gt;
+&lt;font size=3&gt;
+&lt;p style="margin-bottom: -1em"&gt;
+
+La manera más sencilla de convertir este tipo de series en estacionaria es hacer la regresión
+de ella sobre el tiempo y los residuos de tal regresión serán estacionarios. En otras palabras, realizamos la siguiente regresión:
+
+`$$Y_t = \beta_1 + \beta_2 t + u_t$$`
+donde `\(Y_t\)` es la serie de tiempo estudiada y `\(t\)` es la variable de tendencia medida de manera cronológica. Ahora bien
+
+`$$\widehat{u}_t = (Y_t − \widehat\beta_1 − \widehat\beta_2 t)$$`
+será estacionaria. A `\(\widehat{u}_t\)` se le conoce como &lt;font color="blue"&gt;serie de tiempo sin tendencia&lt;/font&gt;
+&lt;p style="margin-bottom: -1em"&gt; 
+
+```r
+mu_t &lt;- lm(Y_t ~ t)
+Ye_t &lt;- Y_t - mu_t[['fitted.values']]
+ts.plot(Ye_t, main = "Serie de tiempo sin tendencia", xlab = "Tiempo", ylab = expression('Estimado Y'[t]), col = "blue", lwd = 2)
+```
+
+&lt;img src="IntroSeriesTiempo_files/figure-html/unnamed-chunk-11-1.png" width="42%" style="display: block; margin: auto;" /&gt;
+&lt;p style="margin-top: -1em"&gt;
+Es importante notar que tal vez la tendencia sea no lineal. Por ejemplo, puede ser `\(Yt = \beta_1 + \beta_2 t + \beta_3 t^2 + u_t\)` que es una serie con tendencia cuadrática. De ser así, los residuos serán ahora una serie (cuadrática) de tiempo sin tendencia
+
+---
+name: resumen
+# &lt;span style="font-size:80%"&gt;En resumen&lt;/span&gt;
+
+- La econometría de series temporales inicia con el análisis de estacionariedad de la serie
+
+- Si es estacionaria se dice que es integrada de orden cero y se denota `\(Y_t \sim I(0)\)`
+
+- Si la serie no es estacionaria, se diferencia la serie para ver si se hace estacionaria `\(\Delta Y_t = Y_t - Y_{t-1}\)`
+
+- Sea `\(d\)` el orden de integración de la serie el cual corresponde al número de veces que hay que diferenciar una serie para que se haga estacionaria. Cualquier serie es `\(I(d)\)`
+
+- Los econométras de esta escuela señala que la inmensa mayoría de series macroeconomicas se pueden representar con un proceso `\(I(1)\)`
+
+- Una vez se dispone una serie estacionaria se modela de acuerdo a procesos ARMA(p,q) surgiendo la metodología
+
+`$$\underbrace{AR}_{p}\underbrace{I}_{I}\underbrace{MA}_{q}$$`
+
+- Por ejemplo, si una serie sigue un proceso ARIMA(1,1,0) quiere decir que se diferenció una vez y se modelo luego con AR(1) y no se utilizó el MA
+
+---
+name: criterios
+# &lt;span style="font-size:80%"&gt;Criterios de información para selección de modelos&lt;/span&gt;
+&lt;p style="margin-bottom: 1em"&gt;
+
+&lt;font color="blue"&gt;Criterio de información de Akaike (AIC) y Schwarz (BIC)&lt;/font&gt;
+
+`$$AIC=-2ln L + 2k$$`
+`$$BIC=-2 lnL + k lnn$$`
+Donde `\(L\)` es el valor de la función de máximo verosimilitud, `\(n\)` es el número de observaciones y `\(k\)` es el número de parámetros. &lt;font color="blue"&gt;El más bajo AIC o BIC indica un mejor ajuste (un modelo más parsimonioso)
+
+---
+name: r
+# &lt;span style="font-size:80%"&gt;Ejercicio aplicado en R: estacionariedad del PIB&lt;/span&gt;
+Se trabajan con variables macroeconómicas de los Estados Unidos, trimestrales entre 1947 y 2007 (precios constantes de 2000):
+
+- IPD = ingreso personal disponible real (miles de millones de dólares)
+- PIB = producto interno bruto (miles de millones de dólares)
+- GCP = gasto de consumo personal real (miles de millones de dólares)
+- UE = utilidades empresariales (miles de millones de dólares)
+- Dividendo = dividendos (miles de millones de dólares)
+
+En esta aplicación estudiamos la serie del PIB y se utilizará el siguiente código:
+
+- [Código en R](https://gusgarciacruz.github.io/EconometriaII/IntroSeriesTiempo/IntroSeriesTiempo.R)
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "16:9"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
