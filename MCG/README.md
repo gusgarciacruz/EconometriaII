@@ -1,8 +1,8 @@
-# Repaso de MCO
-- <span style="font-size:150%">El modelo</span> <br>
+# Repaso de MCG
+- <span style="font-size:150%">[<span style="color:black">Introducción]</span> <br>
 
-- <span style="font-size:150%">Estimación MCO</span> <br>
+- <span style="font-size:150%"> [<span style="color:black">Consecuencias sobre los estimadores por MCO]</span> <br>
 
-- <span style="font-size:150%">Propiedades de los estimadores MCO</span> <br>
+- <span style="font-size:150%"> [<span style="color:black">El estimador MCG]</span> <br>
 
-- <span style="font-size:150%">Ejercicio aplicado en R: tasas de retorno a la educación</span>
+- <span style="font-size:150%"> [<span style="color:black">Ejercicio aplicado en R: heteroscedasticidad]</span>
