@@ -12,6 +12,14 @@ Profesor: [Gustavo A. García](https://gusgarciacruz.github.io/cv)
 
 [Autocorrelación](https://gusgarciacruz.github.io/EconometriaII/Autocorrelacion/Autocorrelacion.html)<br>
 
+[Introducción a series de tiempo](https://gusgarciacruz.github.io/EconometriaII/IntroSeriesTiempo/IntroSeriesTiempo.html)<br>
+
+[Modelos ARIMA](https://gusgarciacruz.github.io/EconometriaII/ARIMA/ARIMA.html)<br>
+
+[Modelos con Variables Exógenas](https://gusgarciacruz.github.io/EconometriaII/VarExogenas/VarExogenas.html)<br>
+
+[Introducción modelos VAR](https://gusgarciacruz.github.io/EconometriaII/IntroVAR/IntroVAR.html)<br>
+
 [Estimación por variables instrumentales (IV)](https://gusgarciacruz.github.io/EconometriaII/IV/IV.html)<br>
 
 [Modelos de ecuaciones simultáneas](https://gusgarciacruz.github.io/EconometriaII/EcuSimultaneas/EcuSimultaneas.html)<br>
@@ -23,5 +31,7 @@ Profesor: [Gustavo A. García](https://gusgarciacruz.github.io/cv)
 [Taller 1](https://gusgarciacruz.github.io/EconometriaII/Taller1/Taller1.pdf)
 
 [Taller 2](https://gusgarciacruz.github.io/EconometriaII/Taller2/Taller2.pdf)
+
+[Taller 3](https://gusgarciacruz.github.io/EconometriaII/Taller3/Taller3.pdf)
 
 [Instrucciones trabajo de investigación](https://gusgarciacruz.github.io/EconometriaII/TrabajoInvestigacion/TrabajoInvestigacion.html)
