@@ -776,11 +776,11 @@ name: r
 
 En este ejemplo vamos analizar la relación entre salarios y productividad en el sector de negocios de Estados Unidos entre 1960 y 2005. Se tienen datos sobre índices de remuneración real por hora (Y) y producción por hora (X), la base de los índices es 1992=100
 
-- [Código en R](https://gusgarciacruz.github.io/EconometriaII/autocorrelacion/Autocorrelacion.R)
+- [Código en R](https://gusgarciacruz.github.io/EconometriaII/Autocorrelacion/Autocorrelacion.R)
 
 
 ```r
-library(tidyverse); library(Hmisc); library(forecast); library(lmtest); library(prais); library(orcutt); library(sandwich)
+library(tidyverse); library(Hmisc); library(forecast); library(lmtest); library(prais); library(orcutt); library(sandwich); library(gujarati)
 
 data("Table12_4")
 data &lt;- Table12_4 |&gt; mutate(year = as.numeric(as.character(Year)),
