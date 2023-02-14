@@ -1,0 +1,363 @@
+---
+title: "Modelos ARIMA"
+author: Gustavo A. García <br> <span style="font-size:65%" class='notbold'>ggarci24@eafit.edu.co</span> <br> <br> <br> <br> <br> <br> <br> <br> <br>
+date: <span style="font-size:65%" class='notbold'>Econometría II <br> Programa de Economía <br> Universidad EAFIT</span>
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: xaringan-themer.css
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      ratio: "16:9"
+---
+
+```{r setup, include = F}
+# This is the recommended set up for flipbooks
+# you might think about setting cache to TRUE as you gain practice --- building flipbooks from scratch can be time consuming
+options(width = 70)
+knitr::opts_chunk$set(
+  dev.args = list(bg = 'transparent'),
+  fig.width = 12, message = TRUE,
+  warning = FALSE, comment = "", cache = TRUE, fig.retina = 3
+)
+knitr::opts_knit$set(global.par = TRUE)
+Sys.setenv(`_R_S3_METHOD_REGISTRATION_NOTE_OVERWRITES_` = "false")
+# remotes::install_github("luukvdmeer/sfnetworks")
+# remotes::install_github("EvaMaeRey/flipbookr")
+# remotes::install_github("rlesur/klippy")
+# devtools::install_github("gadenbuie/xaringanExtra")
+library(flipbookr)
+library(xaringanthemer)
+library(tidyverse)
+library(klippy)
+library(xaringanExtra)
+```
+
+<style>
+.notbold{
+    font-weight:normal
+}
+
+body {
+text-align: justify;
+}
+
+h1{
+      margin-top: -1px;
+      margin-bottom: -3px;
+}
+
+.small-code pre{
+  margin-bottom: -10px;
+  
+}  
+
+.medium-code pre{
+  margin-bottom: 2px;
+  
+} 
+</style>
+
+```{r xaringan-scribble, echo=FALSE}
+#xaringanExtra::use_scribble()
+```
+
+```{r xaringanExtra-clipboard, echo=FALSE}
+htmltools::tagList(
+  xaringanExtra::use_clipboard(
+    button_text = "<i class=\"fa fa-clipboard\"></i>",
+    success_text = "<i class=\"fa fa-check\" style=\"color: #90BE6D\"></i>",
+    error_text = "<i class=\"fa fa-times-circle\" style=\"color: #F94144\"></i>"
+  ),
+  rmarkdown::html_dependency_font_awesome()
+)
+```
+
+```{r xaringan-extra-styles, echo=FALSE}
+xaringanExtra::use_extra_styles(
+  hover_code_line = TRUE,         #<<
+  mute_unhighlighted_code = TRUE  #<<
+)
+```
+<font size = "5">
+
+<br>
+<br>
+<br>
+<br>
+<br>
+
+Link slides en formato [html](https://gusgarciacruz.github.io/EconometriaII/ARIMA/ARIMA.html)
+
+Link slides en formato [PDF](https://gusgarciacruz.github.io/EconometriaII/ARIMA/ARIMA.pdf)
+---
+# <span style="font-size:80%">En este tema</span>
+
+- <span style="font-size:150%">[<span style="color:black">Introducción](#introduccion)</span> <br>
+
+- <span style="font-size:150%"> [<span style="color:black">El enfoque Box-Jenkins](#BJ)</span> <br>
+
+- <span style="font-size:150%"> [<span style="color:black">Ejercicio aplicado en R: tasa de desempleo de los Estados Unidos](#r)</span>
+
+---
+# <span style="font-size:80%">Lecturas</span>
+- <span style="font-size:150%">Maddala, GS. y Lahiri, K. (2009). *Introduction to econometrics*. 4a edición, Willey. <span style="color:blue">Cap 13 <br>
+
+- <span style="font-size:150%">Enders, W. (2014). *Applied econometric time series*. 4th edition, Wiley. <span style="color:blue">Cap 2, sección 8 <br>
+
+- <span style="font-size:150%">Pfaff, B. (2008). *Analysis integrated and cointegrated series with R*. 2th edition, Springer. <span style="color:blue">Part I, sección 1.4 <br>
+
+- <span style="font-size:150%">Hyndman, R.J., y Athanasopoulos, G. (2021). [*Forecasting: principles and practice*](https://otexts.com/fpp3/), 3rd edition, OTexts: Melbourne, Australia.<br>
+
+<span style="font-size:150%"> Páginas webs
+- <span style="font-size:150%">https://finnstats.com/index.php/2021/04/26/timeseries-analysis-in-r/
+
+---
+name: introduccion
+# <span style="font-size:80%">Introducción</span>
+
+- Hemos estudiado cómo una serie de tiempo puede ser explicada o bien por su historia (AR(p)) o por choques contemporáneos o pasados (MA(q))
+
+- También estudiamos que estos dos procesos pueden ponerser juntos en un proceso más general ARMA(p,q)
+
+- Ahora estudiaremos brevemente los modelos ARIMA o el enfoque de Box-Jenkins para series de tiempo
+
+- Este enfoque consiste en tres etapas:
+ 1. identificación
+ 2. estimación
+ 3. diagnóstico
+ 
+---
+name: BJ
+# <span style="font-size:80%">El enfoque Box-Jenkins</span>
+
+- El enfoque de Box-Jenkins (BJ) es una de las metodologías más amplio para el análisis de las series de tiempo
+
+- Los pasos básicos de la metodología BJ son:
+<p style="margin-bottom: -1em">
+ 1. diferenciar la serie, de modo que se alcance la estacionariedad
+ 2. identificar un modelo tentativo
+ 3. estimar el modelo
+ 4. verificar el diagnóstico (si se encuentra que el modelo es inadecuado, volver al paso 2)
+ 5. usar el modelo para pronosticar
+ 
+---
+# <span style="font-size:80%">El enfoque Box-Jenkins</span>
+
+**<font color = "blue">Primer paso</font>** 
+<p style="margin-bottom: -1em">
+- Determinar si la series es estacionaria
+<p style="margin-bottom: -1em">
+ - correlograma
+ - test de raices unitarias
+- Si la serie no es estacionaria deferenciarla (cuantas veces sea necesario) para logra su estacionariedad
+
+**<font color = "blue">Segundo paso</font>** 
+<p style="margin-bottom: -1em">
+- Examinar el correlograma de la serie estacionaria para decidir los ordenes apropiados de los componentes AR y MA
+
+**<font color = "blue">Tercer paso</font>** 
+<p style="margin-bottom: -1em">
+- Estimación del modelo ARMA
+
+**<font color = "blue">Cuarto paso</font>** 
+<p style="margin-bottom: -1em">
+- Verificación del diagnóstico para comprobar la ideonidad del modelo tentativo
+
+**<font color = "blue">Quinto paso</font>** 
+<p style="margin-bottom: -1em">
+- Realizar el pronóstico con el modelo ARIMA
+
+---
+name: r
+# <span style="font-size:80%">Ejercicio aplicado en R: tasa de desempleo de los Estados Unidos</span>
+<font size = 3>
+```{r fig.align='center', message=FALSE, warning=FALSE, out.width="30%"}
+library(urca); library(tidyverse); library(forecast); library(stats); library(lmtest)
+data(npext)
+
+y <- ts(na.omit(npext$unemploy), start=1909, end=1988, frequency = 1)
+```
+
+.small-code[
+.pull-left-50[
+```{r, out.width="75%",fig.align='center'}
+ts.plot(y, main = "Log tasas de desempleo US (media = 1.72)", xlab = "Año", ylab = "", col = "blue", lwd = 3)
+abline(h = mean(y), col = "red", lwd = 3)
+```
+]
+
+.pull-right-50[
+```{r, out.width="75%",fig.align='center'}
+ts.plot(diff(y), main = "Primera diferencia Log tasas de desempleo US", xlab = "Año", ylab = "", col = "blue", lwd = 3)
+abline(h = 0, col = "red", lwd = 3)
+```
+]
+]
+
+
+Parece preferible trabajar con la series sin diferenciar:
+<p style="margin-bottom: -1em">
+- La serie en log no tiene tendencia
+- Existe buena cantidad de persistencia, en el sentido que las duraciones cuando el diferencial está por encima o por debajo de la media son algo largas
+- La dinámica de la serie parece ser constante sobre la media
+- Cuando se hace el Dickey-Fuller indica que la serie es estacionaria
+- Parace que la serie es estacionaria en covarianza
+- La serie diferenciada es muy errática y podría tener poco contenido informativo para hacer predicción de valores futuros
+
+
+---
+# <span style="font-size:80%">Ejercicio aplicado en R: tasa de desempleo de los Estados Unidos</span>
+
+Ahora calculamos el correlograma de la serie
+
+.small-code[
+.pull-left-50[
+```{r, out.width="100%",fig.align='center'}
+ggAcf(y, main="Función AC log tasa de desempleo", ylab="AC")
+```
+]
+
+.pull-right-50[
+```{r, out.width="100%",fig.align='center'}
+ggPacf(y, main="Función PAC log tasa de desempleo", ylab="PAC")
+```
+]
+]
+
+Parece ser un proceso ARMA(2,0). Estimemos también un proceso sobreparametrizado ARMA(3,0) y pongamos a competir los dos procesos
+
+---
+# <span style="font-size:80%">Ejercicio aplicado en R: tasa de desempleo de los Estados Unidos</span>
+
+```{r}
+arma20 <- arima(y, order=c(2,0,0))
+arma20
+coeftest(arma20)
+```
+
+Los parámetros estimados son estadísticamente significativos y los valores satisfacen la condición de estabilidad $(|\rho|<1)$
+
+---
+# <span style="font-size:80%">Ejercicio aplicado en R: tasa de desempleo de los Estados Unidos</span>
+<font size=3>
+Ahora pasamos a chequear los residuales del modelo
+
+.small-code[
+.pull-left-50[
+```{r, out.width="65%",fig.align='center'}
+res20 <- residuals(arma20)
+ggAcf(res20, main="Función AC de los residuales", ylab="AC")
+```
+]
+
+.pull-right-50[
+<p style="margin-bottom: 1.8em">
+```{r, out.width="65%",fig.align='center'}
+ggPacf(res20, main="Función PAC de los residuales", ylab="PAC")
+```
+]
+]
+
+```{r}
+Box.test(res20, lag = 1, type = "Ljung-Box")
+
+shapiro.test(res20)
+```
+
+Se tiene que los residuales no están correlacionados y se distribuyen normal
+
+---
+# <span style="font-size:80%">Ejercicio aplicado en R: tasa de desempleo de los Estados Unidos</span>
+Comparemos con el modelo sobreparametrizado ARMA(3,0)
+
+.pull-left-50[
+```{r, out.width="55%",fig.align='center'}
+arma30 <- arima(y, order=c(3,0,0))
+arma30
+```
+]
+<p style="margin-bottom: 1.8em">
+.pull-right-50[
+```{r, out.width="55%",fig.align='center'}
+coeftest(arma30)
+```
+]
+
+- Se observa que los coeficientes del primer y segundo rezago son similares al modelo ARMA(2,0), pero el tercer rezago no es estadísticamente diferente de cero  
+- Comparando el AIC (el mejor modelo es que tenga menor valor), ARMA(3,0) es mejor que ARMA(2,0)
+- Un test likelihood-ratio puede calcularse para seleccionar el mejor modelo $(H_0:$ se prefiere el modelo restringido (ARMA(2,0)))
+
+```{r}
+lrtest <- as.numeric(2*(logLik(arma30)-logLik(arma20)))
+pchisq(lrtest, df=1, lower.tail = F)
+```
+
+Esto indica no rechazar $H_0$, es decir que las mejoras en el log-likelihood no son significantes de pasar de un modelo ARMA(2,0) a ARMA(3,0), por lo que se prefiere el modelo más parsimonioso ARMA(2,0)
+
+---
+# <span style="font-size:80%">Ejercicio aplicado en R: tasa de desempleo de los Estados Unidos</span>
+
+Una vez se ha estimado un modelo ARMA, puede ser usado para predecir valores futuros de la variable de interes
+
+Estas predicciones pueden ser calculadas recursivamente desde el predictor lineal
+
+$$
+\begin{aligned}
+Y_T(h) = & \rho_1 \overline{Y}_{T+h-1} + ... + \rho_1 \overline{Y}_{T+h-p} +\\
+         & \epsilon_t + \theta_1 \epsilon_{t-T-1} + ... + \epsilon_{t-T-q}  
+\end{aligned}
+$$
+
+donde $\overline{Y}_t = Y_t$ para $t\leq T$ y $\overline{Y}_{T+j} = Y_T(j)$ para $j = 1,...,h-1$
+
+Este predictor es equivalente a
+
+$$Y_T(h) = \mu + \psi_h \epsilon_t + \psi_{h+1} \epsilon_{t-1} + \psi_{h+2} \epsilon_{t-2} + ...$$
+
+Cuando el horizonte de predicción $h$ es mayor que el orden q del MA, la predicción son determinandas sólo por los términos autorregresivos
+
+---
+# <span style="font-size:80%">Ejercicio aplicado en R: tasa de desempleo de los Estados Unidos</span>
+Vamos a predecir 10 años de la tasa de desempleo
+
+```{r fig.align='center', message=FALSE, warning=FALSE, out.width="53%"}
+arma20.pred <- predict(arma20, n.ahead = 10)
+predict <- ts(c(rep(NA, length(y) - 1), y[length(y)], arma20.pred$pred), start=1909, frequency = 1)
+upper <- ts(c(rep(NA, length(y) - 1), y[length(y)], arma20.pred$pred + 2*arma20.pred$se), start = 1909, frequency = 1)
+lower <- ts(c(rep(NA, length(y) - 1), y[length(y)], arma20.pred$pred-2*arma20.pred$se), start = 1909, frequency = 1) 
+observed <- ts(c(y, rep(NA, 10)), start = 1909, frequency = 1) 
+
+data <- data.frame(year = 1909:1998, actual = observed, predicho = predict, ic_l = lower, ic_u = upper)
+ggplot(data) + 
+  geom_line(aes(x = year, y = actual, color = "Observada"), linewidth = 1.5) + 
+  geom_line(aes(x = year, y = predicho, color = "Predicha"), linewidth = 1.5) + geom_ribbon(aes(x = year, y = predicho, ymin = ic_l, ymax = ic_u, fill="IC"), alpha = 0.1) +
+  theme(legend.text = element_text(size = 20), text = element_text(size=16), legend.spacing.y = unit(-0.4, "cm"), legend.background=element_blank()) + guides(shape = guide_legend(order = 2),col = guide_legend(order = 1)) + scale_color_manual(name = "", values = c("Observada" = "darkblue", "Predicha" = "red")) + scale_fill_manual(values = c(IC = "steelblue"), labels = c(IC = "IC 95%")) + labs(x = "Años", y ="", fill = "") + scale_x_continuous(n.breaks = 10)
+```
+
+---
+# <span style="font-size:80%">Ejercicio aplicado en R: tasa de desempleo de los Estados Unidos</span>
+
+Existe otra función más poderosa que selecciona el mejor modelo ARIMA
+
+.pull-left-50[
+```{r, out.width="55%",fig.align='center'}
+arma_op <- auto.arima(y)
+arma_op
+```
+]
+<p style="margin-bottom: 1.8em">
+.pull-right-50[
+```{r}
+coeftest(arma_op)
+```
+]
+
+```{r fig.align='center', out.width="40%"}
+f <- forecast(arma_op, 10, 95)
+autoplot(f, main="Predicción de la tasa de desempleo")
+```
+
+
