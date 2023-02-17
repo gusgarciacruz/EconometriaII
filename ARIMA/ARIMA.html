@@ -81,7 +81,11 @@ Link slides en formato [PDF](https://gusgarciacruz.github.io/EconometriaII/ARIMA
 
 - &lt;span style="font-size:150%"&gt; [&lt;span style="color:black"&gt;El enfoque Box-Jenkins](#BJ)&lt;/span&gt; &lt;br&gt;
 
-- &lt;span style="font-size:150%"&gt; [&lt;span style="color:black"&gt;Ejercicio aplicado en R: tasa de desempleo de los Estados Unidos](#r)&lt;/span&gt;
+- &lt;span style="font-size:150%"&gt; [&lt;span style="color:black"&gt;Modelos ARIMA estacionales](#estacional)&lt;/span&gt; &lt;br&gt;
+
+- &lt;span style="font-size:150%"&gt; [&lt;span style="color:black"&gt;Ejercicio aplicado en R: tasa de desempleo de los Estados Unidos](#r1)&lt;/span&gt; &lt;br&gt;
+
+- &lt;span style="font-size:150%"&gt; [&lt;span style="color:black"&gt;Ejercicio aplicado en R: desempleo estacional de los Estados Unidos](#r2)&lt;/span&gt;
 
 ---
 # &lt;span style="font-size:80%"&gt;Lecturas&lt;/span&gt;
@@ -153,7 +157,45 @@ name: BJ
 - Realizar el pronóstico con el modelo ARIMA
 
 ---
-name: r
+name: estacional
+# &lt;span style="font-size:80%"&gt;Modelos ARIMA estacionales&lt;/span&gt;
+
+Hasta ahora, hemos restringido la atención a datos no estacionales y modelo ARIMA no estacionales. Sin embargo, los modelos ARIMA también son capaces de modelar un amplio rango de dato estacionales. Los datos estacionales tienen la forma:
+&lt;font size = 3&gt;
+
+```r
+library(fpp3)
+
+data(us_employment)
+
+leisure &lt;- us_employment |&gt;  filter(Title == "Leisure and Hospitality", year(Month) &gt; 2000) |&gt;
+  mutate(Employed = Employed/1000) |&gt; select(Month, Employed)
+autoplot(leisure, Employed) + labs(title = "Desempleo US: Sector de ocio", y="# de personas (en millones)")
+```
+
+&lt;img src="ARIMA_files/figure-html/unnamed-chunk-1-1.png" width="30%" style="display: block; margin: auto;" /&gt;
+
+Un modelo estacional ARIMA incluye términos estacionales adicionales y tiene la siguiente estructura 
+
+`$$ARIMA \underbrace{(p,d,q)}_{\text{No estacional}} \underbrace{(P,D,Q)_m}_{\text{ Estacional}}$$`
+donde `\(m=\)` el periodo estacional (ejemplo, número de observaciones por año)
+
+---
+# &lt;span style="font-size:80%"&gt;Modelos ARIMA estacionales&lt;/span&gt;
+Para definir la estructura estacional de una serie de tiempo se sigue el mismo procedimiento que con la parte nos estacional, es decir viendo el correlograma
+
+Correlogragra de un proceso `\(ARIMA(0,0,0)(0,0,1)_{12}\)`
+&lt;p style="margin-bottom: -1em"&gt;
+- AC: un pico estadísticamente significativo en el rezago 12 pero no significancia de otros picos
+- PAC: decae exponencialmente en los rezagos estacionales (es decir, en los rezagos 12, 24, 36,...)
+
+Correlogragra de un proceso `\(ARIMA(0,0,0)(1,0,0)_{12}\)`
+&lt;p style="margin-bottom: -1em"&gt;
+- AC: decae exponencialmente en los rezagos estacionales (es decir, en los rezagos 12, 24, 36,...)
+- PAC: un pico estadísticamente significativo en el rezago 12 pero no significancia de otros picos
+
+---
+name: r1
 # &lt;span style="font-size:80%"&gt;Ejercicio aplicado en R: tasa de desempleo de los Estados Unidos&lt;/span&gt;
 &lt;font size = 3&gt;
 
@@ -172,7 +214,7 @@ ts.plot(y, main = "Log tasas de desempleo US (media = 1.72)", xlab = "Año", yla
 abline(h = mean(y), col = "red", lwd = 3)
 ```
 
-&lt;img src="ARIMA_files/figure-html/unnamed-chunk-2-1.png" width="75%" style="display: block; margin: auto;" /&gt;
+&lt;img src="ARIMA_files/figure-html/unnamed-chunk-3-1.png" width="75%" style="display: block; margin: auto;" /&gt;
 ]
 
 .pull-right-50[
@@ -182,7 +224,7 @@ ts.plot(diff(y), main = "Primera diferencia Log tasas de desempleo US", xlab = "
 abline(h = 0, col = "red", lwd = 3)
 ```
 
-&lt;img src="ARIMA_files/figure-html/unnamed-chunk-3-1.png" width="75%" style="display: block; margin: auto;" /&gt;
+&lt;img src="ARIMA_files/figure-html/unnamed-chunk-4-1.png" width="75%" style="display: block; margin: auto;" /&gt;
 ]
 ]
 
@@ -209,7 +251,7 @@ Ahora calculamos el correlograma de la serie
 ggAcf(y, main="Función AC log tasa de desempleo", ylab="AC")
 ```
 
-&lt;img src="ARIMA_files/figure-html/unnamed-chunk-4-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+&lt;img src="ARIMA_files/figure-html/unnamed-chunk-5-1.png" width="100%" style="display: block; margin: auto;" /&gt;
 ]
 
 .pull-right-50[
@@ -218,7 +260,7 @@ ggAcf(y, main="Función AC log tasa de desempleo", ylab="AC")
 ggPacf(y, main="Función PAC log tasa de desempleo", ylab="PAC")
 ```
 
-&lt;img src="ARIMA_files/figure-html/unnamed-chunk-5-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+&lt;img src="ARIMA_files/figure-html/unnamed-chunk-6-1.png" width="100%" style="display: block; margin: auto;" /&gt;
 ]
 ]
 
@@ -277,7 +319,7 @@ res20 &lt;- residuals(arma20)
 ggAcf(res20, main="Función AC de los residuales", ylab="AC")
 ```
 
-&lt;img src="ARIMA_files/figure-html/unnamed-chunk-7-1.png" width="65%" style="display: block; margin: auto;" /&gt;
+&lt;img src="ARIMA_files/figure-html/unnamed-chunk-8-1.png" width="65%" style="display: block; margin: auto;" /&gt;
 ]
 
 .pull-right-50[
@@ -287,7 +329,7 @@ ggAcf(res20, main="Función AC de los residuales", ylab="AC")
 ggPacf(res20, main="Función PAC de los residuales", ylab="PAC")
 ```
 
-&lt;img src="ARIMA_files/figure-html/unnamed-chunk-8-1.png" width="65%" style="display: block; margin: auto;" /&gt;
+&lt;img src="ARIMA_files/figure-html/unnamed-chunk-9-1.png" width="65%" style="display: block; margin: auto;" /&gt;
 ]
 ]
 
@@ -320,6 +362,27 @@ Se tiene que los residuales no están correlacionados y se distribuyen normal
 
 ---
 # &lt;span style="font-size:80%"&gt;Ejercicio aplicado en R: tasa de desempleo de los Estados Unidos&lt;/span&gt;
+
+```r
+checkresiduals(arma20)
+```
+
+&lt;img src="ARIMA_files/figure-html/unnamed-chunk-11-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+```
+
+	Ljung-Box test
+
+data:  Residuals from ARIMA(2,0,0) with non-zero mean
+Q* = 11.648, df = 8, p-value = 0.1676
+
+Model df: 2.   Total lags used: 10
+```
+
+
+---
+# &lt;span style="font-size:80%"&gt;Ejercicio aplicado en R: tasa de desempleo de los Estados Unidos&lt;/span&gt;
+&lt;font size=3&gt;
 Comparemos con el modelo sobreparametrizado ARMA(3,0)
 
 .pull-left-50[
@@ -342,8 +405,9 @@ s.e.  0.1101   0.1495  0.1103     0.1851
 sigma^2 estimated as 0.1893:  log likelihood = -47.47,  aic = 104.93
 ```
 ]
-&lt;p style="margin-bottom: 1.8em"&gt;
+
 .pull-right-50[
+&lt;p style="margin-bottom: 1.8em"&gt;
 
 ```r
 coeftest(arma30)
@@ -363,9 +427,43 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ```
 ]
 
-- Se observa que los coeficientes del primer y segundo rezago son similares al modelo ARMA(2,0), pero el tercer rezago no es estadísticamente diferente de cero  
-- Comparando el AIC (el mejor modelo es que tenga menor valor), ARMA(3,0) es mejor que ARMA(2,0)
-- Un test likelihood-ratio puede calcularse para seleccionar el mejor modelo `\((H_0:\)` se prefiere el modelo restringido (ARMA(2,0)))
+&lt;br/&gt;
+
+Se observa que los coeficientes del primer y segundo rezago son similares al modelo ARMA(2,0), pero el tercer rezago no es estadísticamente diferente de cero
+
+Comparando los criterios de información (el mejor modelo es que tenga menor valor)
+
+
+```r
+AIC(arma20); AIC(arma30)
+```
+
+```
+[1] 105.1803
+```
+
+```
+[1] 104.9302
+```
+
+```r
+BIC(arma20); BIC(arma30)
+```
+
+```
+[1] 114.7084
+```
+
+```
+[1] 116.8403
+```
+
+Con el AIC el ARMA(3,0) es mejor que el ARMA(2,0), pero con el BIC ARMA(2,0) es mejor que el ARMA(3,0) 
+
+---
+# &lt;span style="font-size:80%"&gt;Ejercicio aplicado en R: tasa de desempleo de los Estados Unidos&lt;/span&gt;
+
+Un test likelihood-ratio puede calcularse para seleccionar el mejor modelo `\((H_0:\)` se prefiere el modelo restringido (ARMA(2,0)))
 
 
 ```r
@@ -420,7 +518,7 @@ ggplot(data) +
   theme(legend.text = element_text(size = 20), text = element_text(size=16), legend.spacing.y = unit(-0.4, "cm"), legend.background=element_blank()) + guides(shape = guide_legend(order = 2),col = guide_legend(order = 1)) + scale_color_manual(name = "", values = c("Observada" = "darkblue", "Predicha" = "red")) + scale_fill_manual(values = c(IC = "steelblue"), labels = c(IC = "IC 95%")) + labs(x = "Años", y ="", fill = "") + scale_x_continuous(n.breaks = 10)
 ```
 
-&lt;img src="ARIMA_files/figure-html/unnamed-chunk-13-1.png" width="53%" style="display: block; margin: auto;" /&gt;
+&lt;img src="ARIMA_files/figure-html/unnamed-chunk-16-1.png" width="53%" style="display: block; margin: auto;" /&gt;
 
 ---
 # &lt;span style="font-size:80%"&gt;Ejercicio aplicado en R: tasa de desempleo de los Estados Unidos&lt;/span&gt;
@@ -430,7 +528,7 @@ Existe otra función más poderosa que selecciona el mejor modelo ARIMA
 .pull-left-50[
 
 ```r
-arma_op &lt;- auto.arima(y)
+arma_op &lt;- auto.arima(y, stepwise=F, approximation=F)
 arma_op
 ```
 
@@ -469,11 +567,254 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
 
 ```r
-f &lt;- forecast(arma_op, 10, 95)
+f &lt;- forecast::forecast(arma_op, 10)
 autoplot(f, main="Predicción de la tasa de desempleo")
 ```
 
-&lt;img src="ARIMA_files/figure-html/unnamed-chunk-16-1.png" width="40%" style="display: block; margin: auto;" /&gt;
+&lt;img src="ARIMA_files/figure-html/unnamed-chunk-19-1.png" width="40%" style="display: block; margin: auto;" /&gt;
+
+---
+name: r2
+# &lt;span style="font-size:80%"&gt;Ejercicio aplicado en R: desempleo estacional en los Estados Unidos&lt;/span&gt;
+
+En este ejemplo se decribe la modelación de un ARIMA estacional usando los datos mensuales de desempleo para Estados Unidos. Se toman los datos para el sector de ocio y hostelería desde enero de 2001 a septiembre de 2019
+
+
+```r
+data("us_employment")
+
+leisure &lt;- us_employment |&gt;  filter(Title == "Leisure and Hospitality", year(Month) &gt; 2000) |&gt;
+  mutate(Employed = Employed/1000) |&gt; select(Month, Employed)
+autoplot(leisure, Employed) + labs(title = "Desempleo US: Sector de ocio", y="# de personas (en millones)")
+```
+
+&lt;img src="ARIMA_files/figure-html/unnamed-chunk-20-1.png" width="40%" style="display: block; margin: auto;" /&gt;
+
+Los datos son claramente no estacionarios, con una fuerte estacionalidad y tendencia no lineal
+
+
+---
+# &lt;span style="font-size:80%"&gt;Ejercicio aplicado en R: desempleo estacional en los Estados Unidos&lt;/span&gt;
+Se toma una diferencia estacional en 12 meses, para eliminar esa estacionalidad
+
+
+```r
+leisure &lt;- leisure |&gt; mutate(Employed.e12 = difference(leisure$Employed, 12))
+ts.plot(leisure$Employed.e12)
+```
+
+&lt;img src="ARIMA_files/figure-html/unnamed-chunk-21-1.png" width="40%" style="display: block; margin: auto;" /&gt;
+
+.small-code[
+.pull-left-50[
+
+```r
+ggAcf(leisure$Employed.e12, main="Función AC", ylab="AC")
+```
+
+&lt;img src="ARIMA_files/figure-html/unnamed-chunk-22-1.png" width="50%" style="display: block; margin: auto;" /&gt;
+]
+
+.pull-right-50[
+
+```r
+ggPacf(leisure$Employed.e12, main="Función PAC", ylab="PAC")
+```
+
+&lt;img src="ARIMA_files/figure-html/unnamed-chunk-23-1.png" width="50%" style="display: block; margin: auto;" /&gt;
+]
+]
+
+---
+# &lt;span style="font-size:80%"&gt;Ejercicio aplicado en R: desempleo estacional en los Estados Unidos&lt;/span&gt;
+
+Se observa que no hay estacionariedad, así que se toman primeras diferencias y se vuelve a mirar el correlograma
+
+```r
+leisure &lt;- leisure |&gt; mutate(dEmployed.e12 = difference(leisure$Employed.e12, 1))
+ts.plot(leisure$dEmployed.e12)
+```
+
+&lt;img src="ARIMA_files/figure-html/unnamed-chunk-24-1.png" width="40%" style="display: block; margin: auto;" /&gt;
+
+.small-code[
+.pull-left-50[
+
+```r
+ggAcf(leisure$dEmployed.e12, main="Función AC", ylab="AC")
+```
+
+&lt;img src="ARIMA_files/figure-html/unnamed-chunk-25-1.png" width="50%" style="display: block; margin: auto;" /&gt;
+]
+
+.pull-right-50[
+
+```r
+ggPacf(leisure$dEmployed.e12, main="Función PAC", ylab="PAC")
+```
+
+&lt;img src="ARIMA_files/figure-html/unnamed-chunk-26-1.png" width="50%" style="display: block; margin: auto;" /&gt;
+]
+]
+
+---
+# &lt;span style="font-size:80%"&gt;Ejercicio aplicado en R: desempleo estacional en los Estados Unidos&lt;/span&gt;
+&lt;font size=3&gt;
+Potenciales modelos que surgen con base en el anterior correlograma:
+&lt;p style="margin-bottom: -1em"&gt;
+- la significancia en el rezago 2 de la AC sugiere un MA(2) en la parte no estacional. La significancia en el rezago 12 en la AC sugiere un MA(1) en la parte estacional. El proceso sería un ARIMA(0,1,2)(0,1,1)
+- si se usa la PAC para seleccionar la parte no estacional y la AC para seleccionar la parte estacional, surge un ARIMA(2,1,2)(0,1,1)
+- También se incluye la selección atomática
+
+.pull-left-50[
+
+```r
+arima012011 &lt;- arima(leisure$Employed, order=c(0,1,2),
+                     seasonal = list(order = c(0, 1, 1), period = 12))
+arima012011
+```
+
+```
+
+Call:
+arima(x = leisure$Employed, order = c(0, 1, 2), seasonal = list(order = c(0, 
+    1, 1), period = 12))
+
+Coefficients:
+         ma1     ma2     sma1
+      0.2315  0.2167  -0.5006
+s.e.  0.0707  0.0621   0.0814
+
+sigma^2 estimated as 0.001433:  log likelihood = 391.45,  aic = -774.9
+```
+]
+
+.pull-right-50[
+
+```r
+arima210011 &lt;- arima(leisure$Employed, order=c(2,1,0),
+                     seasonal = list(order = c(0, 1, 1), period = 12), method="ML")
+arima210011
+```
+
+```
+
+Call:
+arima(x = leisure$Employed, order = c(2, 1, 0), seasonal = list(order = c(0, 
+    1, 1), period = 12), method = "ML")
+
+Coefficients:
+         ar1     ar2     sma1
+      0.2102  0.1941  -0.4969
+s.e.  0.0683  0.0679   0.0788
+
+sigma^2 estimated as 0.001425:  log likelihood = 392.09,  aic = -776.19
+```
+]
+
+
+```r
+autoarima &lt;- leisure |&gt;
+  model(ARIMA(Employed, stepwise = FALSE, approx = FALSE))
+report(autoarima)
+```
+
+```
+Series: Employed 
+Model: ARIMA(2,1,0)(1,1,1)[12] 
+
+Coefficients:
+         ar1     ar2    sar1     sma1
+      0.1786  0.1855  0.3295  -0.7507
+s.e.  0.0695  0.0679  0.1273   0.0936
+
+sigma^2 estimated as 0.001415:  log likelihood=394.96
+AIC=-779.92   AICc=-779.63   BIC=-763.14
+```
+
+---
+# &lt;span style="font-size:80%"&gt;Ejercicio aplicado en R: desempleo estacional en los Estados Unidos&lt;/span&gt;
+
+
+```r
+AIC(arima012011); AIC(arima210011)
+```
+
+```
+[1] -774.8994
+```
+
+```
+[1] -776.189
+```
+
+```r
+BIC(arima012011); BIC(arima210011)
+```
+
+```
+[1] -761.4731
+```
+
+```
+[1] -762.7627
+```
+
+```r
+glance(autoarima)
+```
+
+```
+# A tibble: 1 × 8
+  .model              sigma2 log_lik   AIC  AICc   BIC ar_ro…¹ ma_ro…²
+  &lt;chr&gt;                &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;list&gt;  &lt;list&gt; 
+1 ARIMA(Employed, s… 0.00142    395. -780. -780. -763. &lt;cpl&gt;   &lt;cpl&gt;  
+# … with abbreviated variable names ¹​ar_roots, ²​ma_roots
+```
+
+De acuerdo con los criterios de información, el mejor modelo es el de la selección automática
+
+---
+# &lt;span style="font-size:80%"&gt;Ejercicio aplicado en R: desempleo estacional en los Estados Unidos&lt;/span&gt;
+
+Miremos los residuales del modelo
+
+```r
+autoarima |&gt; gg_tsresiduals(lag=36)
+```
+
+&lt;img src="ARIMA_files/figure-html/unnamed-chunk-31-1.png" width="40%" style="display: block; margin: auto;" /&gt;
+
+Un pequeño pero significante pico (en el rezago 11) de 36 es aún consistente con un comportamiento ruido blanco. Para estar seguros, se calcula el test Ljung-Box
+
+
+```r
+augment(autoarima) |&gt;
+  features(.innov, ljung_box, lag=24, dof=4)
+```
+
+```
+# A tibble: 1 × 3
+  .model                                            lb_stat lb_pvalue
+  &lt;chr&gt;                                               &lt;dbl&gt;     &lt;dbl&gt;
+1 ARIMA(Employed, stepwise = FALSE, approx = FALSE)    16.6     0.680
+```
+El pvalor es muy grande con lo que se confirma que los residuales son similares a un ruido blanco
+
+---
+# &lt;span style="font-size:80%"&gt;Ejercicio aplicado en R: desempleo estacional en los Estados Unidos&lt;/span&gt;
+
+Haciendo la predicción con el modelo seleccionado
+
+
+```r
+fabletools::forecast(autoarima, h=36) |&gt;
+  autoplot(leisure) +
+  labs(title = "Predicción del desempleo en el sector de ocio US",
+       y="# de personas (en millones)")
+```
+
+&lt;img src="ARIMA_files/figure-html/unnamed-chunk-33-1.png" width="60%" style="display: block; margin: auto;" /&gt;
 
 
     </textarea>

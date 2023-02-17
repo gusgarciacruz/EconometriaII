@@ -99,7 +99,11 @@ Link slides en formato [PDF](https://gusgarciacruz.github.io/EconometriaII/ARIMA
 
 - <span style="font-size:150%"> [<span style="color:black">El enfoque Box-Jenkins](#BJ)</span> <br>
 
-- <span style="font-size:150%"> [<span style="color:black">Ejercicio aplicado en R: tasa de desempleo de los Estados Unidos](#r)</span>
+- <span style="font-size:150%"> [<span style="color:black">Modelos ARIMA estacionales](#estacional)</span> <br>
+
+- <span style="font-size:150%"> [<span style="color:black">Ejercicio aplicado en R: tasa de desempleo de los Estados Unidos](#r1)</span> <br>
+
+- <span style="font-size:150%"> [<span style="color:black">Ejercicio aplicado en R: desempleo estacional de los Estados Unidos](#r2)</span>
 
 ---
 # <span style="font-size:80%">Lecturas</span>
@@ -171,7 +175,42 @@ name: BJ
 - Realizar el pronóstico con el modelo ARIMA
 
 ---
-name: r
+name: estacional
+# <span style="font-size:80%">Modelos ARIMA estacionales</span>
+
+Hasta ahora, hemos restringido la atención a datos no estacionales y modelo ARIMA no estacionales. Sin embargo, los modelos ARIMA también son capaces de modelar un amplio rango de dato estacionales. Los datos estacionales tienen la forma:
+<font size = 3>
+```{r fig.align='center', message=FALSE, warning=FALSE, out.width="30%"}
+library(fpp3)
+
+data(us_employment)
+
+leisure <- us_employment |>  filter(Title == "Leisure and Hospitality", year(Month) > 2000) |>
+  mutate(Employed = Employed/1000) |> select(Month, Employed)
+autoplot(leisure, Employed) + labs(title = "Desempleo US: Sector de ocio", y="# de personas (en millones)")
+```
+
+Un modelo estacional ARIMA incluye términos estacionales adicionales y tiene la siguiente estructura 
+
+$$ARIMA \underbrace{(p,d,q)}_{\text{No estacional}} \underbrace{(P,D,Q)_m}_{\text{ Estacional}}$$
+donde $m=$ el periodo estacional (ejemplo, número de observaciones por año)
+
+---
+# <span style="font-size:80%">Modelos ARIMA estacionales</span>
+Para definir la estructura estacional de una serie de tiempo se sigue el mismo procedimiento que con la parte nos estacional, es decir viendo el correlograma
+
+Correlogragra de un proceso $ARIMA(0,0,0)(0,0,1)_{12}$
+<p style="margin-bottom: -1em">
+- AC: un pico estadísticamente significativo en el rezago 12 pero no significancia de otros picos
+- PAC: decae exponencialmente en los rezagos estacionales (es decir, en los rezagos 12, 24, 36,...)
+
+Correlogragra de un proceso $ARIMA(0,0,0)(1,0,0)_{12}$
+<p style="margin-bottom: -1em">
+- AC: decae exponencialmente en los rezagos estacionales (es decir, en los rezagos 12, 24, 36,...)
+- PAC: un pico estadísticamente significativo en el rezago 12 pero no significancia de otros picos
+
+---
+name: r1
 # <span style="font-size:80%">Ejercicio aplicado en R: tasa de desempleo de los Estados Unidos</span>
 <font size = 3>
 ```{r fig.align='center', message=FALSE, warning=FALSE, out.width="30%"}
@@ -271,24 +310,47 @@ Se tiene que los residuales no están correlacionados y se distribuyen normal
 
 ---
 # <span style="font-size:80%">Ejercicio aplicado en R: tasa de desempleo de los Estados Unidos</span>
+```{r, out.width="60%", fig.align='center'}
+checkresiduals(arma20)
+```
+
+
+---
+# <span style="font-size:80%">Ejercicio aplicado en R: tasa de desempleo de los Estados Unidos</span>
+<font size=3>
 Comparemos con el modelo sobreparametrizado ARMA(3,0)
 
 .pull-left-50[
-```{r, out.width="55%",fig.align='center'}
+```{r, out.width="45%",fig.align='center'}
 arma30 <- arima(y, order=c(3,0,0))
 arma30
 ```
 ]
-<p style="margin-bottom: 1.8em">
+
 .pull-right-50[
-```{r, out.width="55%",fig.align='center'}
+<p style="margin-bottom: 1.8em">
+```{r, out.width="45%",fig.align='center'}
 coeftest(arma30)
 ```
 ]
 
-- Se observa que los coeficientes del primer y segundo rezago son similares al modelo ARMA(2,0), pero el tercer rezago no es estadísticamente diferente de cero  
-- Comparando el AIC (el mejor modelo es que tenga menor valor), ARMA(3,0) es mejor que ARMA(2,0)
-- Un test likelihood-ratio puede calcularse para seleccionar el mejor modelo $(H_0:$ se prefiere el modelo restringido (ARMA(2,0)))
+<br/>
+
+Se observa que los coeficientes del primer y segundo rezago son similares al modelo ARMA(2,0), pero el tercer rezago no es estadísticamente diferente de cero
+
+Comparando los criterios de información (el mejor modelo es que tenga menor valor)
+
+```{r out.width="30%"}
+AIC(arma20); AIC(arma30)
+BIC(arma20); BIC(arma30)
+```
+
+Con el AIC el ARMA(3,0) es mejor que el ARMA(2,0), pero con el BIC ARMA(2,0) es mejor que el ARMA(3,0) 
+
+---
+# <span style="font-size:80%">Ejercicio aplicado en R: tasa de desempleo de los Estados Unidos</span>
+
+Un test likelihood-ratio puede calcularse para seleccionar el mejor modelo $(H_0:$ se prefiere el modelo restringido (ARMA(2,0)))
 
 ```{r}
 lrtest <- as.numeric(2*(logLik(arma30)-logLik(arma20)))
@@ -344,7 +406,7 @@ Existe otra función más poderosa que selecciona el mejor modelo ARIMA
 
 .pull-left-50[
 ```{r, out.width="55%",fig.align='center'}
-arma_op <- auto.arima(y)
+arma_op <- auto.arima(y, stepwise=F, approximation=F)
 arma_op
 ```
 ]
@@ -356,8 +418,142 @@ coeftest(arma_op)
 ]
 
 ```{r fig.align='center', out.width="40%"}
-f <- forecast(arma_op, 10, 95)
+f <- forecast::forecast(arma_op, 10)
 autoplot(f, main="Predicción de la tasa de desempleo")
+```
+
+---
+name: r2
+# <span style="font-size:80%">Ejercicio aplicado en R: desempleo estacional en los Estados Unidos</span>
+
+En este ejemplo se decribe la modelación de un ARIMA estacional usando los datos mensuales de desempleo para Estados Unidos. Se toman los datos para el sector de ocio y hostelería desde enero de 2001 a septiembre de 2019
+
+```{r fig.align='center', message=FALSE, warning=FALSE, out.width="40%"}
+data("us_employment")
+
+leisure <- us_employment |>  filter(Title == "Leisure and Hospitality", year(Month) > 2000) |>
+  mutate(Employed = Employed/1000) |> select(Month, Employed)
+autoplot(leisure, Employed) + labs(title = "Desempleo US: Sector de ocio", y="# de personas (en millones)")
+```
+
+Los datos son claramente no estacionarios, con una fuerte estacionalidad y tendencia no lineal
+
+
+---
+# <span style="font-size:80%">Ejercicio aplicado en R: desempleo estacional en los Estados Unidos</span>
+Se toma una diferencia estacional en 12 meses, para eliminar esa estacionalidad
+
+```{r fig.align='center', out.width="40%"}
+leisure <- leisure |> mutate(Employed.e12 = difference(leisure$Employed, 12))
+ts.plot(leisure$Employed.e12)
+
+```
+
+.small-code[
+.pull-left-50[
+```{r, out.width="50%",fig.align='center'}
+ggAcf(leisure$Employed.e12, main="Función AC", ylab="AC")
+```
+]
+
+.pull-right-50[
+```{r, out.width="50%",fig.align='center'}
+ggPacf(leisure$Employed.e12, main="Función PAC", ylab="PAC")
+```
+]
+]
+
+---
+# <span style="font-size:80%">Ejercicio aplicado en R: desempleo estacional en los Estados Unidos</span>
+
+Se observa que no hay estacionariedad, así que se toman primeras diferencias y se vuelve a mirar el correlograma
+```{r out.width="40%",fig.align='center'}
+leisure <- leisure |> mutate(dEmployed.e12 = difference(leisure$Employed.e12, 1))
+ts.plot(leisure$dEmployed.e12)
+```
+
+.small-code[
+.pull-left-50[
+```{r, out.width="50%",fig.align='center'}
+ggAcf(leisure$dEmployed.e12, main="Función AC", ylab="AC")
+```
+]
+
+.pull-right-50[
+```{r, out.width="50%",fig.align='center'}
+ggPacf(leisure$dEmployed.e12, main="Función PAC", ylab="PAC")
+```
+]
+]
+
+---
+# <span style="font-size:80%">Ejercicio aplicado en R: desempleo estacional en los Estados Unidos</span>
+<font size=3>
+Potenciales modelos que surgen con base en el anterior correlograma:
+<p style="margin-bottom: -1em">
+- la significancia en el rezago 2 de la AC sugiere un MA(2) en la parte no estacional. La significancia en el rezago 12 en la AC sugiere un MA(1) en la parte estacional. El proceso sería un ARIMA(0,1,2)(0,1,1)
+- si se usa la PAC para seleccionar la parte no estacional y la AC para seleccionar la parte estacional, surge un ARIMA(2,1,2)(0,1,1)
+- También se incluye la selección atomática
+
+.pull-left-50[
+```{r}
+arima012011 <- arima(leisure$Employed, order=c(0,1,2),
+                     seasonal = list(order = c(0, 1, 1), period = 12))
+arima012011
+```
+]
+
+.pull-right-50[
+```{r}
+arima210011 <- arima(leisure$Employed, order=c(2,1,0),
+                     seasonal = list(order = c(0, 1, 1), period = 12), method="ML")
+arima210011
+```
+]
+
+```{r}
+autoarima <- leisure |>
+  model(ARIMA(Employed, stepwise = FALSE, approx = FALSE))
+report(autoarima)
+```
+
+---
+# <span style="font-size:80%">Ejercicio aplicado en R: desempleo estacional en los Estados Unidos</span>
+
+```{r out.width="30%"}
+AIC(arima012011); AIC(arima210011)
+BIC(arima012011); BIC(arima210011)
+glance(autoarima)
+```
+
+De acuerdo con los criterios de información, el mejor modelo es el de la selección automática
+
+---
+# <span style="font-size:80%">Ejercicio aplicado en R: desempleo estacional en los Estados Unidos</span>
+
+Miremos los residuales del modelo
+```{r, out.width="40%", fig.align='center'}
+autoarima |> gg_tsresiduals(lag=36)
+```
+
+Un pequeño pero significante pico (en el rezago 11) de 36 es aún consistente con un comportamiento ruido blanco. Para estar seguros, se calcula el test Ljung-Box
+
+```{r}
+augment(autoarima) |>
+  features(.innov, ljung_box, lag=24, dof=4)
+```
+El pvalor es muy grande con lo que se confirma que los residuales son similares a un ruido blanco
+
+---
+# <span style="font-size:80%">Ejercicio aplicado en R: desempleo estacional en los Estados Unidos</span>
+
+Haciendo la predicción con el modelo seleccionado
+
+```{r fig.align='center', out.width="60%"}
+fabletools::forecast(autoarima, h=36) |>
+  autoplot(leisure) +
+  labs(title = "Predicción del desempleo en el sector de ocio US",
+       y="# de personas (en millones)")
 ```
 
 
