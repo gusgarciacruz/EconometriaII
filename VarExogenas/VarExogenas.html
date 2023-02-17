@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Modelos con variables exógenas</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Gustavo A. García   ggarci24@eafit.edu.co                  " />
+    <script src="libs/header-attrs-2.14/header-attrs.js"></script>
+    <script src="libs/clipboard-2.0.6/clipboard.min.js"></script>
+    <link href="libs/xaringanExtra-clipboard-0.2.6/xaringanExtra-clipboard.css" rel="stylesheet" />
+    <script src="libs/xaringanExtra-clipboard-0.2.6/xaringanExtra-clipboard.js"></script>
+    <script>window.xaringanExtraClipboard(null, {"button":"<i class=\"fa fa-clipboard\"><\/i>","success":"<i class=\"fa fa-check\" style=\"color: #90BE6D\"><\/i>","error":"<i class=\"fa fa-times-circle\" style=\"color: #F94144\"><\/i>"})</script>
+    <link href="libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+    <link href="libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+    <link href="libs/xaringanExtra-extra-styles-0.2.6/xaringanExtra-extra-styles.css" rel="stylesheet" />
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Modelos con variables exógenas
+]
+.author[
+### Gustavo A. García <br> <span class="notbold" style="font-size:65%"><a href="mailto:ggarci24@eafit.edu.co" class="email">ggarci24@eafit.edu.co</a></span> <br> <br> <br> <br> <br> <br> <br> <br> <br>
+]
+.date[
+### <span class="notbold" style="font-size:65%">Econometría II <br> Programa de Economía <br> Universidad EAFIT</span>
+]
+
+---
+
+
+
+
+&lt;style&gt;
+.notbold{
+    font-weight:normal
+}
+
+body {
+text-align: justify;
+}
+
+h1{
+      margin-top: -1px;
+      margin-bottom: -3px;
+}
+
+.small-code pre{
+  margin-bottom: -10px;
+  
+}  
+
+.medium-code pre{
+  margin-bottom: 2px;
+  
+} 
+&lt;/style&gt;
+
+
+
+
+
+
+&lt;font size = "5"&gt;
+
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+
+Link slides en formato [html](https://gusgarciacruz.github.io/EconometriaII/VarExogenas/VarExogenas.html)
+
+Link slides en formato [PDF](https://gusgarciacruz.github.io/EconometriaII/VarExogenas/VarExogenas.pdf)
+---
+# &lt;span style="font-size:80%"&gt;En este tema&lt;/span&gt;
+
+- &lt;span style="font-size:150%"&gt;[&lt;span style="color:black"&gt;Introducción](#introduccion)&lt;/span&gt; &lt;br&gt;
+
+- &lt;span style="font-size:150%"&gt; [&lt;span style="color:black"&gt;Estimación de modelos de rezagos distribuidos](#rezago)&lt;/span&gt; &lt;br&gt;
+
+- &lt;span style="font-size:150%"&gt; [&lt;span style="color:black"&gt;Estimación de modelos autorregresivos](#ar)&lt;/span&gt; &lt;br&gt;
+
+- &lt;span style="font-size:150%"&gt; [&lt;span style="color:black"&gt;Modelo autorregresivo de rezago distribuido (ADL)](#adl)&lt;/span&gt; &lt;br&gt;
+
+- &lt;span style="font-size:150%"&gt; [&lt;span style="color:black"&gt;Detección de autocorrelación en modelos autorregresivos: `\(h\)` de Durbin](#h)&lt;/span&gt; &lt;br&gt;
+
+- &lt;span style="font-size:150%"&gt; [&lt;span style="color:black"&gt;Modelo ARMAX](#armax)&lt;/span&gt; &lt;br&gt;
+
+- &lt;span style="font-size:150%"&gt; [&lt;span style="color:black"&gt;Ejercicio aplicado en R: predicción del crecimiento del PIB usando el *Term Spread*](#r)&lt;/span&gt;
+
+---
+# &lt;span style="font-size:80%"&gt;Lecturas&lt;/span&gt;
+- &lt;span style="font-size:150%"&gt; Gujarati, D. y Porter, D. (2010). *Econometría*. 5a edición, Mc Graw Hill. &lt;span style="color:blue"&gt;Cap 17 &lt;br&gt; &lt;br&gt;
+
+- &lt;span style="font-size:150%"&gt;Enders, W. (2014). *Applied econometric time series*. 4th edition, Wiley. &lt;span style="color:blue"&gt;Cap 5&lt;br&gt; &lt;br&gt;
+
+- &lt;span style="font-size:150%"&gt;Pérez, c. (2008). *Econometría avanzada. Técnicas y herramientas*. Pearson. &lt;span style="color:blue"&gt;Cap 1&lt;br&gt;&lt;br&gt;
+
+- &lt;span style="font-size:150%"&gt;Demirhan, H. (2020). "dLagM: An R package for distributed lag models and ARDL bounds testing". *PLoS ONE*, 15(2): e0228812. https://doi.org/10.1371/journal.pone.0228812
+
+---
+name: introduccion
+# &lt;span style="font-size:80%"&gt;Introducción&lt;/span&gt;
+
+En modelo de series de tiempo, existen tres tipo de modelos
+
+$$
+`\begin{aligned}
+Y_t &amp; = \alpha + \sum_{i=0}^{p} \beta_i X_{t-i} + u_t &amp; \text{ Modelo de rezagos distribuido}\\
+Y_t &amp; = \alpha + \sum_{j=1}^{q} \gamma_j Y_{t-j} + u_t &amp; \text{ Modelo autorregresivo}\\
+Y_t &amp; = \alpha + \sum_{i=0}^{p} \beta_i X_{t-i} + \sum_{j=1}^{q} \gamma_j Y_{t-j} + u_t &amp; \text{ Modelo autorregresivo de rezago distribuido (ADL)}
+\end{aligned}`
+$$
+
+
+En este tema estudiaremos estos modelos
+
+
+
+
+
+---
+name: rezago
+# &lt;span style="font-size:80%"&gt;Estimación de modelos de rezagos distribuidos&lt;/span&gt;
+
+Suponga que tenemos el siguiente modelo de rezagos distribuidos infinito:
+
+`$$Y_t = \alpha + \beta_0 X_t + \beta_1 X_{t-1} + \beta_2 X_{t-2}+...+u_t$$`
+
+¿Cómo estimamos `\(\alpha\)` y las `\(\beta\)`? Podemos adoptar dos enfoques:
+
+1. estimación *ad hoc* 
+2. restricciones a priori sobre las `\(\beta\)`, si suponemos que siguen un patrón sistemático.
+
+---
+# &lt;span style="font-size:80%"&gt;Estimación de modelos de rezagos distribuidos&lt;/span&gt;
+
+**&lt;font color="blue"&gt;Estimación *ad hoc*&lt;/font&gt;** 
+
+Como se supone que la variable explicativa `\(X_t\)` es no estocástica (o por lo menos no correlacionada con el término de perturbación ut), igualmente son no estocásticas `\(X_{t−1}\)`, `\(X_{t−2}\)`, y así sucesivamente. Por consiguiente, en principio, es aplicable el método de MCO
+
+El enfoque de Alt (1942) y Tinbergen (1949) sugiere  proceder secuencialmente, es decir, primero la regresión `\(Y_t\)` sobre `\(X_t\)`, luego la de `\(Y_t\)` sobre `\(X_t\)` y `\(X_{t−1}\)`, después la regresión de `\(Y_t\)` sobre `\(X_t\)`, `\(X_{t−1}\)` y `\(X_{t−2}\)`, y así sucesivamente
+
+Este procedimiento secuencial se detiene cuando los coeficientes de regresión de las variables rezagadas empiezan a ser estadísticamente insignificantes y/o el coeficiente de por lo menos una variable cambia su signo de positivo a negativo, o viceversa
+
+Aunque la estimación *ad hoc* parece sencilla y discreta, plantea muchas desventajas, como
+las siguientes:
+1. No hay guía a priori sobre la longitud máxima que debe tener el rezago
+
+2. A medida que se estiman rezagos sucesivos, quedan menos grados de libertad, con lo cual se
+debilita un poco la inferencia estadística
+
+3. Los rezagos sucesivos tienden a estar altamente correlacionados; por tanto, sale a relucir la multicolinealidad
+
+Dadas estas limitaciones el procedimiento *ad hoc* no es muy recomendable
+
+---
+# &lt;span style="font-size:80%"&gt;Estimación de modelos de rezagos distribuidos&lt;/span&gt;
+
+**&lt;font color="blue"&gt;Método de Koyck: restricciones a priori sobre las `\(\beta\)`&lt;/font&gt;**
+
+Si todas las `\(\beta\)` tienen el mismo signo, Koyck da por hecho que se reducen geométricamente de la siguiente manera
+
+`$$\beta_k =\beta_0\lambda^k$$`
+
+donde `\(\lambda\)`, tal que `\(0&lt;\lambda&lt;1\)`, se conoce como tasa de descenso, o de caída, del rezago distribuido y donde `\(1-\lambda\)` se conoce como velocidad de ajuste
+
+La idea es que cada coeficiente `\(\beta\)` sucesivo es numéricamente inferior a cada `\(\beta\)` anterior (esta afirmación se debe a que `\(\lambda &lt; 1\)`), lo cual implica que, a medida que se
+retorna al pasado distante, el efecto de ese rezago sobre `\(Y_t\)` se reduce progresivamente, supuesto muy razonable
+
+Características del esquema de Koyck:
+
+1. Al suponer valores no negativos para `\(\lambda\)`, Koyck elimina la posibilidad de que las `\(\beta\)` cambien de signo 
+
+2. al suponer que `\(\lambda &lt; 1\)`, le da un menor peso a las `\(\beta\)` en el pasado distante que a las actuales 
+
+3. asegura que la suma de las β, que proporciona el multiplicador de largo plazo, es
+
+`$$\sum_{k=0}^{\infty}\beta_k = \beta_0 (1+\lambda+\lambda^2+\lambda^3+...)=  \sum_{k=0}^{\infty} \beta_0 \left( \frac{1}{1-\lambda} \right)$$`
+
+---
+# &lt;span style="font-size:80%"&gt;Estimación de modelos de rezagos distribuidos&lt;/span&gt;
+&lt;p style="margin-bottom: -1em"&gt;
+**&lt;font color="blue"&gt;Método de Koyck: restricciones a priori sobre las `\(\beta\)`&lt;/font&gt;**
+
+Como resultado de imponer el supuesto de Koyck sobre el modelo, el modelo de rezagos distribuido queda
+
+`$$Y_t = \alpha + \beta_0 X_t + \beta_0 \lambda X_{t-1} + \beta_0 \lambda^2 X_{t-2}+...+u_t$$`
+
+El modelo aún no es adecuado para su fácil estimación, pues un gran número (infinito) de parámetros quedan aún por estimar y el parámetro `\(\lambda\)` ingresa de forma por completo no lineal, por lo que un método de estimación lineal no podría aplicarse
+
+Koyck entonces propone transformar la ecuación rezagandola un periodo, multiplicarla por `\(\lambda\)` y restarla a la ecuación original, con lo cual el modelo quedaría
+
+`$$Y_t = \alpha(1-\lambda) + \beta_0 X_t + \lambda Y_{t-1} + v_t$$`
+
+donde `\(v_t = u_t - \lambda u_{t-1}\)`
+&lt;p style="margin-bottom: -1em"&gt;
+Esta &lt;font color="blue"&gt;transformación de Koyck&lt;/font&gt; tiene las siguientes características:
+
+1. Empezamos con un modelo de rezagos distribuidos y terminamos con un modelo autorregresivo
+
+2. `\(Y_{t−1}\)` como expicativa implica algunos problemas. `\(Y_{t−1}\)`, al igual que `\(Y_t\)`, es estocástica (aletoria), lo cual significa que tenemos una variable explicativa estocástica en el modelo. En los mínimos cuadrados es necesaio el supuesto de que las variables explicativas son no estocásticas (no aleatorias)
+
+3. `\(v_t = u_t - \lambda u_{t-1}\)` implica problemas de correlación serial
+
+4. La presencia de `\(Y_{t-1}\)` implica que el `\(d\)` de Durbin-Watson no se puede utilizar. Se debe utilizar una prueba alternativa: la `\(h\)` de Durbin
+
+---
+# &lt;span style="font-size:80%"&gt;Estimación de modelos de rezagos distribuidos&lt;/span&gt;
+
+**&lt;font color="blue"&gt;Método de Koyck: restricciones a priori sobre las `\(\beta\)`&lt;/font&gt;**
+
+&lt;font color="blue"&gt;Mediana de los rezagos&lt;/font&gt;
+
+Es el tiempo requerido para la primera mitad, o 50%, del cambio total ocurrido en `\(Y\)` como consecuencia de un cambio unitario sostenido en `\(X\)`
+
+`$$\text{Modelo de Koyck: Mediana de los rezagos} = -\frac{log 2}{log \lambda}$$`
+
+Por ejemplo:&lt;br&gt; 
+`\(\lambda=0.2 \Longrightarrow\)` mediana de los rezagos = 0.4306: 50% del cambio total en `\(Y\)` se logra en menos de la mitad de un periodo &lt;br&gt;
+`\(\lambda=0.8 \Longrightarrow\)` mediana de los rezagos = 3.1067: 50% del cambio total en `\(Y\)` se logra en más de 3 periodos&lt;br&gt;
+`\(\lambda\)` es la velocidad de ajuste, con lo que entre más alto sea `\(\lambda\)` mayor será la velocidad de juste, y entre menor se el valor de `\(\lambda\)` mayor será la velocidad de ajuste
+
+
+&lt;font color="blue"&gt;Rezago medio&lt;/font&gt;
+
+`$$\text{Modelo de Koyck: Media de los rezagos} = \frac{\lambda}{1- \lambda}$$`
+
+Por ejemplo:&lt;br&gt;
+`\(\lambda=0.5 \Longrightarrow\)` rezago medio = 1: se requiere en promedio un periodo para que el efecto de los cambios en `\(X\)` se sientan en los cambios en `\(Y\)`
+
+---
+name: ar
+# &lt;span style="font-size:80%"&gt;Estimación de modelos autorregresivos&lt;/span&gt;
+
+- Como vimos anteriormente, el modelo de rezagos distribuido, se puede reducir a un modelo autorregresivo, es decir, donde una de las variables explicativas es `\(Y_{t-1}\)`
+
+`$$Y_t = \alpha + \sum_{j=1}^{q} \gamma_j Y_{t-j} + u_t$$`
+
+- Aplicar MCO a estos modelo puede no ser adecuado, debido a la presencia de variables explicativas estocásticas o aleatorias y la posibilidad de correlación serial
+
+- Para aplicar MCO debemos demostrar que `\(Y_{t-1}\)` está distribuida independientemente del término de perturbacón `\(v_t\)`. Es posible demostrar que existe tal correlación:
+
+`$$cov[Y_{t-1},(u_t - u_{t-1})] = -\lambda \sigma^2$$`
+
+- Como sabemos, la estimación por MCO ante correlación de las variables independientes y el término de perturbación, lleva a estimadores sesgados e inconsistentes.Por lo que la estimación del modelo por MCO no es adecuada
+
+- Supongamos que encontramos una variable para representar `\(Y_{t-1}\)` muy correlacionada con `\(Y_{t-1}\)` pero no con `\(v_t\)`. Tal representación se denomina &lt;font color="blue"&gt;variable instrumental&lt;/font&gt;. Liviatan (1963) sugiere `\(X_{t-1}\)` como variable instrumental para `\(Y_{t-1}\)`
+
+---
+name: adl
+# &lt;span style="font-size:80%"&gt;Modelo autorregresivo de rezago distribuido (ADL)&lt;/span&gt;
+
+Un modelo `\(ADL(p,q)\)` asume que una serie de tiempo `\(Y_t\)` puede ser representada por una función lineal de `\(p\)` valores de su rezago y `\(q\)` rezagos de otra serie de tiempo `\(X_t\)`
+
+`$$Y_t = \alpha + \sum_{i=0}^{p} \beta_i X_{t-i} + \sum_{j=1}^{q} \gamma_j Y_{t-j} + u_t$$`
+Por ejemplo, un `\(ADL(1,2)\)` será:
+
+`$$Y_t = \alpha + \beta_0 X_{t} + \beta_1 X_{t-1} + \gamma_1 Y_{t-1} + \gamma_2 Y_{t-2} + u_t$$`
+
+---
+name: h
+# &lt;span style="font-size:80%"&gt;Detección de autocorrelación en modelos autorregresivos: `\(h\)` de Durbin&lt;/span&gt;
+
+- Como se mencionó, cuando `\(Y_{t-1}\)` está como variable explicativa el estadístico `\(d\)` de Durbin-Watson no sirve para detectar correlación serial (de primer orden)
+
+- En los modelos autorregresivos el valor del `\(d\)` por lo general tiende a 2, que indica ausencia de autocorrelación
+
+- El mismo Durbin, propuso la prueba `\(h\)` de muestras grandes para detectar correlación serial en modelo autorregresivos. El estadístico `\(h\)` tiene la siguiente estructura bajo la hipótesis nula de no autocorrelación
+
+`$$h = \hat\rho \sqrt{\frac{n}{1-n(Var(\hat\alpha_2))}} \sim N(0,1)$$`
+donde `\(n\)`=tamaño de la muestra, `\(Var(\hat\alpha_2)\)`=varianza del coeficiente de `\(Y_{t-1}\)`, y `\(\hat\rho\)` es la estimación de `\(\rho\)`, correlación serial de primer orden y el estadístico se distribuye como una normal estandarizada
+
+Si el valor absoluto del estadístico `\(h\)` de Durbin es mayor a 1.96 (o si `\(pvalor&lt;5\%\)`), es porbable que exista autocorrelación
+
+---
+name: armax
+# &lt;span style="font-size:80%"&gt;Modelo ARMAX&lt;/span&gt;
+- Los modelos ADL estiman sólo efectos autorregresivos
+
+- Una extensión inmediata que viene a la mente es la inclusión de efectos MA dentro del modelo
+
+- Estos efectos pueden ser entendidos como efectos rezagados de variables omitidas
+
+- El modelo ARMAX(p,q,b) se define como:
+
+`$$Y_t = \alpha + \sum_{j=1}^p \gamma_j Y_{t-j} + \sum_{k=1}^q \phi_k u_{t-k} + \sum_{i=0}^b \beta_i X_{t-i} + u_t$$`
+- Una desventaja de este modelo es que los `\(\beta_i\)` son difíciles de interpretar. El `\(\beta_0\)` no es el efecto sobre `\(Y_t\)` cuando `\(X_{t}\)` incremente en una unidad, como en un modelo de regresión normal
+
+- La presencia de valores rezagados de la variable dependiente al lado derecho de la ecuación implica que, los `\(\beta_i\)` sólo pueden interpretarse condicional a los valores pasados de `\(Y_t\)`, lo cual es poco intuitivo
+
+- Si reescribimos el modelo usando los operadores de rezagos, el modelo ARMAX es dado por
+
+`$$\gamma(L)Y_t = \beta(L)X_t + \phi(L)u_t \Longrightarrow Y_t = \frac{\beta(L)}{\gamma(L)}X_t + \frac{\phi(L)}{\gamma(L)}u_t$$`
+  donde `\(\beta(L) = \beta_1L-...-\beta_bL^b\)`, `\(\gamma(L) = 1-\gamma_1L-...-\gamma_pL^p\)` y `\(\phi(L) = 1-\phi_1L-...-\phi_pL^q\)`  
+
+- Observe cómo los coeficientes AR se mezclan tanto con las covariables como con el término de error
+
+---
+# &lt;span style="font-size:80%"&gt;Modelo ARMAX&lt;/span&gt;
+
+Por esta complicación en la interpretación de los `\(\beta_i\)`, se prefiere usar modelos de regresión con errores ARMA, definido como sigue:
+
+$$
+`\begin{aligned}
+Y_t &amp; = \sum_{i=0}^b \beta_i X_{t-i} + n_t\\
+n_t &amp; = \gamma_1 n_{t-1} + ... + \gamma_p n_{t-p} - \phi_1 u_{t-1} - ... - \phi_q u_{t-q} + u_t
+\end{aligned}`
+$$
+En este caso, los coeficientes de regresión `\(\beta_i\)` tienen la usual interpretación. Esta fácil interpretación lo hace más atractivo que el modelo anterior 
+
+Usando operadores de rezago el modelo puede escribirse como:
+
+`$$Y_t = \beta(L) X_{t} + \frac{\phi(L)}{\gamma(L)}u_t$$`
+Softwares, como R, estiman este último modelo, así que los `\(\beta\)`s pueden interpretarse sin problema
+
+---
+name: r
+# &lt;span style="font-size:80%"&gt;Ejercicio aplicado en R: predicción del crecimiento del PIB usando el *Term Spread*&lt;/span&gt;
+
+Las tasas de interés de los bonos del Tesoro a corto y largo plazo están estrechamente vinculadas a las condiciones macroeconómicas. Si bien las tasas de interés de ambos tipos de bonos tienen las mismas tendencias a largo plazo, se comportan de manera bastante diferente a corto plazo. La diferencia en las tasas de interés de dos bonos con distintos vencimientos se denomina diferencial de plazo o *Term Spread*
+
+La idea en este ejercicio es analizar los efectos del *Term Spread* sobre el crecimiento económico
+&lt;p style="margin-bottom: -1em"&gt;
+Se tienen datos trimestrales para los Estados Unidos entre 1957Q1 y 2013Q4, para las siguientes variables:
+- GDPC96: PIB real a precios de 1996
+- JAPAN_IP: índice de producción industrial Japones 
+- GS10: tasa de interés de los bonos del tesoro de US a 10 años
+- TB3MS: tasa de interés de los bonos del tesoro de US a 3 meses
+- UNRATE: tasa de desempleo
+- EXUSUK: tasa de cambio dólares libra esterlina
+- Y otras variables
+
+&lt;p style="margin-bottom: -1em"&gt;
+En el siguiente link se encuentra el código utilizado en R:
+- [Código en R](https://gusgarciacruz.github.io/EconometriaII/VarExogenas/VarExogenas.R)
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "16:9"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

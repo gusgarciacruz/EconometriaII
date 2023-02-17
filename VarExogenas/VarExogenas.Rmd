@@ -1,0 +1,357 @@
+---
+title: "Modelos con variables exógenas"
+author: Gustavo A. García <br> <span style="font-size:65%" class='notbold'>ggarci24@eafit.edu.co</span> <br> <br> <br> <br> <br> <br> <br> <br> <br>
+date: <span style="font-size:65%" class='notbold'>Econometría II <br> Programa de Economía <br> Universidad EAFIT</span>
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: xaringan-themer.css
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      ratio: "16:9"
+---
+
+```{r setup, include = F}
+# This is the recommended set up for flipbooks
+# you might think about setting cache to TRUE as you gain practice --- building flipbooks from scratch can be time consuming
+options(width = 70)
+knitr::opts_chunk$set(
+  dev.args = list(bg = 'transparent'),
+  fig.width = 12, message = TRUE,
+  warning = FALSE, comment = "", cache = TRUE, fig.retina = 3
+)
+knitr::opts_knit$set(global.par = TRUE)
+Sys.setenv(`_R_S3_METHOD_REGISTRATION_NOTE_OVERWRITES_` = "false")
+# remotes::install_github("luukvdmeer/sfnetworks")
+# remotes::install_github("EvaMaeRey/flipbookr")
+# remotes::install_github("rlesur/klippy")
+# devtools::install_github("gadenbuie/xaringanExtra")
+library(flipbookr)
+library(xaringanthemer)
+library(tidyverse)
+library(klippy)
+library(xaringanExtra)
+```
+
+<style>
+.notbold{
+    font-weight:normal
+}
+
+body {
+text-align: justify;
+}
+
+h1{
+      margin-top: -1px;
+      margin-bottom: -3px;
+}
+
+.small-code pre{
+  margin-bottom: -10px;
+  
+}  
+
+.medium-code pre{
+  margin-bottom: 2px;
+  
+} 
+</style>
+
+```{r xaringan-scribble, echo=FALSE}
+#xaringanExtra::use_scribble()
+```
+
+```{r xaringanExtra-clipboard, echo=FALSE}
+htmltools::tagList(
+  xaringanExtra::use_clipboard(
+    button_text = "<i class=\"fa fa-clipboard\"></i>",
+    success_text = "<i class=\"fa fa-check\" style=\"color: #90BE6D\"></i>",
+    error_text = "<i class=\"fa fa-times-circle\" style=\"color: #F94144\"></i>"
+  ),
+  rmarkdown::html_dependency_font_awesome()
+)
+```
+
+```{r xaringan-extra-styles, echo=FALSE}
+xaringanExtra::use_extra_styles(
+  hover_code_line = TRUE,         #<<
+  mute_unhighlighted_code = TRUE  #<<
+)
+```
+<font size = "5">
+
+<br>
+<br>
+<br>
+<br>
+<br>
+
+Link slides en formato [html](https://gusgarciacruz.github.io/EconometriaII/VarExogenas/VarExogenas.html)
+
+Link slides en formato [PDF](https://gusgarciacruz.github.io/EconometriaII/VarExogenas/VarExogenas.pdf)
+---
+# <span style="font-size:80%">En este tema</span>
+
+- <span style="font-size:150%">[<span style="color:black">Introducción](#introduccion)</span> <br>
+
+- <span style="font-size:150%"> [<span style="color:black">Estimación de modelos de rezagos distribuidos](#rezago)</span> <br>
+
+- <span style="font-size:150%"> [<span style="color:black">Estimación de modelos autorregresivos](#ar)</span> <br>
+
+- <span style="font-size:150%"> [<span style="color:black">Modelo autorregresivo de rezago distribuido (ADL)](#adl)</span> <br>
+
+- <span style="font-size:150%"> [<span style="color:black">Detección de autocorrelación en modelos autorregresivos: $h$ de Durbin](#h)</span> <br>
+
+- <span style="font-size:150%"> [<span style="color:black">Modelo ARMAX](#armax)</span> <br>
+
+- <span style="font-size:150%"> [<span style="color:black">Ejercicio aplicado en R: predicción del crecimiento del PIB usando el *Term Spread*](#r)</span>
+
+---
+# <span style="font-size:80%">Lecturas</span>
+- <span style="font-size:150%"> Gujarati, D. y Porter, D. (2010). *Econometría*. 5a edición, Mc Graw Hill. <span style="color:blue">Cap 17 <br> <br>
+
+- <span style="font-size:150%">Enders, W. (2014). *Applied econometric time series*. 4th edition, Wiley. <span style="color:blue">Cap 5<br> <br>
+
+- <span style="font-size:150%">Pérez, c. (2008). *Econometría avanzada. Técnicas y herramientas*. Pearson. <span style="color:blue">Cap 1<br><br>
+
+- <span style="font-size:150%">Demirhan, H. (2020). "dLagM: An R package for distributed lag models and ARDL bounds testing". *PLoS ONE*, 15(2): e0228812. https://doi.org/10.1371/journal.pone.0228812
+
+---
+name: introduccion
+# <span style="font-size:80%">Introducción</span>
+
+En modelo de series de tiempo, existen tres tipo de modelos
+
+$$
+\begin{aligned}
+Y_t & = \alpha + \sum_{i=0}^{p} \beta_i X_{t-i} + u_t & \text{ Modelo de rezagos distribuido}\\
+Y_t & = \alpha + \sum_{j=1}^{q} \gamma_j Y_{t-j} + u_t & \text{ Modelo autorregresivo}\\
+Y_t & = \alpha + \sum_{i=0}^{p} \beta_i X_{t-i} + \sum_{j=1}^{q} \gamma_j Y_{t-j} + u_t & \text{ Modelo autorregresivo de rezago distribuido (ADL)}
+\end{aligned}
+$$
+
+
+En este tema estudiaremos estos modelos
+
+
+
+
+
+---
+name: rezago
+# <span style="font-size:80%">Estimación de modelos de rezagos distribuidos</span>
+
+Suponga que tenemos el siguiente modelo de rezagos distribuidos infinito:
+
+$$Y_t = \alpha + \beta_0 X_t + \beta_1 X_{t-1} + \beta_2 X_{t-2}+...+u_t$$
+
+¿Cómo estimamos $\alpha$ y las $\beta$? Podemos adoptar dos enfoques:
+
+1. estimación *ad hoc* 
+2. restricciones a priori sobre las $\beta$, si suponemos que siguen un patrón sistemático.
+
+---
+# <span style="font-size:80%">Estimación de modelos de rezagos distribuidos</span>
+
+**<font color="blue">Estimación *ad hoc*</font>** 
+
+Como se supone que la variable explicativa $X_t$ es no estocástica (o por lo menos no correlacionada con el término de perturbación ut), igualmente son no estocásticas $X_{t−1}$, $X_{t−2}$, y así sucesivamente. Por consiguiente, en principio, es aplicable el método de MCO
+
+El enfoque de Alt (1942) y Tinbergen (1949) sugiere  proceder secuencialmente, es decir, primero la regresión $Y_t$ sobre $X_t$, luego la de $Y_t$ sobre $X_t$ y $X_{t−1}$, después la regresión de $Y_t$ sobre $X_t$, $X_{t−1}$ y $X_{t−2}$, y así sucesivamente
+
+Este procedimiento secuencial se detiene cuando los coeficientes de regresión de las variables rezagadas empiezan a ser estadísticamente insignificantes y/o el coeficiente de por lo menos una variable cambia su signo de positivo a negativo, o viceversa
+
+Aunque la estimación *ad hoc* parece sencilla y discreta, plantea muchas desventajas, como
+las siguientes:
+1. No hay guía a priori sobre la longitud máxima que debe tener el rezago
+
+2. A medida que se estiman rezagos sucesivos, quedan menos grados de libertad, con lo cual se
+debilita un poco la inferencia estadística
+
+3. Los rezagos sucesivos tienden a estar altamente correlacionados; por tanto, sale a relucir la multicolinealidad
+
+Dadas estas limitaciones el procedimiento *ad hoc* no es muy recomendable
+
+---
+# <span style="font-size:80%">Estimación de modelos de rezagos distribuidos</span>
+
+**<font color="blue">Método de Koyck: restricciones a priori sobre las $\beta$</font>**
+
+Si todas las $\beta$ tienen el mismo signo, Koyck da por hecho que se reducen geométricamente de la siguiente manera
+
+$$\beta_k =\beta_0\lambda^k$$
+
+donde $\lambda$, tal que $0<\lambda<1$, se conoce como tasa de descenso, o de caída, del rezago distribuido y donde $1-\lambda$ se conoce como velocidad de ajuste
+
+La idea es que cada coeficiente $\beta$ sucesivo es numéricamente inferior a cada $\beta$ anterior (esta afirmación se debe a que $\lambda < 1$), lo cual implica que, a medida que se
+retorna al pasado distante, el efecto de ese rezago sobre $Y_t$ se reduce progresivamente, supuesto muy razonable
+
+Características del esquema de Koyck:
+
+1. Al suponer valores no negativos para $\lambda$, Koyck elimina la posibilidad de que las $\beta$ cambien de signo 
+
+2. al suponer que $\lambda < 1$, le da un menor peso a las $\beta$ en el pasado distante que a las actuales 
+
+3. asegura que la suma de las β, que proporciona el multiplicador de largo plazo, es
+
+$$\sum_{k=0}^{\infty}\beta_k = \beta_0 (1+\lambda+\lambda^2+\lambda^3+...)=  \sum_{k=0}^{\infty} \beta_0 \left( \frac{1}{1-\lambda} \right)$$
+
+---
+# <span style="font-size:80%">Estimación de modelos de rezagos distribuidos</span>
+<p style="margin-bottom: -1em">
+**<font color="blue">Método de Koyck: restricciones a priori sobre las $\beta$</font>**
+
+Como resultado de imponer el supuesto de Koyck sobre el modelo, el modelo de rezagos distribuido queda
+
+$$Y_t = \alpha + \beta_0 X_t + \beta_0 \lambda X_{t-1} + \beta_0 \lambda^2 X_{t-2}+...+u_t$$
+
+El modelo aún no es adecuado para su fácil estimación, pues un gran número (infinito) de parámetros quedan aún por estimar y el parámetro $\lambda$ ingresa de forma por completo no lineal, por lo que un método de estimación lineal no podría aplicarse
+
+Koyck entonces propone transformar la ecuación rezagandola un periodo, multiplicarla por $\lambda$ y restarla a la ecuación original, con lo cual el modelo quedaría
+
+$$Y_t = \alpha(1-\lambda) + \beta_0 X_t + \lambda Y_{t-1} + v_t$$
+
+donde $v_t = u_t - \lambda u_{t-1}$
+<p style="margin-bottom: -1em">
+Esta <font color="blue">transformación de Koyck</font> tiene las siguientes características:
+
+1. Empezamos con un modelo de rezagos distribuidos y terminamos con un modelo autorregresivo
+
+2. $Y_{t−1}$ como expicativa implica algunos problemas. $Y_{t−1}$, al igual que $Y_t$, es estocástica (aletoria), lo cual significa que tenemos una variable explicativa estocástica en el modelo. En los mínimos cuadrados es necesaio el supuesto de que las variables explicativas son no estocásticas (no aleatorias)
+
+3. $v_t = u_t - \lambda u_{t-1}$ implica problemas de correlación serial
+
+4. La presencia de $Y_{t-1}$ implica que el $d$ de Durbin-Watson no se puede utilizar. Se debe utilizar una prueba alternativa: la $h$ de Durbin
+
+---
+# <span style="font-size:80%">Estimación de modelos de rezagos distribuidos</span>
+
+**<font color="blue">Método de Koyck: restricciones a priori sobre las $\beta$</font>**
+
+<font color="blue">Mediana de los rezagos</font>
+
+Es el tiempo requerido para la primera mitad, o 50%, del cambio total ocurrido en $Y$ como consecuencia de un cambio unitario sostenido en $X$
+
+$$\text{Modelo de Koyck: Mediana de los rezagos} = -\frac{log 2}{log \lambda}$$
+
+Por ejemplo:<br> 
+$\lambda=0.2 \Longrightarrow$ mediana de los rezagos = 0.4306: 50% del cambio total en $Y$ se logra en menos de la mitad de un periodo <br>
+$\lambda=0.8 \Longrightarrow$ mediana de los rezagos = 3.1067: 50% del cambio total en $Y$ se logra en más de 3 periodos<br>
+$\lambda$ es la velocidad de ajuste, con lo que entre más alto sea $\lambda$ mayor será la velocidad de juste, y entre menor se el valor de $\lambda$ mayor será la velocidad de ajuste
+
+
+<font color="blue">Rezago medio</font>
+
+$$\text{Modelo de Koyck: Media de los rezagos} = \frac{\lambda}{1- \lambda}$$
+
+Por ejemplo:<br>
+$\lambda=0.5 \Longrightarrow$ rezago medio = 1: se requiere en promedio un periodo para que el efecto de los cambios en $X$ se sientan en los cambios en $Y$
+
+---
+name: ar
+# <span style="font-size:80%">Estimación de modelos autorregresivos</span>
+
+- Como vimos anteriormente, el modelo de rezagos distribuido, se puede reducir a un modelo autorregresivo, es decir, donde una de las variables explicativas es $Y_{t-1}$
+
+$$Y_t = \alpha + \sum_{j=1}^{q} \gamma_j Y_{t-j} + u_t$$
+
+- Aplicar MCO a estos modelo puede no ser adecuado, debido a la presencia de variables explicativas estocásticas o aleatorias y la posibilidad de correlación serial
+
+- Para aplicar MCO debemos demostrar que $Y_{t-1}$ está distribuida independientemente del término de perturbacón $v_t$. Es posible demostrar que existe tal correlación:
+
+$$cov[Y_{t-1},(u_t - u_{t-1})] = -\lambda \sigma^2$$
+
+- Como sabemos, la estimación por MCO ante correlación de las variables independientes y el término de perturbación, lleva a estimadores sesgados e inconsistentes.Por lo que la estimación del modelo por MCO no es adecuada
+
+- Supongamos que encontramos una variable para representar $Y_{t-1}$ muy correlacionada con $Y_{t-1}$ pero no con $v_t$. Tal representación se denomina <font color="blue">variable instrumental</font>. Liviatan (1963) sugiere $X_{t-1}$ como variable instrumental para $Y_{t-1}$
+
+---
+name: adl
+# <span style="font-size:80%">Modelo autorregresivo de rezago distribuido (ADL)</span>
+
+Un modelo $ADL(p,q)$ asume que una serie de tiempo $Y_t$ puede ser representada por una función lineal de $p$ valores de su rezago y $q$ rezagos de otra serie de tiempo $X_t$
+
+$$Y_t = \alpha + \sum_{i=0}^{p} \beta_i X_{t-i} + \sum_{j=1}^{q} \gamma_j Y_{t-j} + u_t$$
+Por ejemplo, un $ADL(1,2)$ será:
+
+$$Y_t = \alpha + \beta_0 X_{t} + \beta_1 X_{t-1} + \gamma_1 Y_{t-1} + \gamma_2 Y_{t-2} + u_t$$
+
+---
+name: h
+# <span style="font-size:80%">Detección de autocorrelación en modelos autorregresivos: $h$ de Durbin</span>
+
+- Como se mencionó, cuando $Y_{t-1}$ está como variable explicativa el estadístico $d$ de Durbin-Watson no sirve para detectar correlación serial (de primer orden)
+
+- En los modelos autorregresivos el valor del $d$ por lo general tiende a 2, que indica ausencia de autocorrelación
+
+- El mismo Durbin, propuso la prueba $h$ de muestras grandes para detectar correlación serial en modelo autorregresivos. El estadístico $h$ tiene la siguiente estructura bajo la hipótesis nula de no autocorrelación
+
+$$h = \hat\rho \sqrt{\frac{n}{1-n(Var(\hat\alpha_2))}} \sim N(0,1)$$
+donde $n$=tamaño de la muestra, $Var(\hat\alpha_2)$=varianza del coeficiente de $Y_{t-1}$, y $\hat\rho$ es la estimación de $\rho$, correlación serial de primer orden y el estadístico se distribuye como una normal estandarizada
+
+Si el valor absoluto del estadístico $h$ de Durbin es mayor a 1.96 (o si $pvalor<5\%$), es porbable que exista autocorrelación
+
+---
+name: armax
+# <span style="font-size:80%">Modelo ARMAX</span>
+- Los modelos ADL estiman sólo efectos autorregresivos
+
+- Una extensión inmediata que viene a la mente es la inclusión de efectos MA dentro del modelo
+
+- Estos efectos pueden ser entendidos como efectos rezagados de variables omitidas
+
+- El modelo ARMAX(p,q,b) se define como:
+
+$$Y_t = \alpha + \sum_{j=1}^p \gamma_j Y_{t-j} + \sum_{k=1}^q \phi_k u_{t-k} + \sum_{i=0}^b \beta_i X_{t-i} + u_t$$
+- Una desventaja de este modelo es que los $\beta_i$ son difíciles de interpretar. El $\beta_0$ no es el efecto sobre $Y_t$ cuando $X_{t}$ incremente en una unidad, como en un modelo de regresión normal
+
+- La presencia de valores rezagados de la variable dependiente al lado derecho de la ecuación implica que, los $\beta_i$ sólo pueden interpretarse condicional a los valores pasados de $Y_t$, lo cual es poco intuitivo
+
+- Si reescribimos el modelo usando los operadores de rezagos, el modelo ARMAX es dado por
+
+$$\gamma(L)Y_t = \beta(L)X_t + \phi(L)u_t \Longrightarrow Y_t = \frac{\beta(L)}{\gamma(L)}X_t + \frac{\phi(L)}{\gamma(L)}u_t$$
+  donde $\beta(L) = \beta_1L-...-\beta_bL^b$, $\gamma(L) = 1-\gamma_1L-...-\gamma_pL^p$ y $\phi(L) = 1-\phi_1L-...-\phi_pL^q$  
+
+- Observe cómo los coeficientes AR se mezclan tanto con las covariables como con el término de error
+
+---
+# <span style="font-size:80%">Modelo ARMAX</span>
+
+Por esta complicación en la interpretación de los $\beta_i$, se prefiere usar modelos de regresión con errores ARMA, definido como sigue:
+
+$$
+\begin{aligned}
+Y_t & = \sum_{i=0}^b \beta_i X_{t-i} + n_t\\
+n_t & = \gamma_1 n_{t-1} + ... + \gamma_p n_{t-p} - \phi_1 u_{t-1} - ... - \phi_q u_{t-q} + u_t
+\end{aligned}
+$$
+En este caso, los coeficientes de regresión $\beta_i$ tienen la usual interpretación. Esta fácil interpretación lo hace más atractivo que el modelo anterior 
+
+Usando operadores de rezago el modelo puede escribirse como:
+
+$$Y_t = \beta(L) X_{t} + \frac{\phi(L)}{\gamma(L)}u_t$$
+Softwares, como R, estiman este último modelo, así que los $\beta$s pueden interpretarse sin problema
+
+---
+name: r
+# <span style="font-size:80%">Ejercicio aplicado en R: predicción del crecimiento del PIB usando el *Term Spread*</span>
+
+Las tasas de interés de los bonos del Tesoro a corto y largo plazo están estrechamente vinculadas a las condiciones macroeconómicas. Si bien las tasas de interés de ambos tipos de bonos tienen las mismas tendencias a largo plazo, se comportan de manera bastante diferente a corto plazo. La diferencia en las tasas de interés de dos bonos con distintos vencimientos se denomina diferencial de plazo o *Term Spread*
+
+La idea en este ejercicio es analizar los efectos del *Term Spread* sobre el crecimiento económico
+<p style="margin-bottom: -1em">
+Se tienen datos trimestrales para los Estados Unidos entre 1957Q1 y 2013Q4, para las siguientes variables:
+- GDPC96: PIB real a precios de 1996
+- JAPAN_IP: índice de producción industrial Japones 
+- GS10: tasa de interés de los bonos del tesoro de US a 10 años
+- TB3MS: tasa de interés de los bonos del tesoro de US a 3 meses
+- UNRATE: tasa de desempleo
+- EXUSUK: tasa de cambio dólares libra esterlina
+- Y otras variables
+
+<p style="margin-bottom: -1em">
+En el siguiente link se encuentra el código utilizado en R:
+- [Código en R](https://gusgarciacruz.github.io/EconometriaII/VarExogenas/VarExogenas.R)
