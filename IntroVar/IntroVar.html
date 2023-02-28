@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Introducción modelos VAR</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Gustavo A. García   ggarci24@eafit.edu.co                  " />
+    <script src="libs/header-attrs-2.14/header-attrs.js"></script>
+    <script src="libs/clipboard-2.0.6/clipboard.min.js"></script>
+    <link href="libs/xaringanExtra-clipboard-0.2.6/xaringanExtra-clipboard.css" rel="stylesheet" />
+    <script src="libs/xaringanExtra-clipboard-0.2.6/xaringanExtra-clipboard.js"></script>
+    <script>window.xaringanExtraClipboard(null, {"button":"<i class=\"fa fa-clipboard\"><\/i>","success":"<i class=\"fa fa-check\" style=\"color: #90BE6D\"><\/i>","error":"<i class=\"fa fa-times-circle\" style=\"color: #F94144\"><\/i>"})</script>
+    <link href="libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+    <link href="libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+    <link href="libs/xaringanExtra-extra-styles-0.2.6/xaringanExtra-extra-styles.css" rel="stylesheet" />
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Introducción modelos VAR
+]
+.author[
+### Gustavo A. García <br> <span class="notbold" style="font-size:65%"><a href="mailto:ggarci24@eafit.edu.co" class="email">ggarci24@eafit.edu.co</a></span> <br> <br> <br> <br> <br> <br> <br> <br> <br>
+]
+.date[
+### <span class="notbold" style="font-size:65%">Econometría II <br> Programa de Economía <br> Universidad EAFIT</span>
+]
+
+---
+
+
+
+
+&lt;style&gt;
+.notbold{
+    font-weight:normal
+}
+
+body {
+text-align: justify;
+}
+
+h1{
+      margin-top: -1px;
+      margin-bottom: -3px;
+}
+
+.small-code pre{
+  margin-bottom: -10px;
+  
+}  
+
+.medium-code pre{
+  margin-bottom: 2px;
+  
+} 
+&lt;/style&gt;
+
+
+
+
+
+
+&lt;font size = "5"&gt;
+
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+
+Link slides en formato [html](https://gusgarciacruz.github.io/EconometriaII/IntroVAR/IntroVAR.html)
+
+Link slides en formato [PDF](https://gusgarciacruz.github.io/EconometriaII/IntroVAR/IntroVAR.pdf)
+---
+# &lt;span style="font-size:80%"&gt;En este tema&lt;/span&gt;
+
+- &lt;span style="font-size:150%"&gt;[&lt;span style="color:black"&gt;Introducción](#introduccion)&lt;/span&gt; &lt;br&gt;
+
+- &lt;span style="font-size:150%"&gt; [&lt;span style="color:black"&gt;Especificación y estimación de un VAR](#especificacion)&lt;/span&gt; &lt;br&gt;
+
+- &lt;span style="font-size:150%"&gt; [&lt;span style="color:black"&gt;Diagnóstico, causalidad, predicción y análisis impulso respuesta](#diagnostico)&lt;/span&gt; &lt;br&gt;
+
+- &lt;span style="font-size:150%"&gt; [&lt;span style="color:black"&gt;Ejercicio aplicado en R: un modelo VAR de consumo para los Estados Unidos](#r)&lt;/span&gt;
+
+---
+# &lt;span style="font-size:80%"&gt;Lecturas&lt;/span&gt;
+- &lt;span style="font-size:150%"&gt;Pfaff, B (2008). *Analysis of integrated and cointegrated time series with R*. 2a edición, Springer. &lt;span style="color:blue"&gt;Cap 2 &lt;br&gt;
+
+- &lt;span style="font-size:150%"&gt;Enders, W. (2014). *Applied econometric time series*. 4th edition, Wiley. &lt;span style="color:blue"&gt;Cap 5&lt;br&gt;
+
+- &lt;span style="font-size:150%"&gt;Pfaff, B (2008). "VAR, SVAR and SVEC models: implementation within R package vars". *Journal of Statistical Software*, 27(4): 1-32. https://doi.org/10.18637/jss.v027.i04&lt;br&gt;
+
+- &lt;span style="font-size:150%"&gt;Hyndman, R.J., y Athanasopoulos, G. (2021). [*Forecasting: principles and practice*](https://otexts.com/fpp3/), 3rd edition, OTexts: Melbourne, Australia.
+
+---
+name: introduccion
+# &lt;span style="font-size:80%"&gt;Introducción&lt;/span&gt;
+
+- Una limitación de los modelos que se han consideredo hasta ahora es que imponen una relación unidireccional `\(\Longrightarrow\)` &lt;font color="blue"&gt;la variable predicha es influencida por las variables predictoras&lt;/font&gt; pero bo viceversa
+
+- Sin embargo, existen muchos casos donde la relación en ambos lados debería ser permitido `\(\Longrightarrow\)` &lt;font color="blue"&gt;todas las variables se afectan unas a otras&lt;/font&gt;
+
+- En macroeconomía sabemos que el gasto en consumo está determinado por el ingreso disponible, pero también es posible pensar que incrementos en el consumos llevan a incrementos en el ingreso
+
+- Un ejemplo de tal situación ocurrió en Australia durante la crisis financiera global de 2008 a 2009. El gobierno autraliano realizó políticas que incluyeron pagos en efectivo en diciembre de 2008, justo en tiempos de navidad. Como resultado de esta política, los vendedores reportaron incrementos en la ventas y la economía fue estimulada, y como consecuencia los ingresos incrementaron
+
+- Estas relaciones bidireccionales son permitidas en el marco de &lt;font color="blue"&gt;vectores autorregresivos (VAR)&lt;/font&gt;:
+&lt;p style="margin-bottom: -1em"&gt;
+ - todas las variables son tratadas simétricamente
+ - todas las variables se influencian entre ellas en igual forma
+ - todas las variables so tratadas como &lt;font color="blue"&gt;endógenas&lt;/font&gt;
+
+---
+name: especificacion
+# &lt;span style="font-size:80%"&gt;Especificación y estimación de un VAR&lt;/span&gt;
+Características de un modelo VAR:
+&lt;p style="margin-bottom: -1em"&gt;
+ - es una generalizción del modelo univariante
+ - es un sistema de ecuaciones, una para cada variable
+ - el lado derecho de cada ecuación incluye una constante y rezagos de todas las variables en el sistema
+ 
+Consideremos un VAR de dos variables con un rezago `\(\Longrightarrow\)` VAR(1) de dos dimensiones:
+
+`$$y_{1,t} = c_1 + \phi_{11,1}y_{1,t-1} + \phi_{12,1}y_{2,t-1} + \epsilon_{1,t}$$`
+`$$y_{2,t} = c_2 + \phi_{21,1}y_{1,t-1} + \phi_{22,1}y_{2,t-1} + \epsilon_{2,t}$$`
+
+donde `\(\epsilon_{1,t}\)` y `\(\epsilon_{2,t}\)` son ruido blanco y pueden estar cotemporáneamente correlacionados. El coeficiente `\(\phi_{ii,l}\)` captura la influencia del `\(l\)`-esimo rezago de la variable `\(y_i\)` sobre si misma, mientras que el coeficiente `\(\phi_{ij,l}\)` captura la influencia de `\(l\)`-esimo rezago de la variable `\(y_j\)` sobre `\(y_i\)`
+
+Si las series son estacionarias, la predicción se hace estimando el VAR con los datos directamente (&lt;font color="blue"&gt;VAR en niveles&lt;/font&gt;). Si las series no son estacionarias, se debe tomar diferencias de los datos para hacer ellos estacionarios y luego estimar el VAR (&lt;font color="blue"&gt;VAR en diferencias&lt;/font&gt;)
+
+El VAR es estimado ecuación por ecuación usando el principio de mínimos cuadrados. Para cada ecuación, los parámetros son estimados por la minimización de la SCR. Hay otros métodos cuando las series pueden no ser estacionarias pero cointegradas, qué significa que existe una combinación líneal de las series que es estacionaria
+
+---
+# &lt;span style="font-size:80%"&gt;Especificación y estimación de un VAR&lt;/span&gt;
+
+En forma matricial, un VAR consiste de un conjunto de `\(K\)` variables endógenas `\(\mathbf{y}_t = (y_{1t},...,y_{kt},...,y_{Kt})\)` para `\(k=1,...,K\)`. El VAR(p) se define como
+
+`$$\mathbf{y}_t = \mathbf{A}_1\mathbf{y}_{t-1}+...+\mathbf{A}_p\mathbf{y}_{t-p}+\mathbf{CD}_t + \mathbf{u}_{t}$$`
+donde `\(\mathbf{A}_i\)` son `\((K\text{x}K)\)` matrices de coeficientes para `\(i=1,...,p\)` y `\(\mathbf{u}_{t}\)` es un reuido blanco de dimensión `\(K\)`. `\(\mathbf{C}\)` es una matriz de coeficientes de regresores con dimensión `\((K\text{x}M)\)`, y `\(\mathbf{D}_t\)` es un vector columna de `\((M\text{x}1)\)` que incluye los regresores, tales como una constante, la tendencia, variables dummy o dummy estacionales
+
+La anterior ecuación puede escribirse en términos del operador de rezagos `\(A(L) = (I_K - \mathbf{A}_1 - ... - \mathbf{A}_p)\)`:
+
+`$$A(L)\mathbf{y}_t = \mathbf{CD}_t + \mathbf{u}_t$$`
+Una importante característica de un proceso VAR(p) es su &lt;font color="blue"&gt;estabilidad&lt;/font&gt;. En el modelo AR(1) `\(y_t = a_0 + a_1 y_{t-1} +\epsilon_t\)`, la condición de estabilidad es que `\(|a_1|&lt;1\)`. Existe una analogía en la condición de estabilidad en `\(\mathbf{A}_1\)` en un VAR(1)
+
+Para chequear la condición de estabilidad en un VAR(p), se debe evaluar la inversa del polinomio característico:
+
+`$$\text{det }(I_K - \mathbf{A}_1z - ... - \mathbf{A}_pz^p)\neq0 \text{ para } |z|\leq1$$`
+Si la solución a la anterior ecuación tiene una raiz para `\(z=1\)`, entonces, o bien algunas variables o todas ellas en el VAR(p) son integradas de orden 1
+
+El VAR será estable si todas las variables incluidas en el modelo son estacionarias
+
+&lt;font color="blue"&gt;Problemas de estabilidad son signo de la presencia de no estacionariedad en las variables del VAR&lt;/font&gt;
+
+---
+# &lt;span style="font-size:80%"&gt;Especificación y estimación de un VAR&lt;/span&gt;
+Un punto importante en la especificación del VAR, es el orden apropiado de los rezagos. Como en los modelo univariantes AR(p), la longitud de los rezagos puede ser determinado por los &lt;font color="blue"&gt;criterios de información&lt;/font&gt;, tales como:
+
+$$
+`\begin{aligned}
+\text{Akaike (1981): } AIC(p) &amp;= log\text{ det}(\sum^{\sim}_{u}(p))+\frac{2}{T}pK^2\\
+\text{Hannan y Quinn (1979): } HQ(p) &amp;= log\text{ det}(\sum^{\sim}_{u}(p))+\frac{2log(log(T))}{T}pK^2\\
+\text{Schwarz (1978): } SC(p) &amp;= log\text{ det}(\sum^{\sim}_{u}(p))+\frac{log(T)}{T}pK^2\\
+\text{Error de predicción final: }FPE(p) &amp;= \left(\frac{T+p^*}{T-p^*}\right)^K \text{det}(\sum^{\sim}_u(p))
+\end{aligned}`
+$$
+con `\(\sum^{\sim}_{u}(p) = T^{-1} \sum_{t=1}^T \mathbf{\widehat{u}}_t\mathbf{\widehat{u}}'_t\)`, y `\(p^*\)` es el número total de parámetros en cada ecuación y `\(p\)` es el orden del rezago
+
+Lütketpohl (2006) muestra que `\(ln(FPE)\)` y `\(AIC\)` indicarán ordenes de rezago similares para muestras grandes. La siguientes relaciones pueden ser establecidas:
+
+$$
+`\begin{aligned}
+\widehat{p}(SC)\leq \hat{p}(AIC) &amp; \text{ si } T\geq8\\
+\widehat{p}(SC)\leq \hat{p}(HQ) &amp; \text{ para todo } T\\
+\widehat{p}(HQ)\leq \hat{p}(AIC) &amp; \text{ si } T\geq16
+\end{aligned}`
+$$
+
+---
+name: diagnostico
+# &lt;span style="font-size:80%"&gt;Diagnóstico, causalidad, predicción y análisis impulso respuesta&lt;/span&gt;
+**&lt;font color="blue"&gt;Tests de diagnóstico&lt;/font&gt;**&lt;br&gt;
+Una vez el modelo VAR ha sido estimado, es importante probar que los residuales del modelo cumplen con los supuestos estandar:
+&lt;p style="margin-bottom: -1em"&gt;
+  - ausencia de correlación serial
+  - homoscedasticidad
+  - normalidad
+
+**&lt;font color="blue"&gt;Test de causaliad de Granger&lt;/font&gt;**&lt;br&gt;
+A menudo estamos interesados en la detección de causalidad entre variables. El test más común es el test de causalidad de Granger (Granger, 1969). En la práctica en este test decimos que la variable `\(x\)` causa Granger la variable `\(y\)`, lo que indicaría que la variable `\(x\)` ayuda a predecir la variable `\(y\)`. La `\(H_0:x\)` no causa Granger `\(y\)`
+
+**&lt;font color="blue"&gt;Predicción&lt;/font&gt;**&lt;br&gt;
+Una vez el modelo VAR es estimado y pasa los tests de diagnóstico, puede ser utilizado para hacer predicción 
+
+**&lt;font color="blue"&gt;Funciones impulso respuesta (FIR)&lt;/font&gt;**&lt;br&gt;
+Las FIR son usadas para analizar las interacciones dinámicas entre las variables endógenas, y la idea es ver qué cambios existen en una variable endógena cuando hay cambios en otra 
+---
+name: r
+# &lt;span style="font-size:80%"&gt;Ejercicio aplicado en R: un modelo VAR de consumo para los Estados Unidos&lt;/span&gt;
+
+Para este ejemplo utilizamos los datos de cambios en el consumo e ingreso disponible para los Estados Unidos. Se dispone de datos trimestrales entre 1970 y 2016. En el siguiente link se encuentra el código utilizado en R:
+- [Código en R](https://gusgarciacruz.github.io/EconometriaII/IntroVar/IntroVar.R)
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "16:9"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

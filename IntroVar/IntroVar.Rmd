@@ -1,0 +1,224 @@
+---
+title: "Introducción modelos VAR"
+author: Gustavo A. García <br> <span style="font-size:65%" class='notbold'>ggarci24@eafit.edu.co</span> <br> <br> <br> <br> <br> <br> <br> <br> <br>
+date: <span style="font-size:65%" class='notbold'>Econometría II <br> Programa de Economía <br> Universidad EAFIT</span>
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: xaringan-themer.css
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      ratio: "16:9"
+---
+
+```{r setup, include = F}
+# This is the recommended set up for flipbooks
+# you might think about setting cache to TRUE as you gain practice --- building flipbooks from scratch can be time consuming
+options(width = 70)
+knitr::opts_chunk$set(
+  dev.args = list(bg = 'transparent'),
+  fig.width = 12, message = TRUE,
+  warning = FALSE, comment = "", cache = TRUE, fig.retina = 3
+)
+knitr::opts_knit$set(global.par = TRUE)
+Sys.setenv(`_R_S3_METHOD_REGISTRATION_NOTE_OVERWRITES_` = "false")
+# remotes::install_github("luukvdmeer/sfnetworks")
+# remotes::install_github("EvaMaeRey/flipbookr")
+# remotes::install_github("rlesur/klippy")
+# devtools::install_github("gadenbuie/xaringanExtra")
+library(flipbookr)
+library(xaringanthemer)
+library(tidyverse)
+library(klippy)
+library(xaringanExtra)
+```
+
+<style>
+.notbold{
+    font-weight:normal
+}
+
+body {
+text-align: justify;
+}
+
+h1{
+      margin-top: -1px;
+      margin-bottom: -3px;
+}
+
+.small-code pre{
+  margin-bottom: -10px;
+  
+}  
+
+.medium-code pre{
+  margin-bottom: 2px;
+  
+} 
+</style>
+
+```{r xaringan-scribble, echo=FALSE}
+#xaringanExtra::use_scribble()
+```
+
+```{r xaringanExtra-clipboard, echo=FALSE}
+htmltools::tagList(
+  xaringanExtra::use_clipboard(
+    button_text = "<i class=\"fa fa-clipboard\"></i>",
+    success_text = "<i class=\"fa fa-check\" style=\"color: #90BE6D\"></i>",
+    error_text = "<i class=\"fa fa-times-circle\" style=\"color: #F94144\"></i>"
+  ),
+  rmarkdown::html_dependency_font_awesome()
+)
+```
+
+```{r xaringan-extra-styles, echo=FALSE}
+xaringanExtra::use_extra_styles(
+  hover_code_line = TRUE,         #<<
+  mute_unhighlighted_code = TRUE  #<<
+)
+```
+<font size = "5">
+
+<br>
+<br>
+<br>
+<br>
+<br>
+
+Link slides en formato [html](https://gusgarciacruz.github.io/EconometriaII/IntroVAR/IntroVAR.html)
+
+Link slides en formato [PDF](https://gusgarciacruz.github.io/EconometriaII/IntroVAR/IntroVAR.pdf)
+---
+# <span style="font-size:80%">En este tema</span>
+
+- <span style="font-size:150%">[<span style="color:black">Introducción](#introduccion)</span> <br>
+
+- <span style="font-size:150%"> [<span style="color:black">Especificación y estimación de un VAR](#especificacion)</span> <br>
+
+- <span style="font-size:150%"> [<span style="color:black">Diagnóstico, causalidad, predicción y análisis impulso respuesta](#diagnostico)</span> <br>
+
+- <span style="font-size:150%"> [<span style="color:black">Ejercicio aplicado en R: un modelo VAR de consumo para los Estados Unidos](#r)</span>
+
+---
+# <span style="font-size:80%">Lecturas</span>
+- <span style="font-size:150%">Pfaff, B (2008). *Analysis of integrated and cointegrated time series with R*. 2a edición, Springer. <span style="color:blue">Cap 2 <br>
+
+- <span style="font-size:150%">Enders, W. (2014). *Applied econometric time series*. 4th edition, Wiley. <span style="color:blue">Cap 5<br>
+
+- <span style="font-size:150%">Pfaff, B (2008). "VAR, SVAR and SVEC models: implementation within R package vars". *Journal of Statistical Software*, 27(4): 1-32. https://doi.org/10.18637/jss.v027.i04<br>
+
+- <span style="font-size:150%">Hyndman, R.J., y Athanasopoulos, G. (2021). [*Forecasting: principles and practice*](https://otexts.com/fpp3/), 3rd edition, OTexts: Melbourne, Australia.
+
+---
+name: introduccion
+# <span style="font-size:80%">Introducción</span>
+
+- Una limitación de los modelos que se han consideredo hasta ahora es que imponen una relación unidireccional $\Longrightarrow$ <font color="blue">la variable predicha es influencida por las variables predictoras</font> pero bo viceversa
+
+- Sin embargo, existen muchos casos donde la relación en ambos lados debería ser permitido $\Longrightarrow$ <font color="blue">todas las variables se afectan unas a otras</font>
+
+- En macroeconomía sabemos que el gasto en consumo está determinado por el ingreso disponible, pero también es posible pensar que incrementos en el consumos llevan a incrementos en el ingreso
+
+- Un ejemplo de tal situación ocurrió en Australia durante la crisis financiera global de 2008 a 2009. El gobierno autraliano realizó políticas que incluyeron pagos en efectivo en diciembre de 2008, justo en tiempos de navidad. Como resultado de esta política, los vendedores reportaron incrementos en la ventas y la economía fue estimulada, y como consecuencia los ingresos incrementaron
+
+- Estas relaciones bidireccionales son permitidas en el marco de <font color="blue">vectores autorregresivos (VAR)</font>:
+<p style="margin-bottom: -1em">
+ - todas las variables son tratadas simétricamente
+ - todas las variables se influencian entre ellas en igual forma
+ - todas las variables so tratadas como <font color="blue">endógenas</font>
+
+---
+name: especificacion
+# <span style="font-size:80%">Especificación y estimación de un VAR</span>
+Características de un modelo VAR:
+<p style="margin-bottom: -1em">
+ - es una generalizción del modelo univariante
+ - es un sistema de ecuaciones, una para cada variable
+ - el lado derecho de cada ecuación incluye una constante y rezagos de todas las variables en el sistema
+ 
+Consideremos un VAR de dos variables con un rezago $\Longrightarrow$ VAR(1) de dos dimensiones:
+
+$$y_{1,t} = c_1 + \phi_{11,1}y_{1,t-1} + \phi_{12,1}y_{2,t-1} + \epsilon_{1,t}$$
+$$y_{2,t} = c_2 + \phi_{21,1}y_{1,t-1} + \phi_{22,1}y_{2,t-1} + \epsilon_{2,t}$$
+
+donde $\epsilon_{1,t}$ y $\epsilon_{2,t}$ son ruido blanco y pueden estar cotemporáneamente correlacionados. El coeficiente $\phi_{ii,l}$ captura la influencia del $l$-esimo rezago de la variable $y_i$ sobre si misma, mientras que el coeficiente $\phi_{ij,l}$ captura la influencia de $l$-esimo rezago de la variable $y_j$ sobre $y_i$
+
+Si las series son estacionarias, la predicción se hace estimando el VAR con los datos directamente (<font color="blue">VAR en niveles</font>). Si las series no son estacionarias, se debe tomar diferencias de los datos para hacer ellos estacionarios y luego estimar el VAR (<font color="blue">VAR en diferencias</font>)
+
+El VAR es estimado ecuación por ecuación usando el principio de mínimos cuadrados. Para cada ecuación, los parámetros son estimados por la minimización de la SCR. Hay otros métodos cuando las series pueden no ser estacionarias pero cointegradas, qué significa que existe una combinación líneal de las series que es estacionaria
+
+---
+# <span style="font-size:80%">Especificación y estimación de un VAR</span>
+
+En forma matricial, un VAR consiste de un conjunto de $K$ variables endógenas $\mathbf{y}_t = (y_{1t},...,y_{kt},...,y_{Kt})$ para $k=1,...,K$. El VAR(p) se define como
+
+$$\mathbf{y}_t = \mathbf{A}_1\mathbf{y}_{t-1}+...+\mathbf{A}_p\mathbf{y}_{t-p}+\mathbf{CD}_t + \mathbf{u}_{t}$$
+donde $\mathbf{A}_i$ son $(K\text{x}K)$ matrices de coeficientes para $i=1,...,p$ y $\mathbf{u}_{t}$ es un reuido blanco de dimensión $K$. $\mathbf{C}$ es una matriz de coeficientes de regresores con dimensión $(K\text{x}M)$, y $\mathbf{D}_t$ es un vector columna de $(M\text{x}1)$ que incluye los regresores, tales como una constante, la tendencia, variables dummy o dummy estacionales
+
+La anterior ecuación puede escribirse en términos del operador de rezagos $A(L) = (I_K - \mathbf{A}_1 - ... - \mathbf{A}_p)$:
+
+$$A(L)\mathbf{y}_t = \mathbf{CD}_t + \mathbf{u}_t$$
+Una importante característica de un proceso VAR(p) es su <font color="blue">estabilidad</font>. En el modelo AR(1) $y_t = a_0 + a_1 y_{t-1} +\epsilon_t$, la condición de estabilidad es que $|a_1|<1$. Existe una analogía en la condición de estabilidad en $\mathbf{A}_1$ en un VAR(1)
+
+Para chequear la condición de estabilidad en un VAR(p), se debe evaluar la inversa del polinomio característico:
+
+$$\text{det }(I_K - \mathbf{A}_1z - ... - \mathbf{A}_pz^p)\neq0 \text{ para } |z|\leq1$$
+Si la solución a la anterior ecuación tiene una raiz para $z=1$, entonces, o bien algunas variables o todas ellas en el VAR(p) son integradas de orden 1
+
+El VAR será estable si todas las variables incluidas en el modelo son estacionarias
+
+<font color="blue">Problemas de estabilidad son signo de la presencia de no estacionariedad en las variables del VAR</font>
+
+---
+# <span style="font-size:80%">Especificación y estimación de un VAR</span>
+Un punto importante en la especificación del VAR, es el orden apropiado de los rezagos. Como en los modelo univariantes AR(p), la longitud de los rezagos puede ser determinado por los <font color="blue">criterios de información</font>, tales como:
+
+$$
+\begin{aligned}
+\text{Akaike (1981): } AIC(p) &= log\text{ det}(\sum^{\sim}_{u}(p))+\frac{2}{T}pK^2\\
+\text{Hannan y Quinn (1979): } HQ(p) &= log\text{ det}(\sum^{\sim}_{u}(p))+\frac{2log(log(T))}{T}pK^2\\
+\text{Schwarz (1978): } SC(p) &= log\text{ det}(\sum^{\sim}_{u}(p))+\frac{log(T)}{T}pK^2\\
+\text{Error de predicción final: }FPE(p) &= \left(\frac{T+p^*}{T-p^*}\right)^K \text{det}(\sum^{\sim}_u(p))
+\end{aligned}
+$$
+con $\sum^{\sim}_{u}(p) = T^{-1} \sum_{t=1}^T \mathbf{\widehat{u}}_t\mathbf{\widehat{u}}'_t$, y $p^*$ es el número total de parámetros en cada ecuación y $p$ es el orden del rezago
+
+Lütketpohl (2006) muestra que $ln(FPE)$ y $AIC$ indicarán ordenes de rezago similares para muestras grandes. La siguientes relaciones pueden ser establecidas:
+
+$$
+\begin{aligned}
+\widehat{p}(SC)\leq \hat{p}(AIC) & \text{ si } T\geq8\\
+\widehat{p}(SC)\leq \hat{p}(HQ) & \text{ para todo } T\\
+\widehat{p}(HQ)\leq \hat{p}(AIC) & \text{ si } T\geq16
+\end{aligned}
+$$
+
+---
+name: diagnostico
+# <span style="font-size:80%">Diagnóstico, causalidad, predicción y análisis impulso respuesta</span>
+**<font color="blue">Tests de diagnóstico</font>**<br>
+Una vez el modelo VAR ha sido estimado, es importante probar que los residuales del modelo cumplen con los supuestos estandar:
+<p style="margin-bottom: -1em">
+  - ausencia de correlación serial
+  - homoscedasticidad
+  - normalidad
+
+**<font color="blue">Test de causaliad de Granger</font>**<br>
+A menudo estamos interesados en la detección de causalidad entre variables. El test más común es el test de causalidad de Granger (Granger, 1969). En la práctica en este test decimos que la variable $x$ causa Granger la variable $y$, lo que indicaría que la variable $x$ ayuda a predecir la variable $y$. La $H_0:x$ no causa Granger $y$
+
+**<font color="blue">Predicción</font>**<br>
+Una vez el modelo VAR es estimado y pasa los tests de diagnóstico, puede ser utilizado para hacer predicción 
+
+**<font color="blue">Funciones impulso respuesta (FIR)</font>**<br>
+Las FIR son usadas para analizar las interacciones dinámicas entre las variables endógenas, y la idea es ver qué cambios existen en una variable endógena cuando hay cambios en otra 
+---
+name: r
+# <span style="font-size:80%">Ejercicio aplicado en R: un modelo VAR de consumo para los Estados Unidos</span>
+
+Para este ejemplo utilizamos los datos de cambios en el consumo e ingreso disponible para los Estados Unidos. Se dispone de datos trimestrales entre 1970 y 2016. En el siguiente link se encuentra el código utilizado en R:
+- [Código en R](https://gusgarciacruz.github.io/EconometriaII/IntroVar/IntroVar.R)
+
