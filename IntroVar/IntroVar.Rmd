@@ -89,9 +89,9 @@ xaringanExtra::use_extra_styles(
 <br>
 <br>
 
-Link slides en formato [html](https://gusgarciacruz.github.io/EconometriaII/IntroVAR/IntroVAR.html)
+Link slides en formato [html](https://gusgarciacruz.github.io/EconometriaII/IntroVar/IntroVar.html)
 
-Link slides en formato [PDF](https://gusgarciacruz.github.io/EconometriaII/IntroVAR/IntroVAR.pdf)
+Link slides en formato [PDF](https://gusgarciacruz.github.io/EconometriaII/IntroVar/IntroVar.pdf)
 ---
 # <span style="font-size:80%">En este tema</span>
 
