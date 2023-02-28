@@ -18,7 +18,7 @@ Profesor: [Gustavo A. García](https://gusgarciacruz.github.io/cv)
 
 [Modelos con Variables Exógenas](https://gusgarciacruz.github.io/EconometriaII/VarExogenas/VarExogenas.html)<br>
 
-[Introducción modelos VAR](https://gusgarciacruz.github.io/EconometriaII/IntroVAR/IntroVAR.html)<br>
+[Introducción modelos VAR](https://gusgarciacruz.github.io/EconometriaII/IntroVar/IntroVar.html)<br>
 
 [Estimación por variables instrumentales (IV)](https://gusgarciacruz.github.io/EconometriaII/IV/IV.html)<br>
 
