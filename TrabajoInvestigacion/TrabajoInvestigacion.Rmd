@@ -162,3 +162,15 @@ El trabajo de investigación debe ser presentado y cada uno de los integrantes d
 
 
 **<span style="color:red">Duración máxima de la presentación: 15min**
+
+---
+# <span style="font-size:80%">Bases de datos</span>
+<font size = "5">
+- Mas 50,000 bases de datos de diferentes tópicos: [Kaggle](https://www.kaggle.com/datasets)
+
+- Papers con bases de datos y códigos en diferentes lenguajes: [FEA1](https://skranz.github.io/r/2023/01/23/FindingEconomicArticles5.html) o [FEA2](https://ejd.econ.mathematik.uni-ulm.de/) 
+
+- Información para Medellín: [medata](http://medata.gov.co/), [geomedellin](https://geomedellin-m-medellin.opendata.arcgis.com/), [Área metropolitana](https://datosabiertos.metropol.gov.co/)
+
+- Microdatos del DANE: [ANDA](https://microdatos.dane.gov.co/index.php/catalog/central/about)
+ 
