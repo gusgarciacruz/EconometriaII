@@ -229,7 +229,7 @@ Para este ejemplo utilizamos los datos de cambios en el consumo e ingreso dispon
 name: r2
 # <span style="font-size:80%">Ejercicio aplicado en R: influencia de la depreciación sobre la inflación en Colombia</span>
 
-En esta ejercicio se va a replicar el trabajo de [Posada y Londoño-Sierra (2023)](https://coyunturaeconomicaeafit.wordpress.com/2022/08/25/retos-para-la-autoridad-monetaria-en-el-proximo-cuatrienio) donde se estima un modelo VAR para el análisis de los efectos de la depreciación sobre la inflación en Colombia.
+En esta ejercicio se va a replicar el trabajo de [Posada y Londoño-Sierra (2022)](https://coyunturaeconomicaeafit.wordpress.com/2022/08/25/retos-para-la-autoridad-monetaria-en-el-proximo-cuatrienio) donde se estima un modelo VAR para el análisis de los efectos de la depreciación sobre la inflación en Colombia.
 
 Todo el ejercicio, junto con el código, se encuentra en el siguiente link:
 - [Inflación y depreciación en Colombia](https://gusgarciacruz.github.io/EconometriaII/IntroVar/Inflacion-depreciacion.html)
