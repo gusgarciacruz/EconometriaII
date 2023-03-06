@@ -369,7 +369,7 @@ EAFIT<br><h4 class="date"><font size="2">2023-03</font></h4>
 <p>En este ejercicio se va a estimar un modelo VAR en donde se relaciona
 la inflación y la depreciación para Colombia. Los datos son tomados de
 <a href="https://coyunturaeconomicaeafit.wordpress.com/2022/08/25/retos-para-la-autoridad-monetaria-en-el-proximo-cuatrienio/">Posada
-y Londoño-Sierra (2023)</a> y se cuenta con la siguiente información
+y Londoño-Sierra (2022)</a> y se cuenta con la siguiente información
 mensual de <strong>enero de 2003 a mayo de 2022</strong> <span class="math inline">\((n=224)\)</span>:</p>
 <ul>
 <li><p><strong>inflación de Colombia</strong>: variación porcentual del
@@ -391,8 +391,9 @@ Estados Unidos.</p>
 <h2>Análisis gráfico</h2>
 <p>A continuación cargamos los datos y realizamos los gráficos de las
 series</p>
-<pre class="r"><code>setwd(&quot;C:/Users/ggarci24/OneDrive - Universidad EAFIT/EAFIT/Cursos EAFIT/Econometria II/R/IntroVar&quot;)
-data &lt;- read_excel(&quot;Inflacion_depreciacion_enero2003_junio2022.xlsx&quot;) |&gt; 
+<pre class="r"><code>library(fpp3); library(tidyverse); library(vars); library(urca); library(forecast)
+library(openxlsx)
+data &lt;- read.xlsx(&quot;https://gusgarciacruz.github.io/EconometriaII/IntroVar/Inflacion_depreciacion_enero2003_junio2022.xlsx&quot;) |&gt; 
   mutate(date = as.yearmon(date))
 
 ggplot(data) +
@@ -1135,7 +1136,7 @@ ggplot(data.irf13) +
 </div>
 <div id="referencias" class="section level2">
 <h2>Referencias</h2>
-<p>Posada, CE y Londoño-Sierra, L. (2023). “Retos para la autoridad
+<p>Posada, CE y Londoño-Sierra, L. (2022). “Retos para la autoridad
 monetaria en el próximo cuatrenio”. Grupo de Coyuntura Económica.
 Universidad EAFIT, Medellín-Colombia. <a href="https://coyunturaeconomicaeafit.wordpress.com/2022/08/25/retos-para-la-autoridad-monetaria-en-el-proximo-cuatrienio/" class="uri">https://coyunturaeconomicaeafit.wordpress.com/2022/08/25/retos-para-la-autoridad-monetaria-en-el-proximo-cuatrienio/</a></p>
 </div>
