@@ -17,7 +17,8 @@
 # EXUSUK: tasa de cambio dólares libra esterlina
 # Y otras variables
 
-library(tidyverse); library(dynlm); library(dLagM); library(AER); library(xts); library(ecm); library(openxlsx)
+library(tidyverse); library(dynlm); library(dLagM); library(AER); library(xts)
+library(ecm); library(openxlsx); library(urca)
 
 data <- read.xlsx("http://wps.pearsoned.co.uk/wps/media/objects/16103/16489878/data3eu/us_macro_quarterly.xlsx",
                         sheet = 1) |>
@@ -30,6 +31,17 @@ data <- read.xlsx("http://wps.pearsoned.co.uk/wps/media/objects/16103/16489878/d
 # Se trabajan con los datos de 1960 Q1 hasta 2012 Q4
 subdata <- data |> 
   filter(date>="1960 Q1" & date<="2012 Q4")
+
+# Determinamos si son o no estacionarias utilizando el test DF
+plot.ts(subdata[, c("GDPGrowth", "TSpread")])
+
+DF.GDPGrowth <- ur.df(subdata$GDPGrowth, type = "trend", selectlags = "AIC") 
+summary(DF.GDPGrowth)
+
+DF.TSpread <- ur.df(subdata$TSpread, type = "trend", selectlags = "AIC") 
+summary(DF.TSpread)
+
+# Las series son estacionarias, por lo que se trabajan en su forma original
 
 # Modelo de rezago distribuido
 # Dos rezagos en TSpread
@@ -63,9 +75,9 @@ mediar
 # Se requiere en promedio medio trimestre para que el efecto de los cambios en el term spread se sientan
 # en los cambios en el crecimiento económico
 
-# Modelo ADL(1,2)
+# Modelo ADL(1,1)
 ADL11 <- ardlDlm(formula = GDPGrowth ~ TSpread, 
-                 data = data.frame(subdata), p = 1, q = 2)
+                 data = data.frame(subdata), p = 1, q = 1)
 summary(ADL11)
 
 predict.ADl11 <- forecast(ADL11, x = c(1.8633333, 1.9466667, 2.6766667, 2.6833333), 
