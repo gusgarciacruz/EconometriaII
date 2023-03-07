@@ -1,0 +1,541 @@
+---
+title: Influencia de la depreciación sobre la inflación en Colombia
+author: 
+  - name        : "[Gustavo A. García](https://gusgarciacruz.github.io/cv)"
+    affiliation : "[Econometría 2](https://gusgarciacruz.github.io/EconometriaII) - Universidad EAFIT"
+date: <font size = "2">2023-03</font>
+output: html_document
+classoption:
+- twocolumn
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+En este ejercicio se va a estimar un modelo VAR en donde se relaciona la inflación y la depreciación para Colombia. Los datos son tomados de [Posada y Londoño-Sierra (2022)](https://coyunturaeconomicaeafit.wordpress.com/2022/08/25/retos-para-la-autoridad-monetaria-en-el-proximo-cuatrienio/) y se cuenta con la siguiente información mensual de **enero de 2003 a mayo de 2022** $(n=224)$:
+
+-	**inflación de Colombia**: variación porcentual del IPC de un mes con respecto al IPC del mismo mes del año anterior (fuente: [DANE](https://www.dane.gov.co/files/investigaciones/ipc/ene23/IPC_Indices.xlsx))  
+
+- **depreciación**: variación porcentual de la tasa representativa del mercado (TRM) de un mes con respecto a la TRM del mismo mes del año anterior (fuente: [Banco de la República](https://www.banrep.gov.co/es/estadisticas/trm))
+
+-	**inflación de los Estados Unidos**: variación porcentual del IPC de un mes con respecto al IPC del mismo mes del año anterior (fuente: [Federal Reserve Bank of St. Louis](https://fred.stlouisfed.org/series/CPIAUCSL))
+
+Las variables endógenas son la inflación para Colombia y la depreciación, mientras como variable exógena se tiene la inflación de Estados Unidos.
+
+## Análisis gráfico
+A continuación cargamos los datos y realizamos los gráficos de las series
+
+```{r fig.align='center', message=FALSE, warning=FALSE, out.width="70%"}
+library(fpp3); library(tidyverse); library(vars); library(urca); library(forecast)
+library(openxlsx)
+data <- read.xlsx("https://gusgarciacruz.github.io/EconometriaII/IntroVar/Inflacion_depreciacion_enero2003_junio2022.xlsx") |> 
+  mutate(date = as.yearmon(date))
+
+ggplot(data) +
+  geom_line(aes(x = date, y = infcol, colour = "Colombia"), size = 0.8) +
+  geom_line(aes(x = date, y = Infeeuu, colour = "Estados Unidos"), size = 0.8) +
+  geom_line(aes(x = date, y = Dep*14, colour = "Depreciación"), size = 0.8) +
+  scale_colour_manual(name = "", values = c("Colombia" = "darkblue", "Estados Unidos" = "red", "Depreciación" = "green"), limits = c("Colombia", "Estados Unidos", "Depreciación")) +
+  labs(title = "Gráfico 1. Inflación en Colombia y Estados Unidos, y depreciación", x = "Mes", y ="") + 
+  theme(legend.position = c(0.17, 0.93),
+        legend.background = element_rect(fill="transparent", colour ="transparent"),
+        legend.key = element_rect(fill = "transparent", colour = "transparent")) +
+  scale_y_continuous(name = "Inflación (%)",
+                     sec.axis = sec_axis(~./14, name="Depreciación"))
+```
+
+## Pruebas de estacionariedad
+Ahora pasamos a determinar si las series son o no estacionarias y para ello calculamos los correlogramas y las pruebas de raices unitarias
+
+:::::::::::::: {.columns}
+::: {.column width="50%"}
+
+```{r fig.align='center', message=FALSE, warning=FALSE, out.width="80%"}
+ggAcf(data$infcol, main="Función AC inflación Colombia", 
+      ylab="AC")
+```
+
+:::
+::: {.column width="50%"}
+
+```{r fig.align='center', message=FALSE, warning=FALSE, out.width="80%"}
+ggPacf(data$infcol, main="Función PAC inflación Colombia", 
+       ylab="PAC")
+```
+
+:::
+::::::::::::::
+
+:::::::::::::: {.columns}
+::: {.column width="50%"}
+
+```{r fig.align='center', message=FALSE, warning=FALSE, out.width="80%"}
+ggAcf(data$Infeeuu, 
+      main="Función AC inflación Estados Unidos", 
+      ylab="AC")
+```
+
+:::
+::: {.column width="50%"}
+
+```{r fig.align='center', message=FALSE, warning=FALSE, out.width="80%"}
+ggPacf(data$Infeeuu, 
+       main="Función PAC inflación Estados Unidos", 
+       ylab="PAC")
+```
+
+:::
+::::::::::::::
+
+:::::::::::::: {.columns}
+::: {.column width="50%"}
+
+```{r fig.align='center', message=FALSE, warning=FALSE, out.width="80%"}
+ggAcf(data$Dep, main="Función AC depreciación", 
+      ylab="AC")
+```
+
+:::
+::: {.column width="50%"}
+
+```{r fig.align='center', message=FALSE, warning=FALSE, out.width="80%"}
+ggPacf(data$Dep, main="Función PAC depreciación", 
+       ylab="PAC")
+```
+
+:::
+::::::::::::::
+
+:::::::::::::: {.columns}
+::: {.column width="50%"}
+
+```{r fig.align='center', message=FALSE, warning=FALSE, out.width="80%"}
+DF_infcol <- ur.df(data$infcol, type="trend", 
+                   selectlags = "AIC")
+summary(DF_infcol)
+```
+
+:::
+::: {.column width="50%"}
+
+```{r fig.align='center', message=FALSE, warning=FALSE, out.width="80%"}
+DF_infeeuu <- ur.df(data$Infeeuu, type="trend", 
+                    selectlags = "AIC")
+summary(DF_infeeuu)
+```
+
+:::
+::::::::::::::
+
+```{r fig.align='center', message=FALSE, warning=FALSE, out.width="80%"}
+DF_dep <- ur.df(data$Dep, type="trend", selectlags = "AIC")
+summary(DF_dep)
+```
+
+La conclusión es que las series no son estacionarias y es necesario diferenciarlas
+
+```{r fig.align='center', out.width="80%"}
+data <- data |> 
+  mutate(dinfcol = c(NA,diff(infcol,1)),
+         dinfeeuu = c(NA,diff(Infeeuu,1)),
+         ddep = c(NA,diff(Dep,1)))
+plot.ts(data[,5:7])
+```
+
+Realizamos pruebas de raices unitarias a las series diferenciadas para chequear que ya sean estacionarias
+
+:::::::::::::: {.columns}
+::: {.column width="50%"}
+
+```{r fig.align='center', message=FALSE, warning=FALSE, out.width="80%"}
+DF_dinfcol <- ur.df(na.omit(data$dinfcol), type="trend", 
+                   selectlags = "AIC")
+summary(DF_dinfcol)
+```
+
+:::
+::: {.column width="50%"}
+
+```{r fig.align='center', message=FALSE, warning=FALSE, out.width="80%"}
+DF_dinfeeuu <- ur.df(na.omit(data$dinfeeuu), type="trend", 
+                    selectlags = "AIC")
+summary(DF_dinfeeuu)
+```
+
+:::
+::::::::::::::
+
+```{r fig.align='center', message=FALSE, warning=FALSE, out.width="80%"}
+DF_ddep <- ur.df(na.omit(data$ddep), type="trend", selectlags = "AIC")
+summary(DF_ddep)
+```
+
+Los tests rechazan la $H_0$: existe raíz unitaria, lo que implica que las series diferenciadas son estacionarias, es decir, son $I(1)$. Por lo tanto, en el modelo VAR las series se incorporan en diferencias 
+
+## Estimación del modelo VAR
+Ahora se determina el rezago óptimo del VAR
+
+```{r fig.align='center', message=FALSE, warning=FALSE, out.width="80%"}
+data.var <- cbind(na.omit(data$dinfcol), na.omit(data$ddep))
+colnames(data.var) <- c("dinfcol", "ddep")
+exo <- as.matrix(data.frame(na.omit(data$dinfeeuu)))
+colnames(exo) <- "dinfeeuu"
+
+select.var <- VARselect(data.var, 
+                        lag.max = 20, 
+                        type = "const",
+                        exogen = exo)
+select.var$selection
+```
+
+El número de rezagos óptimo puede ser 1 o 13 así que se estiman los dos modelos.
+
+```{r fig.align='center', message=FALSE, warning=FALSE, out.width="80%"}
+var1.est <- VAR(data.var, p = 1, type = "const", exogen = exo)
+summary(var1.est)
+```
+
+```{r fig.align='center', message=FALSE, warning=FALSE, out.width="80%"}
+var13.est <- VAR(data.var, p = 13, type = "const", exogen = exo)
+summary(var13.est)
+```
+
+## Estabilidad del VAR
+
+:::::::::::::: {.columns}
+::: {.column width="50%"}
+
+```{r fig.align='center', message=FALSE, warning=FALSE, out.width="80%"}
+barplot(roots(var1.est), ylim = c(0,1),
+        main = "Estabilidad: Raíces de Polinomio Característico",
+        names.arg = as.character(1:2))
+abline(h = 1, col = "red", lty = 2, lwd = 2)
+```
+
+:::
+::: {.column width="50%"}
+
+```{r fig.align='center', message=FALSE, warning=FALSE, out.width="80%"}
+barplot(roots(var13.est), ylim = c(0,1),
+        main = "Estabilidad: Raíces de Polinomio Característico",
+        names.arg = as.character(1:26))
+abline(h = 1, col = "red", lty = 2, lwd = 2)
+```
+
+:::
+::::::::::::::
+
+En los dos modelos VAR las raíces son menores que 1, lo que indica estabilidad
+
+## Chequeando los residuales de los VAR
+La evaluación de los residuales permitirá determinar cual de los modelos se ajusta mejor
+
+:::::::::::::: {.columns}
+::: {.column width="50%"}
+
+```{r fig.align='center', message=FALSE, warning=FALSE, out.width="110%"}
+plot(var1.est, names = "dinfcol")
+plot(var1.est, names = "ddep")
+```
+
+:::
+::: {.column width="50%"}
+
+```{r fig.align='center', message=FALSE, warning=FALSE, out.width="110%"}
+plot(var13.est, names = "dinfcol")
+plot(var13.est, names = "ddep")
+```
+
+:::
+::::::::::::::
+
+Al parecer el VAR(13) presenta un mejor ajustes. Miremos pruebas formales de autocorrelación, heteroscedasticidad y normalidad
+
+## Autocorrelación
+
+:::::::::::::: {.columns}
+::: {.column width="50%"}
+
+```{r fig.align='center', message=FALSE, warning=FALSE, out.width="110%"}
+var1.serial1 <- serial.test(var1.est, lags.pt = 20, type = "PT.asymptotic")
+var1.serial1
+```
+
+:::
+::: {.column width="50%"}
+
+```{r fig.align='center', message=FALSE, warning=FALSE, out.width="110%"}
+var13.serial <- serial.test(var13.est, lags.pt = 20, type = "PT.asymptotic")
+var13.serial
+```
+:::
+::::::::::::::
+
+En los dos modelos se rechaza la $H_0$: no autocorrelación, lo cual indica problemas de autocorrelación
+
+## Heteroscedasticidad
+:::::::::::::: {.columns}
+::: {.column width="50%"}
+
+```{r fig.align='center', message=FALSE, warning=FALSE, out.width="110%"}
+var1.hetero <- arch.test(var1.est, lags.multi = 5)
+var1.hetero
+```
+
+:::
+::: {.column width="50%"}
+
+```{r fig.align='center', message=FALSE, warning=FALSE, out.width="110%"}
+var13.hetero <- arch.test(var13.est, lags.multi = 5)
+var13.hetero
+```
+:::
+::::::::::::::
+
+Se observa que se rechaza $H_0$: homoscedasticidad, lo cual indica problemas de heteroscedasticidad
+
+## Normalidad
+:::::::::::::: {.columns}
+::: {.column width="50%"}
+
+```{r fig.align='center', message=FALSE, warning=FALSE, out.width="110%"}
+var1.norm <- normality.test(var1.est)
+var1.norm
+```
+
+:::
+::: {.column width="50%"}
+
+```{r fig.align='center', message=FALSE, warning=FALSE, out.width="110%"}
+var13.norm <- normality.test(var13.est)
+var13.norm
+```
+:::
+::::::::::::::
+
+Se observa que los residuales de los modelos no son normales (se rechaza $H_0$: normalidad)
+
+# Test de causalidad de Granger
+:::::::::::::: {.columns}
+::: {.column width="50%"}
+
+```{r fig.align='center', message=FALSE, warning=FALSE, out.width="110%"}
+var1.cause.infcol <- causality(var1.est, cause = "ddep")
+var1.cause.infcol
+```
+
+:::
+::: {.column width="50%"}
+
+```{r fig.align='center', message=FALSE, warning=FALSE, out.width="110%"}
+var13.cause.infcol <- causality(var13.est, cause = "ddep")
+var13.cause.infcol
+```
+:::
+::::::::::::::
+
+El test de Granger muestra que la depreciación causa Granger la inflación 
+
+## Predicción
+Para la predicción de la inflación para Colombia y la depreciación, se deben asignar valores futuros para la variable exogena inflación de los Estados Unidos y luego diferenciarlos. Se toman los datos de inflación en los Estados Unidos de junio de 2022 a enero de 2023 (se toman 8 meses que al diferenciar nos da 7 meses), lo cual daría para hacer 7 meses de predicción.
+```{r}
+infeeuu_f <- as.matrix(data.frame(dinfeeuu = c(8.93298689, 8.413182026, 8.227361014, 8.214853957, 7.762492677,
+                                               7.135348085, 6.444940492, 6.347156218)))
+dinfeeuu_f <- diff(infeeuu_f,1)
+```
+
+:::::::::::::: {.columns}
+::: {.column width="50%"}
+
+```{r fig.align='center', message=FALSE, warning=FALSE, out.width="110%"}
+var1.predic <- predict(var1.est, n.ahead = 7, ci = 0.95, dumvar = dinfeeuu_f)
+plot(var1.predic, names = "dinfcol")
+plot(var1.predic, names = "ddep")
+
+data.predict1 <- data.frame(date = as.yearmon(seq(as.Date("2003-01-01"), as.Date("2023-01-01"), by = "month"), "%m-%Y"),
+                            predicho = c(rep(NA, length(data$dinfcol) - 1), data$dinfcol[length(data$dinfcol)],
+                                               var1.predic$fcst$dinfcol[1:7,1]),
+                            ic_l = c(rep(NA, length(data$dinfcol) - 1), data$dinfcol[length(data$dinfcol)],
+                                               var1.predic$fcst$dinfcol[1:7,2]),
+                            ic_u = c(rep(NA, length(data$dinfcol) - 1), data$dinfcol[length(data$dinfcol)],
+                                               var1.predic$fcst$dinfcol[1:7,3]),
+                            actual = c(data$dinfcol, rep(NA, 7)))
+
+ggplot(data.predict1[data.predict1$date>"ene. 2020",]) + 
+  geom_line(aes(x = date, y = actual, color = "Observada"), size = 0.8) + 
+  geom_line(aes(x = date, y = predicho, color = "Predicha"), size = 0.8) + 
+  geom_ribbon(aes(x = date, y = predicho, ymin = ic_l, ymax = ic_u, fill="IC"), alpha = 0.1) +
+  theme(legend.text = element_text(size = 10), text = element_text(size=12), legend.spacing.y = unit(-0.3, "cm"), legend.background=element_blank()) + 
+  guides(shape = guide_legend(order = 2),col = guide_legend(order = 1)) + scale_color_manual(name = "", values = c("Observada" = "darkblue", "Predicha" = "red")) + 
+  scale_fill_manual(values = c(IC = "steelblue"), labels = c(IC = "IC 95%")) + 
+  labs(title = "Predicción del D(inflación) de Colombia VAR(1)", x = "Mes", y ="", fill = "") + 
+  scale_x_continuous(n.breaks = 8)
+```
+
+:::
+::: {.column width="50%"}
+
+```{r fig.align='center', message=FALSE, warning=FALSE, out.width="110%"}
+var13.predic <- predict(var13.est, n.ahead = 7, ci = 0.95, dumvar = dinfeeuu_f)
+plot(var13.predic, names = "dinfcol")
+plot(var13.predic, names = "ddep")
+
+data.predict13 <- data.frame(date = as.yearmon(seq(as.Date("2003-01-01"), as.Date("2023-01-01"), by = "month"), "%m-%Y"),
+                            predicho = c(rep(NA, length(data$dinfcol) - 1), data$dinfcol[length(data$dinfcol)],
+                                               var13.predic$fcst$dinfcol[1:7,1]),
+                            ic_l = c(rep(NA, length(data$dinfcol) - 1), data$dinfcol[length(data$dinfcol)],
+                                               var13.predic$fcst$dinfcol[1:7,2]),
+                            ic_u = c(rep(NA, length(data$dinfcol) - 1), data$dinfcol[length(data$dinfcol)],
+                                               var13.predic$fcst$dinfcol[1:7,3]),
+                            actual = c(data$dinfcol, rep(NA, 7)))
+
+ggplot(data.predict13[data.predict13$date>"ene. 2020",]) + 
+  geom_line(aes(x = date, y = actual, color = "Observada"), size = 0.8) + 
+  geom_line(aes(x = date, y = predicho, color = "Predicha"), size = 0.8) + 
+  geom_ribbon(aes(x = date, y = predicho, ymin = ic_l, ymax = ic_u, fill="IC"), alpha = 0.1) +
+  theme(legend.text = element_text(size = 10), text = element_text(size=12), legend.spacing.y = unit(-0.3, "cm"), legend.background=element_blank()) + 
+  guides(shape = guide_legend(order = 2),col = guide_legend(order = 1)) + scale_color_manual(name = "", values = c("Observada" = "darkblue", "Predicha" = "red")) + 
+  scale_fill_manual(values = c(IC = "steelblue"), labels = c(IC = "IC 95%")) + 
+  labs(title = "Predicción del D(inflación) de Colombia VAR(13)", x = "Mes", y ="", fill = "") + 
+  scale_x_continuous(n.breaks = 8)
+```
+:::
+::::::::::::::
+
+Lo anterior fue la predicción de la serie de inflación diferenciada. Ahora, para hacer la predicción de la serie original se procede como sigue:
+
+$$\Delta x_t = x_t - x_{t-1} $$
+$$\Delta x_{t+1} = x_{t+1} - x_{t} $$
+
+Así que, para deducir el valor predicho en niveles seria:
+$$x_{t+1} = \Delta x_{t+1} + x_{t}$$
+
+Con los datos predichos de los modelos VAR en diferencias, se puede hacer el cálculo de la prediccion de la variable original de inflación
+
+:::::::::::::: {.columns}
+::: {.column width="50%"}
+
+```{r fig.align='center', message=FALSE, warning=FALSE, out.width="110%"}
+predict1_infcol <- data.frame(infcol_p = NA)
+
+for (i in 1:7) {
+predict1_infcol <- data.frame(infcol_p = c(
+  data.predict1$predicho[235]+data$infcol[234],
+  data.predict1$predicho[236]+predict1_infcol$infcol_p[1],
+  data.predict1$predicho[237]+predict1_infcol$infcol_p[2],
+  data.predict1$predicho[238]+predict1_infcol$infcol_p[3],
+  data.predict1$predicho[239]+predict1_infcol$infcol_p[4],
+  data.predict1$predicho[240]+predict1_infcol$infcol_p[5],
+  data.predict1$predicho[241]+predict1_infcol$infcol_p[6]))
+}
+
+data.predict1infcol <- data.frame(date = as.yearmon(seq(as.Date("2003-01-01"), as.Date("2023-01-01"), by = "month"), "%m-%Y"),
+                                  predicho = c(rep(NA, length(data$infcol) - 1), data$infcol[length(data$infcol)], predict1_infcol$infcol_p),
+                                  actual = c(data$infcol, rep(NA, 7)))
+
+ggplot(data.predict1infcol) + 
+  geom_line(aes(x = date, y = actual, color = "Observada"), size = 0.8) + 
+  geom_line(aes(x = date, y = predicho, color = "Predicha"), size = 0.8) +
+  theme(legend.text = element_text(size = 10), text = element_text(size=12), legend.background=element_blank()) + 
+  guides(shape = guide_legend(order = 2),col = guide_legend(order = 1)) + 
+  scale_color_manual(name = "", values = c("Observada" = "darkblue", "Predicha" = "red")) + 
+  labs(title = "Predicción de la inflación de Colombia VAR(1)", x = "Mes", y ="", fill = "") + 
+  scale_x_continuous(n.breaks = 8) + scale_y_continuous(n.breaks = 6)
+```
+
+:::
+::: {.column width="50%"}
+
+```{r fig.align='center', message=FALSE, warning=FALSE, out.width="110%"}
+predict13_infcol <- data.frame(infcol_p = NA)
+
+for (i in 1:7) {
+predict13_infcol <- data.frame(infcol_p = c(
+  data.predict13$predicho[235]+data$infcol[234],
+  data.predict13$predicho[236]+predict13_infcol$infcol_p[1],
+  data.predict13$predicho[237]+predict13_infcol$infcol_p[2],
+  data.predict13$predicho[238]+predict13_infcol$infcol_p[3],
+  data.predict13$predicho[239]+predict13_infcol$infcol_p[4],
+  data.predict13$predicho[240]+predict13_infcol$infcol_p[5],
+  data.predict13$predicho[241]+predict13_infcol$infcol_p[6]))
+}
+
+data.predict13infcol <- data.frame(date = as.yearmon(seq(as.Date("2003-01-01"), as.Date("2023-01-01"), by = "month"), "%m-%Y"),
+                                  predicho = c(rep(NA, length(data$infcol) - 1), data$infcol[length(data$infcol)], predict13_infcol$infcol_p),
+                                  actual = c(data$infcol, rep(NA, 7)))
+
+ggplot(data.predict13infcol) + 
+  geom_line(aes(x = date, y = actual, color = "Observada"), size = 0.8) + 
+  geom_line(aes(x = date, y = predicho, color = "Predicha"), size = 0.8) +
+  theme(legend.text = element_text(size = 10), text = element_text(size=12), legend.background=element_blank()) + 
+  guides(shape = guide_legend(order = 2),col = guide_legend(order = 1)) + 
+  scale_color_manual(name = "", values = c("Observada" = "darkblue", "Predicha" = "red")) + 
+  labs(title = "Predicción de la inflación de Colombia VAR(13)", x = "Mes", y ="", fill = "") + 
+  scale_x_continuous(n.breaks = 8) + scale_y_continuous(n.breaks = 6)
+
+```
+:::
+::::::::::::::
+
+
+## Funciones impulso respuesta
+:::::::::::::: {.columns}
+::: {.column width="50%"}
+
+```{r fig.align='center', message=FALSE, warning=FALSE, out.width="110%"}
+irf1.dinfcol <- irf(var1.est, impulse = "ddep", response = "dinfcol", 
+                  n.ahead = 10, boot = TRUE, runs = 1000,
+                  seed = 0123456789)
+
+data.irf1 <- data.frame(time = seq(1,11,1),
+                       irf = irf1.dinfcol$irf$ddep[1:11,1],
+                       lower = irf1.dinfcol$Lower$ddep[1:11,1],
+                       upper = irf1.dinfcol$Upper$ddep[1:11,1])
+
+ggplot(data.irf1) + 
+  geom_line(aes(x = time, y = irf, color = "FIR"), size = 0.8) + 
+  geom_ribbon(aes(x = time, y = irf, ymin = lower, ymax = upper, fill="IC"), alpha = 0.1) +
+  theme(legend.text = element_text(size = 10), text = element_text(size=12), legend.spacing.y = unit(-0.3, "cm"), legend.background=element_blank()) + 
+  guides(shape = guide_legend(order = 2),col = guide_legend(order = 1)) + 
+  scale_color_manual(name = "", values = c("FIR" = "darkblue")) + 
+  scale_fill_manual(values = c(IC = "steelblue"), labels = c(IC = "IC 95%")) + 
+  labs(title = "Shock de la depreciación sobre la inflación VAR(1)", x = "Mes", y ="Inflación de Colombia", fill = "", caption ="Intervalos de confianza con 1000 bootstrap") + 
+  scale_x_continuous(n.breaks = 11) +
+  geom_hline(yintercept=0, color = "red")
+
+```
+
+:::
+::: {.column width="50%"}
+
+```{r fig.align='center', message=FALSE, warning=FALSE, out.width="110%"}
+irf13.dinfcol <- irf(var13.est, impulse = "ddep", response = "dinfcol", 
+                  n.ahead = 10, boot = TRUE, runs = 1000,
+                  seed = 0123456789)
+
+data.irf13 <- data.frame(time = seq(1,11,1),
+                       irf = irf13.dinfcol$irf$ddep[1:11,1],
+                       lower = irf13.dinfcol$Lower$ddep[1:11,1],
+                       upper = irf13.dinfcol$Upper$ddep[1:11,1])
+
+ggplot(data.irf13) + 
+  geom_line(aes(x = time, y = irf, color = "FIR"), size = 0.8) + 
+  geom_ribbon(aes(x = time, y = irf, ymin = lower, ymax = upper, fill="IC"), alpha = 0.1) +
+  theme(legend.text = element_text(size = 10), text = element_text(size=12), legend.spacing.y = unit(-0.3, "cm"), legend.background=element_blank()) + 
+  guides(shape = guide_legend(order = 2),col = guide_legend(order = 1)) + 
+  scale_color_manual(name = "", values = c("FIR" = "darkblue")) + 
+  scale_fill_manual(values = c(IC = "steelblue"), labels = c(IC = "IC 95%")) + 
+  labs(title = "Shock de la depreciación sobre la inflación VAR(13)", x = "Mes", y ="Inflación de Colombia", fill = "", caption ="Intervalos de confianza con 1000 bootstrap") + 
+  scale_x_continuous(n.breaks = 11) +
+  geom_hline(yintercept=0, color = "red")
+```
+:::
+::::::::::::::
+
+## Referencias
+
+Posada, CE y Londoño-Sierra, L. (2022). "Retos para la autoridad monetaria en el próximo cuatrenio". Grupo de Coyuntura Económica. Universidad EAFIT, Medellín-Colombia. https://coyunturaeconomicaeafit.wordpress.com/2022/08/25/retos-para-la-autoridad-monetaria-en-el-proximo-cuatrienio/
+
+
