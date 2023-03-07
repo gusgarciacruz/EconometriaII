@@ -29,7 +29,7 @@ A continuación cargamos los datos y realizamos los gráficos de las series
 
 ```{r fig.align='center', message=FALSE, warning=FALSE, out.width="70%"}
 library(fpp3); library(tidyverse); library(vars); library(urca); library(forecast)
-library(openxlsx)
+library(openxlsx); library(plotly)
 data <- read.xlsx("https://gusgarciacruz.github.io/EconometriaII/IntroVar/Inflacion_depreciacion_enero2003_junio2022.xlsx") |> 
   mutate(date = as.yearmon(date))
 
@@ -44,6 +44,35 @@ ggplot(data) +
         legend.key = element_rect(fill = "transparent", colour = "transparent")) +
   scale_y_continuous(name = "Inflación (%)",
                      sec.axis = sec_axis(~./14, name="Depreciación"))
+```
+
+Es posible generar un gráfico interactivo para ver los valores directamente en el gráfico
+
+```{r fig.align='center', message=FALSE, warning=FALSE, out.width="100%"}
+g1 <- ggplot(data) +
+  geom_line(aes(x = date, y = infcol, colour = "Colombia"), size = 0.8) +
+  geom_line(aes(x = date, y = Infeeuu, colour = "Estados Unidos"), size = 0.8) +
+  scale_colour_manual(name = "", values = c("Colombia" = "darkblue", "Estados Unidos" = "red"), limits = c("Colombia", "Estados Unidos")) +
+  labs(title = "Gráfico 1. Inflación en Colombia y Estados Unidos, y depreciación", x = "Mes", y ="") + 
+  theme(legend.position = c(0.17, 0.93),
+        legend.background = element_rect(fill="transparent", colour ="transparent"),
+        legend.key = element_rect(fill = "transparent", colour = "transparent")) +
+  scale_y_continuous(name = "Inflación (%)")
+
+ay <- list(
+  tickfont = list(size=12),
+  titlefont=list(size=15),
+  overlaying = "y",
+  nticks = 5,
+  zeroline=F,
+  side = "right",
+  title = "Depreciación"
+)
+
+ggplotly(g1) |> 
+  add_lines(x=~date, y=~Dep, yaxis="y2", line = list(color = "#00FF00", width = 3), 
+            data=data, showlegend=T, name = "Depreciación") |> 
+  layout(yaxis2 = ay)
 ```
 
 ## Pruebas de estacionariedad
@@ -486,7 +515,7 @@ ggplot(data.predict13infcol) +
 
 ```{r fig.align='center', message=FALSE, warning=FALSE, out.width="110%"}
 irf1.dinfcol <- irf(var1.est, impulse = "ddep", response = "dinfcol", 
-                  n.ahead = 10, boot = TRUE, runs = 1000,
+                  n.ahead = 10, ortho = F, boot = TRUE, runs = 1000,
                   seed = 0123456789)
 
 data.irf1 <- data.frame(time = seq(1,11,1),
@@ -512,7 +541,7 @@ ggplot(data.irf1) +
 
 ```{r fig.align='center', message=FALSE, warning=FALSE, out.width="110%"}
 irf13.dinfcol <- irf(var13.est, impulse = "ddep", response = "dinfcol", 
-                  n.ahead = 10, boot = TRUE, runs = 1000,
+                  n.ahead = 10, ortho = F, boot = TRUE, runs = 1000,
                   seed = 0123456789)
 
 data.irf13 <- data.frame(time = seq(1,11,1),
