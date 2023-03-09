@@ -36,14 +36,14 @@ data <- read.xlsx("https://gusgarciacruz.github.io/EconometriaII/IntroVar/Inflac
 ggplot(data) +
   geom_line(aes(x = date, y = infcol, colour = "Colombia"), size = 0.8) +
   geom_line(aes(x = date, y = Infeeuu, colour = "Estados Unidos"), size = 0.8) +
-  geom_line(aes(x = date, y = Dep*14, colour = "Depreciación"), size = 0.8) +
+  geom_line(aes(x = date, y = Dep/4, colour = "Depreciación"), size = 0.8) +
   scale_colour_manual(name = "", values = c("Colombia" = "darkblue", "Estados Unidos" = "red", "Depreciación" = "green"), limits = c("Colombia", "Estados Unidos", "Depreciación")) +
   labs(title = "Gráfico 1. Inflación en Colombia y Estados Unidos, y depreciación", x = "Mes", y ="") + 
   theme(legend.position = c(0.17, 0.93),
         legend.background = element_rect(fill="transparent", colour ="transparent"),
         legend.key = element_rect(fill = "transparent", colour = "transparent")) +
   scale_y_continuous(name = "Inflación (%)",
-                     sec.axis = sec_axis(~./14, name="Depreciación"))
+                     sec.axis = sec_axis(~.*4, name="Depreciación (%)"))
 ```
 
 Es posible generar un gráfico interactivo para ver los valores directamente en el gráfico
@@ -66,7 +66,7 @@ ay <- list(
   nticks = 5,
   zeroline=F,
   side = "right",
-  title = "Depreciación"
+  title = "Depreciación (%)"
 )
 
 ggplotly(g1) |> 
