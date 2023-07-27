@@ -654,7 +654,7 @@ Cov(\textbf{u}^*)     & = E((\textbf{u}^* - E(\textbf{u}^*))((\textbf{u}^* - E(\
 \end{aligned}
 $$
 
-Por lo tanto, en le modelo $\textbf{Y}^* = \textbf{X}^*\textbf{B} + \textbf{u}^*$\ se cumple la hipótesis de perturbaciones esféricas y se puede aplicar MCO al modelo transformado, dando como resultado $\widehat{\textbf{B}}_{MCG}$
+Por lo tanto, en le modelo $\textbf{Y}^* = \textbf{X}^*\textbf{B} + \textbf{u}^*$ se cumple la hipótesis de perturbaciones esféricas y se puede aplicar MCO al modelo transformado, dando como resultado $\widehat{\textbf{B}}_{MCG}$
 
 $$
 \begin{aligned}
