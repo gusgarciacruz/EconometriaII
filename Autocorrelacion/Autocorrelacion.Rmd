@@ -385,8 +385,9 @@ Como muestra esta figura, la mayoría de los residuos están agrupados en el seg
 ---
 # <span style="font-size:80%">Detección de la autocorrelación</span>
 
-<font color = "blue">2. Prueba *d* de Durbin-Watson</font>
+<font color = "blue">2. Prueba $d$ de Durbin-Watson
 
+<font color = "black">
 - La prueba más conocida para detectar correlación serial es la de los estadísticos Durbin y Watson
 
 - Se le conoce como <font color = "blue">estadístico $d$ de Durbin-Watson</font>, que se define como:
