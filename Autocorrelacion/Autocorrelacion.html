@@ -4,13 +4,13 @@
     <title>Autocorrelación</title>
     <meta charset="utf-8" />
     <meta name="author" content="Gustavo A. García   ggarci24@eafit.edu.co                  " />
-    <script src="libs/header-attrs-2.14/header-attrs.js"></script>
+    <script src="libs/header-attrs-2.23/header-attrs.js"></script>
     <script src="libs/clipboard-2.0.6/clipboard.min.js"></script>
     <link href="libs/xaringanExtra-clipboard-0.2.6/xaringanExtra-clipboard.css" rel="stylesheet" />
     <script src="libs/xaringanExtra-clipboard-0.2.6/xaringanExtra-clipboard.js"></script>
     <script>window.xaringanExtraClipboard(null, {"button":"<i class=\"fa fa-clipboard\"><\/i>","success":"<i class=\"fa fa-check\" style=\"color: #90BE6D\"><\/i>","error":"<i class=\"fa fa-times-circle\" style=\"color: #F94144\"><\/i>"})</script>
-    <link href="libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
-    <link href="libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+    <link href="libs/font-awesome-6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="libs/font-awesome-6.4.0/css/v4-shims.min.css" rel="stylesheet" />
     <link href="libs/xaringanExtra-extra-styles-0.2.6/xaringanExtra-extra-styles.css" rel="stylesheet" />
     <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
   </head>
@@ -356,7 +356,7 @@ Para ver esto en forma diferente, podemos graficar `\(\widehat{u}_t\)` respecto 
 
 
 ```r
-data &lt;- data |&gt; mutate(u_lag1 = lag(u, lag=1))
+data &lt;- data |&gt; mutate(u_lag1 = lag(u, 1))
 
 ggplot(data, aes(x=u_lag1, y=u)) +
   geom_point(color = "blue", size = 3) +
@@ -371,7 +371,7 @@ Como muestra esta figura, la mayoría de los residuos están agrupados en el seg
 ---
 # &lt;span style="font-size:80%"&gt;Detección de la autocorrelación&lt;/span&gt;
 
-&lt;font color = "blue"&gt;2. Prueba `\(d\)` de Durbin-Watson&lt;/font&gt;
+&lt;font color = "blue"&gt;2. Prueba *d* de Durbin-Watson&lt;/font&gt;
 
 - La prueba más conocida para detectar correlación serial es la de los estadísticos Durbin y Watson
 
@@ -637,7 +637,7 @@ La propuesta de los MCG es premultiplicar todo el modelo por `\(\textbf{P}^{-1}\
 `$$\textbf{Y}^* = \textbf{X}^*\textbf{B} + \textbf{u}^*$$`
 ---
 # &lt;span style="font-size:80%"&gt;Solución a la autocorrelación: el estimador MCG&lt;/span&gt;
-&lt;font size = "3"&gt;
+&lt;font size = "2"&gt;
 Si la perturbación `\(\textbf{u}^*\)` es esférica se puede aplicar MCO al modelo con base en `\(\textbf{Y}^*\)` y `\(\textbf{X}^*\)`. Hay que ver los supuestos para `\(\textbf{u}^*\)`
 
 `$$E(\textbf{u}^*) = E(\textbf{P}^{-1}\textbf{u}) = \textbf{P}^{-1}E(\textbf{u})=\textbf{0}$$`
@@ -863,7 +863,7 @@ Observamos que tanto u como u_e presentan un patrón, lo que indica que tal vez 
 Graficando `\(u_t\)` contra `\(u_{t-1}\)`
 
 ```r
-data &lt;- data |&gt; mutate(u_lag1 = lag(u, lag=1))
+data &lt;- data |&gt; mutate(u_lag1 = lag(u, 1))
 
 ggplot(data, aes(x=u_lag1, y=u)) +
   geom_point(color = "blue", size = 3) +

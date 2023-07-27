@@ -372,7 +372,7 @@ Observamos que tanto $\widehat{u}_t$ como $\widehat{u}_t$ estandarizados present
 Para ver esto en forma diferente, podemos graficar $\widehat{u}_t$ respecto de $\widehat{u}_{t-1}$, es decir, el residuo en el tiempo $t$ frente a su valor en el tiempo $(t-1)$, una clase de prueba empírica del esquema AR(1)
 
 ```{r, out.width="50%",fig.align='center'}
-data <- data |> mutate(u_lag1 = lag(u, lag=1))
+data <- data |> mutate(u_lag1 = lag(u, 1))
 
 ggplot(data, aes(x=u_lag1, y=u)) +
   geom_point(color = "blue", size = 3) +
@@ -385,7 +385,7 @@ Como muestra esta figura, la mayoría de los residuos están agrupados en el seg
 ---
 # <span style="font-size:80%">Detección de la autocorrelación</span>
 
-<font color = "blue">2. Prueba $d$ de Durbin-Watson</font>
+<font color = "blue">2. Prueba *d* de Durbin-Watson</font>
 
 - La prueba más conocida para detectar correlación serial es la de los estadísticos Durbin y Watson
 
@@ -639,7 +639,7 @@ $$\textbf{P}^{-1}\textbf{Y} = \textbf{P}^{-1}\textbf{XB} + \textbf{P}^{-1}\textb
 $$\textbf{Y}^* = \textbf{X}^*\textbf{B} + \textbf{u}^*$$
 ---
 # <span style="font-size:80%">Solución a la autocorrelación: el estimador MCG</span>
-<font size = "3">
+<font size = "2">
 Si la perturbación $\textbf{u}^*$ es esférica se puede aplicar MCO al modelo con base en $\textbf{Y}^*$ y $\textbf{X}^*$. Hay que ver los supuestos para $\textbf{u}^*$
 
 $$E(\textbf{u}^*) = E(\textbf{P}^{-1}\textbf{u}) = \textbf{P}^{-1}E(\textbf{u})=\textbf{0}$$
@@ -831,7 +831,7 @@ Observamos que tanto u como u_e presentan un patrón, lo que indica que tal vez 
 
 Graficando $u_t$ contra $u_{t-1}$
 ```{r, out.width="50%",fig.align='center'}
-data <- data |> mutate(u_lag1 = lag(u, lag=1))
+data <- data |> mutate(u_lag1 = lag(u, 1))
 
 ggplot(data, aes(x=u_lag1, y=u)) +
   geom_point(color = "blue", size = 3) +
