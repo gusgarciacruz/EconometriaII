@@ -20,7 +20,7 @@
 library(tidyverse); library(dynlm); library(dLagM); library(AER); library(xts)
 library(ecm); library(openxlsx); library(urca)
 
-data <- read.xlsx("http://wps.pearsoned.co.uk/wps/media/objects/16103/16489878/data3eu/us_macro_quarterly.xlsx",
+data <- read.xlsx("https://www.princeton.edu/~mwatson/Stock-Watson_3u/Students/EE_Datasets/us_macro_quarterly.xlsx",
                         sheet = 1) |>
   rename(date=X1) |> 
   mutate(date = as.yearqtr(date, format = "%Y:0%q"),
@@ -176,7 +176,7 @@ data.predictARMAX <- data.frame(date = seq(as.Date("1960-01-01"), by="quarter", 
                            ic_l = lower, ic_u = upper) |> 
   mutate(date = as.yearqtr(date, format = "%Y-%m-%d"))
 
-ggplot(data.predictARMAX[201:2016,]) + 
+ggplot(data.predictARMAX[201:216,]) + 
   geom_line(aes(x = date, y = actual, color = "Observada"), linewidth = 0.8) + 
   geom_line(aes(x = date, y = predicho, color = "Predicha"), linewidth = 0.8) + 
   geom_ribbon(aes(x = date, y = predicho, ymin = ic_l, ymax = ic_u, fill="IC"), alpha = 0.1)+
@@ -192,7 +192,7 @@ data.predictADLARMAX <- data.frame(date = seq(as.Date("1960-01-01"), by="quarter
   mutate(date = as.yearqtr(date, format = "%Y-%m-%d"))
 
 
-ggplot(data.predictADLARMAX[201:2016,]) + 
+ggplot(data.predictADLARMAX[201:216,]) + 
   geom_line(aes(x = date, y = actual, color = "Observada"), linewidth = 0.8) + 
   geom_line(aes(x = date, y = predicho1, color = "ADL11"), linewidth = 0.8) +
   geom_line(aes(x = date, y = predicho2, color = "ARMAX(1,0,1)"), linewidth = 0.8) +
