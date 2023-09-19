@@ -30,12 +30,6 @@ Profesor: [Gustavo A. García](https://gusgarciacruz.github.io/cv)
 
 [Modelos de elección discreta](https://gusgarciacruz.github.io/EconometriaII/ModelosEleccion/ModelosEleccion.html)
 
-[Taller 1](https://gusgarciacruz.github.io/EconometriaII/Taller1/Taller1.pdf)
-
-[Taller 2](https://gusgarciacruz.github.io/EconometriaII/Taller2/Taller2.pdf)
-
-[Taller 3](https://gusgarciacruz.github.io/EconometriaII/Taller3/Taller3.pdf)
-
 [Instrucciones trabajo de investigación](https://gusgarciacruz.github.io/EconometriaII/TrabajoInvestigacion/TrabajoInvestigacion.html)
 
 [Quiz 1](https://gusgarciacruz.github.io/EconometriaII/Q1.pdf)
