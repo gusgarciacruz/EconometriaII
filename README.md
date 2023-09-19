@@ -41,3 +41,5 @@ Profesor: [Gustavo A. García](https://gusgarciacruz.github.io/cv)
 [Quiz 1](https://gusgarciacruz.github.io/EconometriaII/Q1.pdf)
 
 [Quiz 2](https://gusgarciacruz.github.io/EconometriaII/Q2.pdf)
+
+[Quiz 3](https://gusgarciacruz.github.io/EconometriaII/Q3.pdf)
