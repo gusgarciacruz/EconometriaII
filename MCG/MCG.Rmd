@@ -222,7 +222,7 @@ Las matrices definidas positivas pueden descomponerse como:
 
 $$\boldsymbol\Omega = \textbf{PP}'$$
 
-Siendo $\textbf{P}$ una matriz no singular ($\textbf{P}^{-1}$ existe). En el mundo matricial, dadas las probabilidades de la inversión de matrices, se da que:
+Siendo $\textbf{P}$ una matriz no singular ( $\textbf{P}^{-1}$ existe). En el mundo matricial, dadas las probabilidades de la inversión de matrices, se da que:
 
 $$\boldsymbol\Omega^{-1} = (\textbf{PP}')^{-1} = \textbf{P}'^{-1}\textbf{P}^{-1} = \textbf{P}^{-1'}\textbf{P}^{-1}$$
 
@@ -247,7 +247,7 @@ Cov(\textbf{u}^*)     & = E((\textbf{u}^* - E(\textbf{u}^*))((\textbf{u}^* - E(\
 \end{aligned}
 $$
 
-Por lo tanto, en le modelo $\textbf{Y}^* = \textbf{X}^*\textbf{B} + \textbf{u}^*$\ se cumple la hipótesis de perturbaciones esféricas y se puede aplicar MCO al modelo transformado, dando como resultado $\widehat{\textbf{B}}_{MCG}$
+Por lo tanto, en le modelo $\textbf{Y}^* = \textbf{X}^*\textbf{B} + \textbf{u}^*$ se cumple la hipótesis de perturbaciones esféricas y se puede aplicar MCO al modelo transformado, dando como resultado $\widehat{\textbf{B}}_{MCG}$
 
 $$
 \begin{aligned}

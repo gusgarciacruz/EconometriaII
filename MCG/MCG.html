@@ -4,13 +4,13 @@
     <title>Repaso de MCG</title>
     <meta charset="utf-8" />
     <meta name="author" content="Gustavo A. García   ggarci24@eafit.edu.co                  " />
-    <script src="libs/header-attrs-2.14/header-attrs.js"></script>
+    <script src="libs/header-attrs-2.25/header-attrs.js"></script>
     <script src="libs/clipboard-2.0.6/clipboard.min.js"></script>
     <link href="libs/xaringanExtra-clipboard-0.2.6/xaringanExtra-clipboard.css" rel="stylesheet" />
     <script src="libs/xaringanExtra-clipboard-0.2.6/xaringanExtra-clipboard.js"></script>
     <script>window.xaringanExtraClipboard(null, {"button":"<i class=\"fa fa-clipboard\"><\/i>","success":"<i class=\"fa fa-check\" style=\"color: #90BE6D\"><\/i>","error":"<i class=\"fa fa-times-circle\" style=\"color: #F94144\"><\/i>"})</script>
-    <link href="libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
-    <link href="libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+    <link href="libs/font-awesome-6.4.2/css/all.min.css" rel="stylesheet" />
+    <link href="libs/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet" />
     <link href="libs/xaringanExtra-extra-styles-0.2.6/xaringanExtra-extra-styles.css" rel="stylesheet" />
     <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
   </head>
@@ -204,7 +204,7 @@ Las matrices definidas positivas pueden descomponerse como:
 
 `$$\boldsymbol\Omega = \textbf{PP}'$$`
 
-Siendo `\(\textbf{P}\)` una matriz no singular ($\textbf{P}^{-1}$ existe). En el mundo matricial, dadas las probabilidades de la inversión de matrices, se da que:
+Siendo `\(\textbf{P}\)` una matriz no singular ( `\(\textbf{P}^{-1}\)` existe). En el mundo matricial, dadas las probabilidades de la inversión de matrices, se da que:
 
 `$$\boldsymbol\Omega^{-1} = (\textbf{PP}')^{-1} = \textbf{P}'^{-1}\textbf{P}^{-1} = \textbf{P}^{-1'}\textbf{P}^{-1}$$`
 
@@ -229,7 +229,7 @@ Cov(\textbf{u}^*)     &amp; = E((\textbf{u}^* - E(\textbf{u}^*))((\textbf{u}^* -
 \end{aligned}`
 $$
 
-Por lo tanto, en le modelo `\(\textbf{Y}^* = \textbf{X}^*\textbf{B} + \textbf{u}^*\)`\ se cumple la hipótesis de perturbaciones esféricas y se puede aplicar MCO al modelo transformado, dando como resultado `\(\widehat{\textbf{B}}_{MCG}\)`
+Por lo tanto, en le modelo `\(\textbf{Y}^* = \textbf{X}^*\textbf{B} + \textbf{u}^*\)` se cumple la hipótesis de perturbaciones esféricas y se puede aplicar MCO al modelo transformado, dando como resultado `\(\widehat{\textbf{B}}_{MCG}\)`
 
 $$
 `\begin{aligned}
@@ -272,7 +272,7 @@ bptest(ols)
 	studentized Breusch-Pagan test
 
 data:  ols
-BP = 8.3913, df = 3, p-value = 0.03858
+BP = 8.442, df = 3, p-value = 0.03771
 ```
 
 Ausumiendo que la variable `\(meals\)` es la cuausante de la heteroscedasticidad y que la estructura de la heteroscedasticidad es `\(Var(u) = \sigma^2meals\)`, el modelo corregido por MCP será
