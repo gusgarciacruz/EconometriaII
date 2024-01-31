@@ -9,12 +9,10 @@ purrr
 dplyr
 stringr
 forcats
+lubridate
 klippy
 xaringanExtra
 gujarati
-lattice
-survival
-Formula
 Hmisc
 forecast
 zoo
@@ -23,4 +21,3 @@ sandwich
 pcse
 prais
 orcutt
-lubridate
