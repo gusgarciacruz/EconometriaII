@@ -4,13 +4,13 @@
     <title>Modelos ARIMA</title>
     <meta charset="utf-8" />
     <meta name="author" content="Gustavo A. García   ggarci24@eafit.edu.co                  " />
-    <script src="libs/header-attrs-2.14/header-attrs.js"></script>
+    <script src="libs/header-attrs-2.25/header-attrs.js"></script>
     <script src="libs/clipboard-2.0.6/clipboard.min.js"></script>
     <link href="libs/xaringanExtra-clipboard-0.2.6/xaringanExtra-clipboard.css" rel="stylesheet" />
     <script src="libs/xaringanExtra-clipboard-0.2.6/xaringanExtra-clipboard.js"></script>
     <script>window.xaringanExtraClipboard(null, {"button":"<i class=\"fa fa-clipboard\"><\/i>","success":"<i class=\"fa fa-check\" style=\"color: #90BE6D\"><\/i>","error":"<i class=\"fa fa-times-circle\" style=\"color: #F94144\"><\/i>"})</script>
-    <link href="libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
-    <link href="libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+    <link href="libs/font-awesome-6.4.2/css/all.min.css" rel="stylesheet" />
+    <link href="libs/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet" />
     <link href="libs/xaringanExtra-extra-styles-0.2.6/xaringanExtra-extra-styles.css" rel="stylesheet" />
     <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
   </head>
@@ -162,18 +162,7 @@ name: estacional
 
 Hasta ahora, hemos restringido la atención a datos no estacionales y modelo ARIMA no estacionales. Sin embargo, los modelos ARIMA también son capaces de modelar un amplio rango de dato estacionales. Los datos estacionales tienen la forma:
 &lt;font size = 3&gt;
-
-```r
-library(fpp3)
-
-data(us_employment)
-
-leisure &lt;- us_employment |&gt;  filter(Title == "Leisure and Hospitality", year(Month) &gt; 2000) |&gt;
-  mutate(Employed = Employed/1000) |&gt; select(Month, Employed)
-autoplot(leisure, Employed) + labs(title = "Desempleo US: Sector de ocio", y="# de personas (en millones)")
-```
-
-&lt;img src="ARIMA_files/figure-html/unnamed-chunk-1-1.png" width="30%" style="display: block; margin: auto;" /&gt;
+&lt;img src="ARIMA_files/figure-html/unnamed-chunk-1-1.png" width="50%" style="display: block; margin: auto;" /&gt;
 
 Un modelo estacional ARIMA incluye términos estacionales adicionales y tiene la siguiente estructura 
 
@@ -506,19 +495,29 @@ Vamos a predecir 10 años de la tasa de desempleo
 
 ```r
 arma20.pred &lt;- predict(arma20, n.ahead = 10)
+
 predict &lt;- ts(c(rep(NA, length(y) - 1), y[length(y)], arma20.pred$pred), start=1909, frequency = 1)
-upper &lt;- ts(c(rep(NA, length(y) - 1), y[length(y)], arma20.pred$pred + 2*arma20.pred$se), start = 1909, frequency = 1)
-lower &lt;- ts(c(rep(NA, length(y) - 1), y[length(y)], arma20.pred$pred-2*arma20.pred$se), start = 1909, frequency = 1) 
+
+ic_ub &lt;- ts(c(rep(NA, length(y) - 1), y[length(y)], arma20.pred$pred + qt(0.025, nobs(arma20)-length(arma20$coefficients), lower.tail = F)*arma20.pred$se), start = 1909, frequency = 1)
+ic_lb &lt;- ts(c(rep(NA, length(y) - 1), y[length(y)], arma20.pred$pred - qt(0.025, nobs(arma20)-length(arma20$coefficients), lower.tail = F)*arma20.pred$se), start = 1909, frequency = 1)
+
 observed &lt;- ts(c(y, rep(NA, 10)), start = 1909, frequency = 1) 
 
-data &lt;- data.frame(year = 1909:1998, actual = observed, predicho = predict, ic_l = lower, ic_u = upper)
+data &lt;- data.frame(year = 1909:1998, actual = observed, predicho = predict, ic_l = ic_lb, ic_u = ic_ub)
+
 ggplot(data) + 
   geom_line(aes(x = year, y = actual, color = "Observada"), linewidth = 1.5) + 
-  geom_line(aes(x = year, y = predicho, color = "Predicha"), linewidth = 1.5) + geom_ribbon(aes(x = year, y = predicho, ymin = ic_l, ymax = ic_u, fill="IC"), alpha = 0.1) +
-  theme(legend.text = element_text(size = 20), text = element_text(size=16), legend.spacing.y = unit(-0.4, "cm"), legend.background=element_blank()) + guides(shape = guide_legend(order = 2),col = guide_legend(order = 1)) + scale_color_manual(name = "", values = c("Observada" = "darkblue", "Predicha" = "red")) + scale_fill_manual(values = c(IC = "steelblue"), labels = c(IC = "IC 95%")) + labs(x = "Años", y ="", fill = "") + scale_x_continuous(n.breaks = 10)
+  geom_line(aes(x = year, y = predicho, color = "Predicha"), linewidth = 1.5) + 
+  geom_ribbon(aes(x = year, y = predicho, ymin = ic_l, ymax = ic_u, fill="IC"), alpha = 0.1) +
+  theme(legend.text = element_text(size = 20), text = element_text(size=16), legend.spacing.y = unit(-0.4, "cm"), legend.background=element_blank()) + 
+  guides(shape = guide_legend(order = 2), col = guide_legend(order = 1)) + 
+  scale_color_manual(name = "", values = c("Observada" = "darkblue", "Predicha" = "red")) + 
+  scale_fill_manual(values = c(IC = "steelblue"), labels = c(IC = "IC 95%")) + 
+  labs(x = "Años", y ="", fill = "") + 
+  scale_x_continuous(n.breaks = 10)
 ```
 
-&lt;img src="ARIMA_files/figure-html/unnamed-chunk-16-1.png" width="53%" style="display: block; margin: auto;" /&gt;
+&lt;img src="ARIMA_files/figure-html/unnamed-chunk-16-1.png" width="32%" style="display: block; margin: auto;" /&gt;
 
 ---
 # &lt;span style="font-size:80%"&gt;Ejercicio aplicado en R: tasa de desempleo de los Estados Unidos&lt;/span&gt;
@@ -766,10 +765,9 @@ glance(autoarima)
 
 ```
 # A tibble: 1 × 8
-  .model              sigma2 log_lik   AIC  AICc   BIC ar_ro…¹ ma_ro…²
-  &lt;chr&gt;                &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;list&gt;  &lt;list&gt; 
-1 ARIMA(Employed, s… 0.00142    395. -780. -780. -763. &lt;cpl&gt;   &lt;cpl&gt;  
-# … with abbreviated variable names ¹​ar_roots, ²​ma_roots
+  .model            sigma2 log_lik   AIC  AICc   BIC ar_roots ma_roots
+  &lt;chr&gt;              &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;list&gt;   &lt;list&gt;  
+1 ARIMA(Employed,… 0.00142    395. -780. -780. -763. &lt;cpl&gt;    &lt;cpl&gt;   
 ```
 
 De acuerdo con los criterios de información, el mejor modelo es el de la selección automática
