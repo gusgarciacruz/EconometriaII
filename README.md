@@ -28,6 +28,8 @@ Profesor: [Gustavo A. García](https://gusgarciacruz.github.io/cv)
 
 [Modelos de datos panel](https://gusgarciacruz.github.io/EconometriaII/ModelosPanel/ModelosPanel.html)<br>
 
+[Diferencias en diferencias](https://gusgarciacruz.github.io/EconometriaII/DiD/DiD.html)<br>
+
 [Modelos de elección discreta](https://gusgarciacruz.github.io/EconometriaII/ModelosEleccion/ModelosEleccion.html)
 
 [Instrucciones trabajo de investigación](https://gusgarciacruz.github.io/EconometriaII/TrabajoInvestigacion/TrabajoInvestigacion.html)
