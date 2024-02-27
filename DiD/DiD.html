@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Diferencias en Diferencias</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Gustavo A. García   ggarci24@eafit.edu.co                  " />
+    <script src="libs/header-attrs-2.25/header-attrs.js"></script>
+    <script src="libs/fabric-4.3.1/fabric.min.js"></script>
+    <link href="libs/xaringanExtra-scribble-0.0.1/scribble.css" rel="stylesheet" />
+    <script src="libs/xaringanExtra-scribble-0.0.1/scribble.js"></script>
+    <script>document.addEventListener('DOMContentLoaded', function() { window.xeScribble = new Scribble({"pen_color":["#FF0000"],"pen_size":3,"eraser_size":30,"palette":[]}) })</script>
+    <script src="libs/clipboard-2.0.6/clipboard.min.js"></script>
+    <link href="libs/xaringanExtra-clipboard-0.2.6/xaringanExtra-clipboard.css" rel="stylesheet" />
+    <script src="libs/xaringanExtra-clipboard-0.2.6/xaringanExtra-clipboard.js"></script>
+    <script>window.xaringanExtraClipboard(null, {"button":"<i class=\"fa fa-clipboard\"><\/i>","success":"<i class=\"fa fa-check\" style=\"color: #90BE6D\"><\/i>","error":"<i class=\"fa fa-times-circle\" style=\"color: #F94144\"><\/i>"})</script>
+    <link href="libs/font-awesome-6.4.2/css/all.min.css" rel="stylesheet" />
+    <link href="libs/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet" />
+    <link href="libs/xaringanExtra-extra-styles-0.2.6/xaringanExtra-extra-styles.css" rel="stylesheet" />
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Diferencias en Diferencias
+]
+.author[
+### Gustavo A. García <br> <span class="notbold" style="font-size:65%"><a href="mailto:ggarci24@eafit.edu.co" class="email">ggarci24@eafit.edu.co</a></span> <br> <br> <br> <br> <br> <br> <br> <br> <br>
+]
+.date[
+### <span class="notbold" style="font-size:65%">Econometría II <br> Programa de Economía <br> Universidad EAFIT</span>
+]
+
+---
+
+
+
+
+&lt;style&gt;
+.notbold{
+    font-weight:normal
+}
+
+body {
+text-align: justify;
+}
+
+h1{
+      margin-top: -1px;
+      margin-bottom: -3px;
+}
+
+.small-code pre{
+  margin-bottom: -10px;
+  
+}  
+
+.medium-code pre{
+  margin-bottom: 2px;
+  
+} 
+&lt;/style&gt;
+
+
+
+
+
+
+&lt;font size = "5"&gt;
+
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+
+Link slides formato [html](https://gusgarciacruz.github.io/EconometriaII/DiD/DiD.html) 
+
+Link slides formato [PDF](https://gusgarciacruz.github.io/EconometriaII/DiD/DiD.pdf) 
+
+---
+# &lt;span style="font-size:80%"&gt;En este tema&lt;/span&gt;
+
+- &lt;span style="font-size:150%"&gt;[&lt;span style="color:black"&gt;La evaluación de impacto](#impacto)&lt;/span&gt; &lt;br&gt;
+
+- &lt;span style="font-size:150%"&gt;[&lt;span style="color:black"&gt;Evaluación prospectiva versus evaluación retrospectiva](#prospectiva)&lt;/span&gt; &lt;br&gt;
+
+- &lt;span style="font-size:150%"&gt;[&lt;span style="color:black"&gt;Inferencia causal y contrafactuales](#inferencia)&lt;/span&gt; &lt;br&gt;
+
+- &lt;span style="font-size:150%"&gt;[&lt;span style="color:black"&gt;Métodos de evaluación de impacto](#metodos)&lt;/span&gt; &lt;br&gt;
+
+- &lt;span style="font-size:150%"&gt;[&lt;span style="color:black"&gt;Diferencias en diferencias](#DD)&lt;/span&gt; &lt;br&gt;
+
+- &lt;span style="font-size:150%"&gt;[&lt;span style="color:black"&gt;Ejemplo 1 del modelo 2x2 DD](#ejemplo1)&lt;/span&gt; &lt;br&gt;
+
+- &lt;span style="font-size:150%"&gt;[&lt;span style="color:black"&gt;Ejemplo 2 del modelo 2x2 DD](#ejemplo2)&lt;/span&gt; &lt;br&gt;
+
+- &lt;span style="font-size:150%"&gt;[&lt;span style="color:black"&gt;El supuesto de tendencias paralelas](#supuesto)&lt;/span&gt; &lt;br&gt;
+
+- &lt;span style="font-size:150%"&gt;[&lt;span style="color:black"&gt;Ejercicio 1 aplicado en R: efecto de la formación en el empleo sobre los salarios](#r1)&lt;/span&gt; &lt;br&gt;
+
+- &lt;span style="font-size:150%"&gt;[&lt;span style="color:black"&gt;Ejercicio 2 aplicado en R: efecto de Empleando Futuro sobre la formalidad](#r2)&lt;/span&gt;
+
+
+---
+# &lt;span style="font-size:80%"&gt;Lecturas&lt;/span&gt;
+
+- &lt;span style="font-size:150%"&gt; Gertler, P. J., Martínez, S., Premand, P., Rawlings, L. B., Vermeersch, C. M. (2011). [*La evaluación de impacto en la práctica*](https://openknowledge.worldbank.org/entities/publication/f090e5a0-16f6-5795-a3b2-7f711c8b7eb7). Banco Mundial.
+
+- &lt;span style="font-size:150%"&gt; Roth, J., Sant'Anna, P., Bilinski, A., Poe, J. (2023). [What’s trending in difference-in-differences? A synthesis of
+the recent econometrics literature](https://www.sciencedirect.com/science/article/pii/S0304407623001318), *Journal of Econometrics*, 235: 2218-2244.
+
+- &lt;span style="font-size:150%"&gt; Wing, C., Simon, K., Bello-Gomez, R. (2018). [Designing Difference in difference studies: best practices for public health
+policy research](https://www.annualreviews.org/doi/10.1146/annurev-publhealth-040617-013507), *Annual Review of Public Health*, 39: 453-469.
+
+- &lt;span style="font-size:150%"&gt; Algunas webs: [DS4PS](https://ds4ps.org/PROG-EVAL-III/DiffInDiff.html), [Tidy Finance](https://www.tidy-finance.org/r/difference-in-differences.html), [RE_STAT](https://bookdown.org/cuborican/RE_STAT/difference-in-differences.html),
+[DiDs in R](https://lfoswald.github.io/2021-spring-stats2/materials/session-8/08-online-tutorial/)
+
+
+---
+name: impacto
+# &lt;span style="font-size:80%"&gt;La evaluación de impacto&lt;/span&gt;
+&lt;spam style="font-size:120%"&gt;
+
+- La evaluación de impacto sirve para determinar &lt;span style="color:blue"&gt;si un programa ha logrado o no los resultados previstos&lt;/span&gt;, y para explorar si existen estrategias alternativas con las que alcanzar mejor dichos resultados
+
+- Las evaluaciones de impacto forman parte de un programa más amplio de &lt;span style="color:blue"&gt;formulación de políticas basadas en evidencias&lt;/span&gt;. Esta tendencia mundial creciente se caracteriza por un cambio de enfoque: &lt;span style="color:blue"&gt;de los insumos a los resultados&lt;/span&gt;
+
+- En términos sencillos, una evaluación de impacto &lt;span style="color:blue"&gt;evalúa los cambios en el bienestar de las personas que pueden atribuirse a un proyecto, programa o política particular
+
+-  El principal desafío para llevar a cabo evaluaciones eficaces de impacto es identificar &lt;span style="color:blue"&gt;la relación causal entre el proyecto&lt;/span&gt;, el
+programa o la política y los resultados de interés
+
+- Las evaluaciones de impacto son un tipo particular de evaluación que intenta
+responder a preguntas sobre &lt;span style="color:blue"&gt;causa y efecto&lt;/span&gt;
+
+- Las evaluaciones de impacto se preocupan por saber cuál es el &lt;span style="color:blue"&gt;impacto o efecto causal&lt;/span&gt; de un programa sobre un resultado de interés. Solo interesa el impacto del programa: &lt;span style="color:blue"&gt;el efecto directo que tiene en los resultados&lt;/span&gt;
+
+---
+# &lt;span style="font-size:80%"&gt;La evaluación de impacto&lt;/span&gt;
+&lt;spam style="font-size:120%"&gt;
+
+- Para estimar el efecto causal o el impacto de un programa sobre los resultados, cualquier método elegido debe estimar el denominado &lt;span style="color:blue"&gt;contrafactual&lt;/span&gt; `\(\Longrightarrow\)` &lt;span style="color:blue"&gt;cuál habría sido el resultado para los participantes en el programa si no hubieran participado en él
+
+- La evaluación de impacto requiere que el evaluador encuentre &lt;span style="color:blue"&gt;un grupo de comparación&lt;/span&gt; para estimar lo que habría ocurrido con los participantes sin el programa
+
+- La pregunta fundamental de una evaluación de impacto puede formularse así:
+
+&lt;center&gt;&lt;span style="color:red"&gt;¿Cuál es el impacto (o efecto causal) de un programa sobre un resultado de interés?&lt;/center&gt;&lt;/span&gt;
+
+- Por ejemplo:
+ - ¿Cuál es el efecto causal de las becas sobre la asistencia escolar y el logro
+académico? 
+ - ¿Cuál es el impacto de la formación para trabajo sobre la formalidad?
+ - ¿La mejora de las carreteras mejora el acceso a mercados laborales y aumenta
+el ingreso de los hogares?
+ - ¿Incrementos en el salario mínimo tienen efectos negativos o positivos sobre el empleo?
+
+---
+name: prospectiva
+# &lt;span style="font-size:80%"&gt;Evaluación prospectiva versus evaluación retrospectiva&lt;/span&gt;
+&lt;spam style="font-size:120%"&gt;
+
+Las evaluaciones de impacto pueden dividirse en dos categorías: &lt;span style="color:blue"&gt;prospectivas&lt;/span&gt; y &lt;span style="color:blue"&gt;retrospectivas&lt;/span&gt; 
+
+**&lt;span style="color:blue"&gt;Evaluaciones prospectivas**
+&lt;p style="margin-bottom: -1em"&gt;
+- Se realizan al mismo tiempo que se diseña el programa y forman parte de la implementación del programa
+- Para ello, se recolectan datos de &lt;span style="color:blue"&gt;línea de base de los grupos de tratamiento y de comparación&lt;/span&gt; antes de la implementación del programa
+
+**&lt;span style="color:blue"&gt;Evaluaciones retrospectivas**&lt;/span&gt;
+&lt;p style="margin-bottom: -1em"&gt;
+- Examinan el impacto del programa después de su implementación, lo que genera grupos de tratamiento y de comparación ex post
+
+En general, las evaluaciones prospectivas de impacto tienen más probabilidades
+de producir resultados más sólidos y creíbles, por tres motivos:
+&lt;p style="margin-bottom: -1em"&gt;
+1. Levantamiento de una línea base que permite tener información antes de la intervención e identificar que los grupos de tratamiento y comparación sean similares
+2. Aclarar los objetivos del programa e identificar la medida de éxito
+3. Los grupos de tratamiento y de comparación se identifican antes de la
+implementación del programa
+
+---
+name: inferencia
+# &lt;span style="font-size:80%"&gt;Inferencia causal y contrafactuales&lt;/span&gt;
+&lt;spam style="font-size:110%"&gt;
+
+**&lt;span style="color:blue"&gt;Inferencia causal**&lt;/span&gt;
+&lt;p style="margin-bottom: -1em"&gt;
+- La pregunta básica de la evaluación de impacto es esencialmente un problema de
+&lt;span style="color:blue"&gt;inferencia causal
+
+- Evaluar el impacto de un programa sobre una serie de resultados es equivalente a &lt;span style="color:blue"&gt;evaluar el efecto causal del programa sobre ellos
+
+- Aunque las preguntas sobre causa y efecto son habituales, determinar que &lt;span style="color:blue"&gt;una
+relación es causal no es tan sencillo
+
+- Las evaluaciones de impacto nos ayudan a &lt;span style="color:blue"&gt;atribuir causalidad al establecer empíricamente en qué medida cierto programa, y solo ese programa, ha contribuido a cambiar un resultado
+
+- Para atribuir causalidad entre un programa y un resultado se usan &lt;span style="color:blue"&gt;los métodos de evaluación de impacto, que descartan la posibilidad de que cualquier factor distinto del programa de interés explique el impacto observado
+- La respuesta a la pregunta básica de la evaluación de impacto, &lt;span style="color:blue"&gt;¿Cuál es el impacto o efecto causal de un programa *P* sobre un resultado de interés *Y*?&lt;/span&gt;, se obtiene mediante la fórmula básica de la evaluación de impacto:
+
+`$$\alpha = (Y|P=1) - (Y|P=0)$$`
+
+- Esta formula implica medir *Y* en un momento para la misma unidad de observación (persona, firma, región...), pero en dos realidades diferentes, lo cual no es posible
+
+---
+# &lt;span style="font-size:80%"&gt;Inferencia causal y contrafactuales&lt;/span&gt;
+&lt;spam style="font-size:110%"&gt;
+
+**&lt;span style="color:blue"&gt;Contrafactuales**&lt;/span&gt;
+&lt;p style="margin-bottom: -1em"&gt;
+- Como se mencionó, es imposible medir a la misma persona en dos situaciones diferentes en el mismo momento: &lt;span style="color:blue"&gt;una persona habrá participado en un programa, o no lo habrá hecho; no se la puede observar simultáneamente en dos estados diferentes
+
+- Este es el &lt;span style="color:blue"&gt;problema contrafactual&lt;/span&gt;: ¿cómo se
+mide lo que habría ocurrido si hubiera prevalecido la otra circunstancia?
+
+- Aunque se puede observar y medir el resultado (*Y*) para los participantes en el
+programa `\((Y | P = 1)\)`, &lt;span style="color:blue"&gt;no se cuenta con datos para establecer cuál habría sido el resultado en ausencia del programa `\((Y | P = 0)\)`
+
+- En la fórmula básica de la evaluación de impacto, la expresión &lt;span style="color:blue"&gt; `\((Y | P = 0)\)` representa el contrafactual&lt;/span&gt;, que puede entenderse como lo que habría pasado si un participante no hubiera participado en el programa `\(\Longrightarrow\)`&lt;span style="color:blue"&gt;El contrafactual es lo que habría sido el resultado (*Y*) en ausencia de un programa (P)
+
+- `\((Y | P = 0)\)` no se puede observar directamente, y de ahí la necesidad de completar esta información mediante la &lt;span style="color:blue"&gt;estimación del contrafactual
+
+- Para ello se recurre habitualmente a grupos de comparación o &lt;span style="color:blue"&gt;grupos de control&lt;/span&gt;
+
+- La identificación de esos grupos de comparación es el quid de cualquier evaluación de impacto `\(\Longrightarrow\)` &lt;span style="color:blue"&gt;sin una estimación válida del contrafactual, no se puede conocer el impacto de un programa
+
+---
+# &lt;span style="font-size:80%"&gt;Inferencia causal y contrafactuales&lt;/span&gt;
+&lt;spam style="font-size:110%"&gt;
+
+**&lt;span style="color:blue"&gt;Contrafactuales**&lt;/span&gt;
+&lt;p style="margin-bottom: -1em"&gt;
+- Un objetivo clave de una evaluación de impacto es &lt;span style="color:blue"&gt;identificar a un grupo de participantes en el programa (el grupo de tratamiento) y a un grupo de no participantes
+(el grupo de comparación) estadísticamente idénticos en ausencia del programa
+
+- Si los dos grupos son iguales, a excepción de que uno de ellos participa en el programa y el otro no, &lt;span style="color:blue"&gt;cualquier diferencia en los resultados deberá provenir
+del programa
+
+- &lt;span style="color:blue"&gt;El reto principal es identificar a un grupo de comparación con las mismas características que el grupo de tratamiento&lt;/span&gt;. Al menos en tres aspectos deben ser iguales:
+&lt;p style="margin-bottom: -1em"&gt;
+ - ambos grupos deben ser idénticos en ausencia del programa
+ - los grupos deben reaccionar de la misma manera al programa
+ - ambos grupos no pueden estar expuestos de manera diferente a otras intervenciones durante el período de la evaluación
+ 
+- &lt;span style="color:blue"&gt;Cuando el grupo de comparación para una evaluación es inválido, la estimación del impacto del programa también será inválida&lt;/span&gt;: no estimará el impacto real del programa. En términos estadísticos, estará sesgada
+
+---
+name: metodos
+# &lt;span style="font-size:80%"&gt;Métodos de evaluación de impacto&lt;/span&gt;
+&lt;spam style="font-size:120%"&gt;
+
+Los métodos o estrategias en la evaluación de impacto consisten en &lt;span style="color:blue"&gt;identificar grupos de comparación válidos que reproduzcan o imiten exactamente el contrafactual&lt;/span&gt;
+
+Los métodos de evaluación de impacto más comúnmente utilizados son: 
+&lt;p style="margin-bottom: -1em"&gt;
+ - asignación aleatoria
+ - promoción aleatoria 
+ - diseño de regresión discontinua
+ - diferencias en diferencias (DD)
+ - pareamiento
+ 
+Los tres primeros métodos estiman el contrafactual a través de reglas explícitas de &lt;span style="color:blue"&gt;asignación del programa&lt;/span&gt;, que el evaluador conoce y entiende. Estos métodos ofrecen &lt;span style="color:blue"&gt;estimaciones creíbles del contrafactual haciendo relativamente pocas suposiciones e imponiendo pocas condiciones. 
+
+Los dos últimos métodos, ofrecen al evaluador herramientas adicionales que pueden aplicarse cuando las &lt;span style="color:blue"&gt;reglas de asignación del programa sean menos claras o cuando no sea factible ninguno de los tres métodos antes descritos
+
+---
+name: DD
+# &lt;span style="font-size:80%"&gt;Diferencias en diferencias&lt;/span&gt;
+&lt;spam style="font-size:120%"&gt;
+
+- El método de DD consiste, como indica su nombre, en aplicar una doble diferencia. Compara los cambios a lo largo del tiempo en la variable de interés entre una población inscrita en un programa (el grupo de tratamiento) y una población no inscrita (el grupo de comparación)
+
+- DD estima el contrafactual del cambio en el resultado para el grupo de tratamiento
+calculando el cambio del resultado para el grupo de comparación. Este método nos
+permite tener en cuenta cualquier diferencia constante en el tiempo entre los
+grupos de tratamiento y de comparación
+
+- Para aplicar DD, solo hace falta medir los resultados del grupo que recibe el programa (el grupo de tratamiento) y del grupo que no lo recibe (el grupo de comparación) antes y después del programa
+
+---
+# &lt;span style="font-size:80%"&gt;Diferencias en diferencias&lt;/span&gt;
+&lt;spam style="font-size:120%"&gt;
+&lt;p style="margin-bottom: -1em"&gt;
+El estimador DD considera:
+- cómo cambia la media de un grupo antes y después de una intervención política (grupo de tratamiento) 
+- comparar éste cambio con la media a lo largo del tiempo de un grupo similar que no se sometió al tratamiento (grupo de control)
+
+&lt;img src="DiD_files/figure-html/diffindiff-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+# &lt;span style="font-size:80%"&gt;Diferencias en diferencias&lt;/span&gt;
+&lt;spam style="font-size:116%"&gt;
+
+Como sugiere su nombre, el estimador DD es la &lt;span style="color:blue"&gt;diferencia de sus diferencias medias&lt;/span&gt;. Más claramente, el estimador DD toma:
+&lt;p style="margin-bottom: -1em"&gt;
+- la diferencia en el grupo de tratamiento antes y después del tratamiento (el efecto del tratamiento)
+y resta
+- la diferencia en el grupo de control antes y después del tratamiento (la tendencia en el tiempo)
+como en la siguiente fórmula:
+
+`$$(\text{Tratamiento después} - \text{Tratamiento antes}) - (\text{Control después} - \text{Control antes}) = \text{estimación DD}$$`
+`$$(85 - 50) - (55 - 35) = 15$$`
+Este efecto es lo que en la literatura de evaluación de impacto se llama el &lt;span style="color:blue"&gt;efecto medio del tratamiento sobre los tratados&lt;/span&gt; o &lt;span style="color:blue"&gt;Average Treatment Effect on Treated (ATT)&lt;/span&gt;  
+&lt;br&gt;
+En la siguiente tabla puede verse un cálculo más detallado:
+
+|              | Después | Antes       | Diferencia |
+|:-------------|:-------:|:-----------:|:----------:|
+| Tratamiento  | 85      | 50          | 35         |
+| Control      | 55      | 35          | 20         |
+| Diferencias  | 30      | 15          | **&lt;span style="color:blue"&gt;15**|
+
+---
+# &lt;span style="font-size:80%"&gt;Diferencias en diferencias&lt;/span&gt;
+&lt;spam style="font-size:120%"&gt;
+
+- Se podría estar tentado a pensar que la primera diferencia `\((\text{Tratamiento después} - \text{Tratamiento antes})\)` o la comparación de tratados y no tratados, pueden medir el efecto del programa
+
+- La diferencia de los resultados antes-después del grupo tratado (la primera diferencia) considera factores constantes en el tiempo para dicho grupo, ya que se compara al grupo con sí mismo. Sin embargo, todavía nos quedan los factores externos que varían con el tiempo
+
+- Una manera de observar estos factores variables en el tiempo es medir el cambio antes-después de los resultados de un grupo que no se trató, pero estuvo expuesto a las mismas condiciones ambientales (la segunda diferencia)
+
+- Si se “limpia” la primera diferencia de otros factores variables en el tiempo que afectan al resultado de interés sustrayéndole la segunda diferencia, se habrá eliminado la principal causa de sesgo que nos preocupaba en el caso de las comparaciones simples de antes-después. 
+
+- Por lo tanto, el método de DD combinaría los dos falsos contrafactuales (comparaciones
+antes-después y comparaciones tratados-no tratados) para generar una mejor estimación del contrafactual
+
+---
+# &lt;span style="font-size:80%"&gt;Diferencias en diferencias&lt;/span&gt;
+&lt;spam style="font-size:120%"&gt;
+
+**&lt;span style="color:blue"&gt;El clásico 2x2 DD&lt;/span&gt;**&lt;br&gt;
+El modelo clásico 2x2 DD es la forma más simple del diseño DD y es el caso especial en el cual hay sólo dos grupos observados en dos periodos de tiempo, y cómo vimos es fácilmente representable en la tabla anterior 2x2 
+
+El modelo clásico 2x2 DD tiene la siguiente estructura:
+
+`$$y_{it} = \beta_1 + \beta_2Tratamiento_i + \beta_3Post_{it} + \beta_4Tratamiento_i*Post_{it} + \epsilon_{it}$$`
+
+donde&lt;br&gt;
+`\(y:\)` variable resultado&lt;br&gt;
+`\(Tratamiento:\)` variable dummy indicando el grupo de tratamiento `\((=1)\)` y control `\((=0)\)`&lt;br&gt;
+`\(Post:\)` variable dummy indicando pre-tratamiento `\((=0)\)` y el pos-tratamiento `\((=1)\)`&lt;br&gt;
+`\(Tratamiento*Post:\)` variable dummy indicando si la variable de resultado se observó en el grupo de tratamiento y esto fue observado después de la intervención `\((=1)\)` o en cualquier otro caso `\((=0)\)`
+
+---
+# &lt;span style="font-size:80%"&gt;Diferencias en diferencias&lt;/span&gt;
+&lt;spam style="font-size:117%"&gt;
+
+**&lt;span style="color:blue"&gt;Múltiples grupos y periodos de tiempo (Two-way Fixed Effects - TWFE)&lt;/span&gt;**&lt;br&gt;
+El diseño DD de dos grupos-dos periodos es muy intuitivo, pero no se ajusta adecuadamente a la realidad, donde pueden haber tratamientos en múltiples grupos y múltiples periodos de tiempo
+
+El &lt;span style="color:blue"&gt;modelo general DD&lt;/span&gt; con múltiples tratamientos y periodos de tiempo sigue la forma general:
+`$$y_{it} = \alpha_i + \gamma_t + \beta D_{it}+\epsilon_{it}$$`
+donde `\(\alpha_i\)` y `\(\alpha_t\)` son efectos fijos de individuo y tiempo, y `\(D_{it}=Tratamiento_i*Post_{it}\)` 
+
+A este modelo le llaman el *Two-way Fixed Effects* (TWFE) al incluir doble efecto fijo asociado a `\(i\)` y `\(t\)`. Note que las variables `\(Tratamiento\)` y `\(Post\)` indivuduales del 2x2 DD se subsumen por la estructura de los efectos fijos
+
+La versión dinámica del TWFE para medir el efecto del tratamiento en el tiempo, es la espacificación &lt;span style="color:blue"&gt;TWFE *event study*:
+
+`$$y_{it} = \beta_1 + \sum_{k=T_0}^{T}\beta_k (Tratamiento_i*t_k) + \alpha_i + \gamma_t + \epsilon_{it}$$`
+donde `\(t_k\)` es una variable binaria para cada año `\(k\)` y la intervención empieza en `\(T_0\)` para el grupo de tratados
+
+---
+name: ejemplo1
+# &lt;span style="font-size:80%"&gt;Ejemplo 1 del modelo 2x2 DD&lt;/span&gt;
+&lt;spam style="font-size:120%"&gt;
+
+Supongamos que se tiene la siguiente información donde dos individuos son tratados y dos son no tratados, y se registra información sobre la variable de resultado antes y después de la intervención:
+
+| Individuo    | Y       | Tratamiento | Post       |Trat*Post   |
+|:-------------|:-------:|:-----------:|:----------:|:----------:|
+| 1            | 74      | 1           | 1          | 1          |
+| 1            | 46      | 1           | 0          | 0          |
+| 2            | 96      | 1           | 1          | 1          |
+| 2            | 54      | 1           | 0          | 0          |
+| 3            | 50      | 0           | 1          | 0          |
+| 3            | 30      | 0           | 0          | 0          |
+| 4            | 60      | 0           | 1          | 0          |
+| 4            | 40      | 0           | 0          | 0          |
+
+---
+# &lt;span style="font-size:80%"&gt;Ejemplo 1 del modelo 2x2 DD&lt;/span&gt;
+&lt;spam style="font-size:120%"&gt;
+.pull-left-50[
+
+
+
+
+&lt;table style="text-align:center"&gt;&lt;tr&gt;&lt;td colspan="2" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;Y&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td colspan="2" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;p&gt;&amp;beta;&lt;sub&gt;1&lt;/sub&gt;&lt;/p&gt;&lt;/td&gt;&lt;td&gt;35.00&lt;sup&gt;***&lt;/sup&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;(0.00)&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;Tratamiento&lt;/td&gt;&lt;td&gt;15.00&lt;sup&gt;***&lt;/sup&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;(0.00)&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;Post&lt;/td&gt;&lt;td&gt;20.00&lt;sup&gt;***&lt;/sup&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;(0.00)&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;Trat*Post&lt;/td&gt;&lt;td&gt;15.00&lt;sup&gt;***&lt;/sup&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;(0.00)&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td colspan="2" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td colspan="2" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;em&gt;Note:&lt;/em&gt;&lt;/td&gt;&lt;td style="text-align:right"&gt;&lt;sup&gt;*&lt;/sup&gt;p&lt;0.1; &lt;sup&gt;**&lt;/sup&gt;p&lt;0.05; &lt;sup&gt;***&lt;/sup&gt;p&lt;0.01&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td style="text-align:right"&gt;Errores estándar en ()&lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;
+]
+
+.pull-left-50[
+
+| &lt;center&gt; `\(\beta\)`      | &lt;center&gt;Interpretación&lt;/center&gt;                               | 
+|--------------|---------------------------------------------------------------|
+| `\(\beta_1=35\)` | Promedio de `\(Y\)` en el grupo de control antes de la intervención    |
+| `\(\beta_2=15\)` | Diferencia entre el tratamiento y el control antes de la intervención     |
+| `\(\beta_3=20\)` | Cambio en `\(Y\)` del grupo de control después de la intervención    |
+| `\(\beta_4=15\)` | &lt;span style="color:blue"&gt;Parámetro de ínteres&lt;/span&gt;. Cambio en `\(Y\)` del grupo tratado después de la intervención, en comparación con lo que le habría ocurrido al mismo grupo si no se hubiera producido la intervención    |
+]
+
+---
+# &lt;span style="font-size:80%"&gt;Ejemplo 1 del modelo 2x2 DD&lt;/span&gt;
+&lt;spam style="font-size:110%"&gt;
+
+**&lt;span style="color:blue"&gt;El contrafactual**&lt;br&gt;
+&lt;p style="margin-bottom: -1em"&gt;
+- Para entender mejor `\(\beta_4\)`, debemos examinar mejor el contrafactual. &lt;span style="color:blue"&gt;El contrafactual es lo que le habría ocurrido a `\(Y\)`, si no se hubiera producido la intervención
+
+- En el modelo DD, el contrafactual es el resultado del grupo de intervención si no se hubiera producido la intervención
+
+- `\(\beta_4\)` representa la diferencia entre el resultado contrafactual y el resultado medio del grupo de tratamiento en el periodo posterior al tratamiento
+
+&lt;img src="DiD_files/figure-html/counterfactual-1.png" width="53%" style="display: block; margin: auto;" /&gt;
+
+---
+name: ejemplo2
+# &lt;span style="font-size:80%"&gt;Ejemplo 2 del modelo 2x2 DD&lt;/span&gt;
+&lt;spam style="font-size:120%"&gt;
+
+&lt;img src="f1.png" width="45%" style="display: block; margin: auto;" /&gt;
+
+Aquí los dos falsos contrafactuales serían:
+&lt;p style="margin-bottom: -1em"&gt;
+- diferencia antes y despúes de la intervención en los tratados: `\((B-A)=0.74-0.60=0.14\)`
+- diferencia después de la interveción entre tratados y control: `\((B-D)=0.74-(-0.81)=1.55\)`
+
+Con DD el impacto o efecto del programa está definido por:
+
+`$$(B − A) − (D − C) = (B − E) = (0.74 − 0.60) − (0.81 − 0.78) = 0.11$$`
+
+---
+name: supuesto
+# &lt;span style="font-size:80%"&gt;El supuesto de tendencias paralelas&lt;/span&gt;
+&lt;spam style="font-size:120%"&gt;
+
+- El método de DD supone que &lt;span style="color:blue"&gt;muchas características de las unidades o las personas son constantes (o invariables en el tiempo)
+
+- Para que DD genere una estimación válida del contrafactual, se debe &lt;span style="color:blue"&gt;suponer la inexistencia de diferencias que aparecen a lo largo del tiempo entre los grupos de tratamiento y de comparación
+
+- Es decir que en ausencia del programa, &lt;span style="color:blue"&gt;las diferencias en los resultados entre los grupos de tratamiento y de comparación tendrían que evolucionar paralelamente&lt;/span&gt; `\(\Longrightarrow\)` &lt;span style="color:blue"&gt;sin el tratamiento, los resultados aumentarían o disminuirían al mismo ritmo en ambos grupos&lt;/span&gt;; es decir, es necesario que los resultados reflejen tendencias iguales en ausencia del tratamiento
+
+- Lamentablemente, no existe una manera de demostrar que las diferencias entre los grupos de tratamiento y de comparación habrían evolucionado paralelamente en ausencia del programa. &lt;span style="color:blue"&gt;Esto se debe a que no se puede observar lo que le habría pasado al grupo de tratamiento en ausencia del tratamiento&lt;/span&gt; `\(\Longrightarrow\)` &lt;span style="color:blue"&gt;¡no se puede observar el contrafactual!
+
+- Por lo tanto, cuando se usa el método de DD, se debe suponer que, &lt;span style="color:blue"&gt;en ausencia del programa, el resultado del grupo de tratamiento habría evolucionado paralelamente al grupo de control
+
+---
+# &lt;span style="font-size:80%"&gt;El supuesto de tendencias paralelas&lt;/span&gt;
+&lt;spam style="font-size:100%"&gt;
+
+&lt;img src="f2.png" width="40%" style="display: block; margin: auto;" /&gt;
+
+- Si las tendencias de los resultados son diferentes para los grupos de tratamiento y de comparación, &lt;span style="color:blue"&gt;el efecto estimado de tratamiento obtenido mediante métodos de DD será inválido o sesgado&lt;/span&gt;. Esto se debe a que &lt;span style="color:blue"&gt;la tendencia del grupo de comparación no es una estimación válida de la tendencia del contrafactual
+
+- Como se ve en el gráfico, los resultados del grupo de comparación crecen más lentamente que los resultados del grupo de tratamiento en ausencia del programa
+
+- El uso de la tendencia del grupo de comparación como estimación de la “tendencia contrafactual” del grupo de tratamiento provoca una sobreestimación del impacto del programa
+
+---
+# &lt;span style="font-size:80%"&gt;El supuesto de tendencias paralelas&lt;/span&gt;
+&lt;spam style="font-size:110%"&gt;
+
+A pesar de que no se puede demostrar el supuesto fundamental de igualdad de tendencias, se puede comprobar. En la literatura existen cuatro formas regularmente utilizadas para corrorborar el supuesto: 
+
+
+&lt;span style="color:blue"&gt;*Testing for pre-trends*&lt;/span&gt;&lt;br&gt;
+Una técnica comúnmente utilizada para probar tendencias paralelas antes del tratamiento, es el estudio de eventos (*event-study*)
+ 
+La idea de este método consiste en incluir la interacción entre las variables binarias de tiempo antes y después de la fecha de la intervención y el indicador de tratamiento como variables explicativas de la variable resultado a analizar
+ 
+Para comprobar la igualdad de las tendencias antes de la intervención, se necesitan al menos dos rondas de datos para los grupos de tratamiento y de comparación antes del comienzo del programa
+ 
+Se estima el siguiente *event-study*, con `\(t\)` siendo una variable binaria de tiempo:
+
+`$$y_{it} = \beta_1 + \underbrace{\sum_{k=T_0^*}^{T_{0}-1}\theta_k (Tratamiento_i*t_k)}_{Pretratamiento} + \underbrace{\sum_{\tau=T_1}^{T}\delta_\tau (Tratamiento_i*t_\tau)}_{Postratamiento} + \alpha_i + \gamma_t + \epsilon_{it}$$`
+Para corroborar que la tendencia entre los grupos de tratamiento y control es la misma, se debe probar que los coeficientes asociados al pretratamiento no son estadísticamente significantes
+
+---
+# &lt;span style="font-size:80%"&gt;El supuesto de tendencias paralelas&lt;/span&gt;
+&lt;spam style="font-size:120%"&gt;
+
+&lt;span style="color:blue"&gt;*Placebo test*&lt;/span&gt;&lt;br&gt;
+los investigadores pueden probar si se observó un efecto en una muestra diferente que no debería haberse visto afectada por la intervención 
+
+En esta prueba placebo, `\(\theta\)` es el cambio en el resultado en el grupo que no debería verse afectado por la intervención
+
+Esto podría implicar el uso del mismo modelo de DD en una población diferente, y ver si hay un efecto medio significativo del tratamiento
+
+---
+name: r1
+# &lt;span style="font-size:80%"&gt;Ejercicio 1 aplicado en R: efecto de la formación en el empleo sobre los salarios&lt;/span&gt;
+&lt;spam style="font-size:100%"&gt;
+
+La *National Supported Work* (NSW) en los Estados Unidos, llevó acabo en los 70 un análisis sobre el impacto de la formación en el empleo sobre los salarios. El programa fue realizado entre 1976 y 1977. Hay 185 tratados y un grupo de control de 2490. La variable de resultado a analizar son los salarios reales, y se cuenta con información en el pretratamiento en 1974 y 1975, y en el postratamiento en 1978 (Lalonde, 1986; Dehejia y Wahba, 1999, 2002). La base de datos [nswpsid.dta](https://cameron.econ.ucdavis.edu/mmabook/nswpsid.dta) cuenta con las siguientes principales variables:
+&lt;p style="margin-bottom: -1em"&gt;
+
+| &lt;center&gt; Variable | &lt;center&gt;Definición&lt;/center&gt;   | 
+|-------------------|-------------------------------|
+| treat             | 1=tratados, 0=control         |
+| age               | Edad en años                  |
+| educ              | Número de años de educación   |
+| black             | 1=afrodescendiente, 0=no afro |
+| re74              | Salario real en 1974          |
+| re75              | Salario real en 1975          |
+| re78              | Salario real en 1978          |
+
+En el siguiente link se encuentra el código utilizado en R:
+&lt;p style="margin-bottom: -1em"&gt;
+- [Código en R](https://gusgarciacruz.github.io/EconometriaII/DiD/DiD1.R)
+
+---
+name: r2
+# &lt;span style="font-size:80%"&gt;Ejercicio 2 aplicado en R: efecto de Empleando Futuro sobre la formalidad&lt;/span&gt;
+&lt;spam style="font-size:120%"&gt;
+
+En este ejercicio se va a realizar una aplicación del modelo de Diferencias en Diferencias (DD) para analizar el efecto causal de [Empleando Futuro](https://www.sibs.co/iniciativa/empleado-del-futuro/). Este programa fue el primer [Bono de Impacto Social (BIS)](https://prosperidadsocial.gov.co/sobre-los-bis/) implementado en Colombia y Latinoamérica, y tenía como objetivo fomentar la inserción laboral y retención de la población vulnerable. 
+
+Empleando Futuro se ejecutó entre marzo de 2017 y diciembre de 2018 en Cali, Pereira y Bogotá. Este ejercicio se basa en el documento de [Chaparro, García y Cardona (2020)](https://www.sibs.co/wp-content/uploads/2023/11/Evaluacion-de-Impacto_Empleando-Futuro_2020.pdf) donde se encuentra más detallada la evaluación de impacto de Empleando Futuro.
+
+Todo el ejercicio, junto con el código, se encuentra en el siguiente link:
+- [Empleando Futuro](https://gusgarciacruz.github.io/EconometriaII/DiD/EmpleandoFuturo.html)
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "16:9"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
