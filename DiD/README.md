@@ -1,15 +1,15 @@
 # Diferencias en Diferencias
-- <span style="font-size:150%">La evaluación de impacto</span> <br> <br>
+- <span style="font-size:150%">La evaluación de impacto</span> <br>
 
-- <span style="font-size:150%">Evaluación prospectiva versus evaluación retrospectiva</span> <br> <br>
+- <span style="font-size:150%">Evaluación prospectiva versus evaluación retrospectiva</span> <br>
 
-- <span style="font-size:150%">Inferencia causal y contrafactuales</span> <br> <br>
+- <span style="font-size:150%">Inferencia causal y contrafactuales</span> <br>
 
-- <span style="font-size:150%">Métodos de evaluación de impacto</span> <br> <br>
+- <span style="font-size:150%">Métodos de evaluación de impacto</span> <br>
 
-- <span style="font-size:150%">Diferencias en diferencias</span> <br> <br>
+- <span style="font-size:150%">Diferencias en diferencias</span> <br>
 
-- <span style="font-size:150%">Ejemplo 1 del modelo 2x2 DD</span> <br> <br>
+- <span style="font-size:150%">Ejemplo 1 del modelo 2x2 DD</span> <br>
 
 - <span style="font-size:150%">Ejemplo 2 del modelo 2x2 DD</span> <br>
 
