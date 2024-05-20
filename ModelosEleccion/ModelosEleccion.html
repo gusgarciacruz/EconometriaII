@@ -4,7 +4,7 @@
     <title>Modelos de elección discreta</title>
     <meta charset="utf-8" />
     <meta name="author" content="Gustavo A. García   ggarci24@eafit.edu.co                  " />
-    <script src="libs/header-attrs-2.11/header-attrs.js"></script>
+    <script src="libs/header-attrs-2.26/header-attrs.js"></script>
     <script src="libs/fabric-4.3.1/fabric.min.js"></script>
     <link href="libs/xaringanExtra-scribble-0.0.1/scribble.css" rel="stylesheet" />
     <script src="libs/xaringanExtra-scribble-0.0.1/scribble.js"></script>
@@ -13,8 +13,8 @@
     <link href="libs/xaringanExtra-clipboard-0.2.6/xaringanExtra-clipboard.css" rel="stylesheet" />
     <script src="libs/xaringanExtra-clipboard-0.2.6/xaringanExtra-clipboard.js"></script>
     <script>window.xaringanExtraClipboard(null, {"button":"<i class=\"fa fa-clipboard\"><\/i>","success":"<i class=\"fa fa-check\" style=\"color: #90BE6D\"><\/i>","error":"<i class=\"fa fa-times-circle\" style=\"color: #F94144\"><\/i>"})</script>
-    <link href="libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
-    <link href="libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+    <link href="libs/font-awesome-6.4.2/css/all.min.css" rel="stylesheet" />
+    <link href="libs/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet" />
     <link href="libs/xaringanExtra-extra-styles-0.2.6/xaringanExtra-extra-styles.css" rel="stylesheet" />
     <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
   </head>
@@ -22,9 +22,15 @@
     <textarea id="source">
 class: center, middle, inverse, title-slide
 
+.title[
 # Modelos de elección discreta
+]
+.author[
 ### Gustavo A. García <br> <span class="notbold" style="font-size:65%"><a href="mailto:ggarci24@eafit.edu.co" class="email">ggarci24@eafit.edu.co</a></span> <br> <br> <br> <br> <br> <br> <br> <br> <br>
+]
+.date[
 ### <span class="notbold" style="font-size:65%">Econometría II <br> Programa de Economía <br> Universidad EAFIT</span>
+]
 
 ---
 
@@ -590,7 +596,7 @@ Las principales variables a analizar son:
 &lt;p style="margin-bottom: -.8em"&gt;
 En los siguientes links se encuentran los datos y el código utilizado en R:
 - [Datos](https://gusgarciacruz.github.io/EconometriaII/ModelosEleccion/data.xlsx)
-- [Código en R](https://gusgarciacruz.github.io/EconometriaII/ModelosEleccion/Tema 11b.R)
+- [Código en R](https://gusgarciacruz.github.io/EconometriaII/ModelosEleccion/Tema 11c.R)
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
@@ -639,6 +645,19 @@ if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
     deleted = true;
   });
 })();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
 (function() {
   "use strict"
   // Replace <script> tags in slides area to make them executable

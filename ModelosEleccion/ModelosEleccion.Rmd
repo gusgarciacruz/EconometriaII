@@ -621,4 +621,4 @@ Las principales variables a analizar son:
 <p style="margin-bottom: -.8em">
 En los siguientes links se encuentran los datos y el código utilizado en R:
 - [Datos](https://gusgarciacruz.github.io/EconometriaII/ModelosEleccion/data.xlsx)
-- [Código en R](https://gusgarciacruz.github.io/EconometriaII/ModelosEleccion/Tema 11b.R)
+- [Código en R](https://gusgarciacruz.github.io/EconometriaII/ModelosEleccion/Tema 11c.R)
