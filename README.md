@@ -1,4 +1,4 @@
-# Econometría II
+# Curso de Econometría II
 
 Profesor: [Gustavo A. García](https://gusgarciacruz.github.io/cv)
 
