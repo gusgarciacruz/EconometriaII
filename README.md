@@ -3,7 +3,7 @@ En este repositorio se encuentra el material del curso de Econometría II del Pr
 
 Profesor: [Gustavo A. García](https://gusgarciacruz.github.io/cv)
 
-[**Programa del curso**](https://gusgarciacruz.github.io/EconometriaII/EC0251ECONOMETRIA2-2024II.pdf.pdf)<br>
+[**Programa del curso**](https://gusgarciacruz.github.io/EconometriaII/EC0251ECONOMETRIA2-2024II.pdf)<br>
 
 **Temas**<br>
 [Una breve introducción a R](https://gusgarciacruz.github.io/EbookR_introduccion/)<br>
