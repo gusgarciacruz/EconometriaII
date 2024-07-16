@@ -3,7 +3,7 @@ En este repositorio se encuentra el material del curso de Econometría II del Pr
 
 Profesor: [Gustavo A. García](https://gusgarciacruz.github.io/cv)
 
-[**Programa del curso**](https://gusgarciacruz.github.io/EconometriaII/EC0251ECONOMETRIA2-2024I.pdf)<br>
+[**Programa del curso**](https://gusgarciacruz.github.io/EconometriaII/EC0251ECONOMETRIA2-2024II.pdf.pdf)<br>
 
 **Temas**<br>
 [Una breve introducción a R](https://gusgarciacruz.github.io/EbookR_introduccion/)<br>
@@ -33,5 +33,3 @@ Profesor: [Gustavo A. García](https://gusgarciacruz.github.io/cv)
 [Modelos de elección discreta](https://gusgarciacruz.github.io/EconometriaII/ModelosEleccion/ModelosEleccion.html)
 
 [Instrucciones trabajo de investigación](https://gusgarciacruz.github.io/EconometriaII/TrabajoInvestigacion/TrabajoInvestigacion.html)
-
-[Q1](https://gusgarciacruz.github.io/EconometriaII/Q1.pdf)
