@@ -1,5 +1,4 @@
-# Curso de Econometría II, Universidad EAFIT (Medellín-Colombia)
-En este repositorio se encuentra el material del curso de Econometría II del Programa de Economía de la Universidad EAFIT.
+# Econometría II
 
 Profesor: [Gustavo A. García](https://gusgarciacruz.github.io/cv)
 
