@@ -34,3 +34,5 @@ Profesor: [Gustavo A. García](https://gusgarciacruz.github.io/cv)
 [Instrucciones trabajo de investigación](https://gusgarciacruz.github.io/EconometriaII/TrabajoInvestigacion/TrabajoInvestigacion.html)
 
 [Q1](https://gusgarciacruz.github.io/EconometriaII/Q1.pdf)
+
+[Q3](https://gusgarciacruz.github.io/EconometriaII/Q3.pdf)
