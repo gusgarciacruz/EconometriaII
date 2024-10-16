@@ -4,7 +4,7 @@
     <title>Modelos de ecuaciones simultáneas</title>
     <meta charset="utf-8" />
     <meta name="author" content="Gustavo A. García   ggarci24@eafit.edu.co                  " />
-    <script src="libs/header-attrs-2.11/header-attrs.js"></script>
+    <script src="libs/header-attrs-2.28/header-attrs.js"></script>
     <script src="libs/fabric-4.3.1/fabric.min.js"></script>
     <link href="libs/xaringanExtra-scribble-0.0.1/scribble.css" rel="stylesheet" />
     <script src="libs/xaringanExtra-scribble-0.0.1/scribble.js"></script>
@@ -13,8 +13,8 @@
     <link href="libs/xaringanExtra-clipboard-0.2.6/xaringanExtra-clipboard.css" rel="stylesheet" />
     <script src="libs/xaringanExtra-clipboard-0.2.6/xaringanExtra-clipboard.js"></script>
     <script>window.xaringanExtraClipboard(null, {"button":"<i class=\"fa fa-clipboard\"><\/i>","success":"<i class=\"fa fa-check\" style=\"color: #90BE6D\"><\/i>","error":"<i class=\"fa fa-times-circle\" style=\"color: #F94144\"><\/i>"})</script>
-    <link href="libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
-    <link href="libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+    <link href="libs/font-awesome-6.4.2/css/all.min.css" rel="stylesheet" />
+    <link href="libs/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet" />
     <link href="libs/xaringanExtra-extra-styles-0.2.6/xaringanExtra-extra-styles.css" rel="stylesheet" />
     <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
   </head>
@@ -22,9 +22,15 @@
     <textarea id="source">
 class: center, middle, inverse, title-slide
 
+.title[
 # Modelos de ecuaciones simultáneas
+]
+.author[
 ### Gustavo A. García <br> <span class="notbold" style="font-size:65%"><a href="mailto:ggarci24@eafit.edu.co" class="email">ggarci24@eafit.edu.co</a></span> <br> <br> <br> <br> <br> <br> <br> <br> <br>
+]
+.date[
 ### <span class="notbold" style="font-size:65%">Econometría II <br> Programa de Economía <br> Universidad EAFIT</span>
+]
 
 ---
 
@@ -234,7 +240,7 @@ Suponiendo que `\(\alpha_2 \alpha_1 \neq 1\)` para que se puede resolver para `\
 `$$y_2 = \pi_{21} z_1 + \pi_{22} z_2 + \nu_2 \tag{3}$$`
 
 
-`\(\pi_{21}=\alpha_2 \beta_1 /(1-\alpha_2 \alpha_1)\)`, `\(\pi_{22}=\alpha_2 /(1-\alpha_2 \alpha_1)\)` y `\(\nu_2 = (\alpha_2 u_1 + u_2)/(1-\alpha_2 \alpha_1)\)`
+`\(\pi_{21}=\alpha_2 \beta_1 /(1-\alpha_2 \alpha_1)\)`, `\(\pi_{22}=\beta_2 /(1-\alpha_2 \alpha_1)\)` y `\(\nu_2 = (\alpha_2 u_1 + u_2)/(1-\alpha_2 \alpha_1)\)`
 
 `\(y_2\)` está expresada en términos de las variables exógenas y los términos de error, y representa la &lt;span style="color:blue"&gt;ecuación de la forma reducida&lt;/span&gt; para `\(y_2\)`
 
@@ -680,7 +686,7 @@ donde `\(e_{in}\)` representan los residuales MCO de la i-ésimia ecuación. `\(
 Ya que la no diagonalidad de `\(\pmb{\Omega}\)` es el principal supuesto del método de estimación SUR, es importante probar `\(H_0:\pmb{\Omega}\)` es diagonal
 ( `\(\sigma_{12}=\sigma_{13}=...=\sigma_{1G}=\sigma_{23}=...=\sigma_{(G-1)G}=0\)`)
 
-Breusch y Pagan (1980) derivaron una forma simple para realizar esta prueba y se basa en construir un estadístico de multiplicadores de lagrange ($LM$) sobre los coeficientes de correlación muestral de los residuales MCO. El estadístico tiene la forma:
+Breusch y Pagan (1980) derivaron una forma simple para realizar esta prueba y se basa en construir un estadístico de multiplicadores de lagrange `\((LM)\)` sobre los coeficientes de correlación muestral de los residuales MCO. El estadístico tiene la forma:
 
 `$$LM = N \sum_{i=2}^{G}\sum_{j=1}^{i-1} r_{ij}^2 \sim \chi^{2}_{G(G-1)/2}$$`
 
@@ -709,6 +715,7 @@ PS: población estudiantil de primaria y secundaria (exógena)&lt;br&gt;
 &lt;p style="margin-bottom: -.8em"&gt;
 En los siguientes links se encuentran los datos y el código utilizado en R:
 - [Datos](https://gusgarciacruz.github.io/EconometriaII/EcuSimultaneas/EX73.xlsx)
+- [Datos SUR](https://gusgarciacruz.github.io/EconometriaII/EcuSimultaneas/GASOLINE.DAT)
 - [Código en R](https://gusgarciacruz.github.io/EconometriaII/EcuSimultaneas/Tema10.R)
 
 ---
@@ -743,14 +750,14 @@ Y luego se prueba que los coeficientes de las variables excluidas sean estadíst
 &lt;p style="margin-bottom: -.8em"&gt;
 Cargando las librerias
 
-```r
+``` r
 library(stargazer); library(car); library(readxl); library(AER); library(systemfit)
 ```
 &lt;p style="margin-bottom: -.8em"&gt;
 Leyendo los datos
 
 
-```r
+``` r
 setwd("C:/Users/ggarci24/OneDrive - Universidad EAFIT/EAFIT/Cursos EAFIT/Econometria II/R/Tema 10")
 
 data &lt;- read_excel("EX73.xlsx")
@@ -760,7 +767,7 @@ Estimamos por MCO la ecuación (1) y (2) en la forma reducida y corroboramos que
 
 
 
-```r
+``` r
 EXP.reducida &lt;- lm(EXP~INC+POP+PS, data=data)
 
 AID.reducida &lt;- lm(AID~INC+POP+PS, data=data)
@@ -769,8 +776,8 @@ AID.reducida &lt;- lm(AID~INC+POP+PS, data=data)
 &lt;p style="margin-bottom: -1.5em"&gt;
 .pull-left-50[
 
-```r
-linearHypothesis(EXP.reducida, "PS = 0")
+``` r
+linearHypothesis(AID.reducida, "PS = 0")
 ```
 
 ```
@@ -780,11 +787,11 @@ Hypothesis:
 PS = 0
 
 Model 1: restricted model
-Model 2: EXP ~ INC + POP + PS
+Model 2: AID ~ INC + POP + PS
 
-  Res.Df      RSS Df Sum of Sq      F   Pr(&gt;F)   
-1     47 32654947                                
-2     46 27978053  1   4676893 7.6895 0.007995 **
+  Res.Df     RSS Df Sum of Sq      F Pr(&gt;F)  
+1     47 2496640                             
+2     46 2265748  1    230893 4.6877 0.0356 *
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ```
@@ -792,8 +799,8 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
 .pull-left-50[
 
-```r
-linearHypothesis(AID.reducida, c("INC = 0", "POP = 0"))
+``` r
+linearHypothesis(EXP.reducida, c("INC = 0", "POP = 0"))
 ```
 
 ```
@@ -804,11 +811,11 @@ INC = 0
 POP = 0
 
 Model 1: restricted model
-Model 2: AID ~ INC + POP + PS
+Model 2: EXP ~ INC + POP + PS
 
-  Res.Df     RSS Df Sum of Sq     F   Pr(&gt;F)    
-1     48 4476328                                
-2     46 2265748  2   2210580 22.44 1.58e-07 ***
+  Res.Df       RSS Df Sum of Sq      F    Pr(&gt;F)    
+1     48 108094974                                  
+2     46  27978053  2  80116921 65.862 3.157e-14 ***
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ```
@@ -832,7 +839,7 @@ El test de Hausman comprende los siguientes pasos:
 &lt;p style="margin-bottom: -.5em"&gt;
 Obtenemos los residuales de las ecuaciones estimadas de la forma reducida
 
-```r
+``` r
 data$w &lt;- residuals(AID.reducida)
 
 data$v &lt;- residuals(EXP.reducida)
@@ -843,7 +850,7 @@ Estimamos los modelos incorporando los residuales para corroborar la existencia 
 
 .pull-left-50[
 
-```r
+``` r
 hausman1 &lt;- lm(EXP~AID+INC+POP+w, data=data)
 summary(hausman1)
 ```
@@ -875,7 +882,7 @@ F-statistic:  1716 on 4 and 45 DF,  p-value: &lt; 2.2e-16
 
 .pull-right-50[
 
-```r
+``` r
 hausman2 &lt;- lm(AID~EXP+PS+v, data=data)
 summary(hausman2)
 ```
@@ -914,7 +921,7 @@ F-statistic: 962.6 on 3 and 46 DF,  p-value: &lt; 2.2e-16
 &lt;p style="margin-bottom: -.8em"&gt;
 Primero se crea el sistema
 
-```r
+``` r
 eqEXP &lt;- EXP ~ AID + INC + POP
 eqAID &lt;- AID ~ EXP + PS
 eq.sys &lt;- list(EXP = eqEXP,
@@ -924,7 +931,7 @@ eq.sys &lt;- list(EXP = eqEXP,
 &lt;p style="margin-bottom: -.8em"&gt;
 **MCO**: ignorando la estructura de sistema de ecuaciones. Estos es equivalente a estimar cada ecuación por separado
 
-```r
+``` r
 MCO &lt;- systemfit(eq.sys, method = "OLS", data = data)
 summary(MCO)
 ```
@@ -934,7 +941,7 @@ summary(MCO)
 - Mismo instrumento para las dos ecuaciones
 &lt;p style="margin-bottom: -.8em"&gt;
 
-```r
+``` r
 inst &lt;- ~ INC + POP + PS
 MC2E.1 &lt;- systemfit(eq.sys, method = "2SLS", inst = inst, data = data)
 summary(MC2E.1)
@@ -942,7 +949,7 @@ summary(MC2E.1)
 Note que lo anterior es lo mismo que hacer IV
 &lt;p style="margin-bottom: -.8em"&gt;
 
-```r
+``` r
 IV &lt;- ivreg(EXP ~ AID+INC+POP | INC+POP+PS, data=data)
 summary(IV)
 ```
@@ -950,7 +957,7 @@ summary(IV)
 - Diferentes instrumentos por ecuación
 &lt;p style="margin-bottom: -.8em"&gt;
 
-```r
+``` r
 inst1 &lt;- ~ INC + POP + PS
 inst2 &lt;- ~ INC + POP
 instlist &lt;- list(inst1, inst2)
@@ -969,7 +976,7 @@ summary(MC2E.2)
 En el modelo SUR los residuales son correlacionados a través de las ecuaciones. La estimación se hace la siguiente forma:
 
 
-```r
+``` r
 SUR &lt;- systemfit(eq.sys, method = "SUR", data = data)
 summary(SUR)
 ```
@@ -987,7 +994,7 @@ donde `\(r = \sigma_{ij} / (\sigma_{ii}\sigma_{jj})^{1/2}\)`
 Primero se calcula la matrix var-cov de los residuales estimados. Con la siguiente función nos muestra dicha matriz var-cov y la matriz de correlación de los residuales
 
 
-```r
+``` r
 summary(MCO, residCov = TRUE, equations = FALSE)
 ```
 
@@ -995,7 +1002,7 @@ summary(MCO, residCov = TRUE, equations = FALSE)
 Ahora calculamos el `\(r\)` y lo comparamos con el coeficiente de correlación, deben dar igual
 
 
-```r
+``` r
 r &lt;- (-25845.3)/((140757.9*14996.3)^(1/2))
 ```
 
@@ -1003,7 +1010,7 @@ r &lt;- (-25845.3)/((140757.9*14996.3)^(1/2))
 Y procedemos calcular el estadístico de prueba
 
 
-```r
+``` r
 BP &lt;- 50*((r)^2)
 BP
 pchisq(BP, df=1, lower.tail = F) # Pvalor de BP
@@ -1032,7 +1039,7 @@ Las tres etapas serían:
 La estimación la podemos hacer de la siguiente forma:
 
 
-```r
+``` r
 MC3E &lt;- systemfit(eq.sys, method = "3SLS", inst = inst, data = data)
 summary(MC3E)
 ```
@@ -1085,6 +1092,19 @@ if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
     deleted = true;
   });
 })();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
 (function() {
   "use strict"
   // Replace <script> tags in slides area to make them executable

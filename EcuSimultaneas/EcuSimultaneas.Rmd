@@ -254,7 +254,7 @@ Suponiendo que $\alpha_2 \alpha_1 \neq 1$ para que se puede resolver para $y_2$ 
 $$y_2 = \pi_{21} z_1 + \pi_{22} z_2 + \nu_2 \tag{3}$$
 
 
-$\pi_{21}=\alpha_2 \beta_1 /(1-\alpha_2 \alpha_1)$, $\pi_{22}=\alpha_2 /(1-\alpha_2 \alpha_1)$ y $\nu_2 = (\alpha_2 u_1 + u_2)/(1-\alpha_2 \alpha_1)$
+$\pi_{21}=\alpha_2 \beta_1 /(1-\alpha_2 \alpha_1)$, $\pi_{22}=\beta_2 /(1-\alpha_2 \alpha_1)$ y $\nu_2 = (\alpha_2 u_1 + u_2)/(1-\alpha_2 \alpha_1)$
 
 $y_2$ está expresada en términos de las variables exógenas y los términos de error, y representa la <span style="color:blue">ecuación de la forma reducida</span> para $y_2$
 
@@ -700,7 +700,7 @@ donde $e_{in}$ representan los residuales MCO de la i-ésimia ecuación. $\wideh
 Ya que la no diagonalidad de $\pmb{\Omega}$ es el principal supuesto del método de estimación SUR, es importante probar $H_0:\pmb{\Omega}$ es diagonal
 ( $\sigma_{12}=\sigma_{13}=...=\sigma_{1G}=\sigma_{23}=...=\sigma_{(G-1)G}=0$)
 
-Breusch y Pagan (1980) derivaron una forma simple para realizar esta prueba y se basa en construir un estadístico de multiplicadores de lagrange ($LM$) sobre los coeficientes de correlación muestral de los residuales MCO. El estadístico tiene la forma:
+Breusch y Pagan (1980) derivaron una forma simple para realizar esta prueba y se basa en construir un estadístico de multiplicadores de lagrange $(LM)$ sobre los coeficientes de correlación muestral de los residuales MCO. El estadístico tiene la forma:
 
 $$LM = N \sum_{i=2}^{G}\sum_{j=1}^{i-1} r_{ij}^2 \sim \chi^{2}_{G(G-1)/2}$$
 
@@ -729,6 +729,7 @@ $u_{1i}$ y $u_{2i}$: términos de error
 <p style="margin-bottom: -.8em">
 En los siguientes links se encuentran los datos y el código utilizado en R:
 - [Datos](https://gusgarciacruz.github.io/EconometriaII/EcuSimultaneas/EX73.xlsx)
+- [Datos SUR](https://gusgarciacruz.github.io/EconometriaII/EcuSimultaneas/GASOLINE.DAT)
 - [Código en R](https://gusgarciacruz.github.io/EconometriaII/EcuSimultaneas/Tema10.R)
 
 ---
@@ -787,13 +788,13 @@ AID.reducida <- lm(AID~INC+POP+PS, data=data)
 <p style="margin-bottom: -1.5em">
 .pull-left-50[
 ```{r}
-linearHypothesis(EXP.reducida, "PS = 0")
+linearHypothesis(AID.reducida, "PS = 0")
 ```
 ]
 
 .pull-left-50[
 ```{r}
-linearHypothesis(AID.reducida, c("INC = 0", "POP = 0"))
+linearHypothesis(EXP.reducida, c("INC = 0", "POP = 0"))
 ```
 ]
 
