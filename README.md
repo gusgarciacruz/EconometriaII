@@ -29,6 +29,8 @@ Profesor: [Gustavo A. García](https://gusgarciacruz.github.io/cv)
 
 [Diferencias en diferencias](https://gusgarciacruz.github.io/EconometriaII/DiD/DiD.html)<br>
 
-[Modelos de elección discreta](https://gusgarciacruz.github.io/EconometriaII/ModelosEleccion/ModelosEleccion.html)
+[Modelos de elección discreta](https://gusgarciacruz.github.io/EconometriaII/ModelosEleccion/ModelosEleccion.html)<br>
 
-[Instrucciones trabajo de investigación](https://gusgarciacruz.github.io/EconometriaII/TrabajoInvestigacion/TrabajoInvestigacion.html)
+[Instrucciones trabajo de investigación](https://gusgarciacruz.github.io/EconometriaII/TrabajoInvestigacion/TrabajoInvestigacion.html)<br>
+
+[Q1](https://gusgarciacruz.github.io/EconometriaII/Q1.pdf)
