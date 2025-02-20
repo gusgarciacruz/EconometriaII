@@ -21,11 +21,11 @@ library(tidyverse); library(dynlm); library(dLagM); library(AER); library(xts)
 library(ecm); library(openxlsx); library(urca)
 
 data <- read.xlsx("https://www.princeton.edu/~mwatson/Stock-Watson_3u/Students/EE_Datasets/us_macro_quarterly.xlsx",
-                        sheet = 1) |>
+                        sheet = 1)|>
   rename(date=X1) |> 
   mutate(date = as.yearqtr(date, format = "%Y:0%q"),
          TSpread = GS10 - TB3MS,
-         TSpread.1 = lag(TSpread),
+         TSpread.1 = lag(TSpread,1),
          GDPGrowth = 400*log(GDPC96/lag(GDPC96))) 
 
 # Se trabajan con los datos de 1960 Q1 hasta 2012 Q4
@@ -45,8 +45,8 @@ summary(DF.TSpread)
 
 # Modelo de rezago distribuido
 # Dos rezagos en TSpread
-rezagod <- dlm(formula = GDPGrowth ~ TSpread, 
-               data = data.frame(subdata), q = 2)
+rezagod <- dlm(GDPGrowth ~ TSpread, 
+               data = data.frame(subdata), q = 1)
 summary(rezagod)
 
 # Modelo de rezago distribuido: método de Koyck
@@ -80,7 +80,7 @@ ADL11 <- ardlDlm(formula = GDPGrowth ~ TSpread,
                  data = data.frame(subdata), p = 1, q = 1)
 summary(ADL11)
 
-predict.ADl11 <- forecast(ADL11, x = c(1.8633333, 1.9466667, 2.6766667, 2.6833333), 
+predict.ADl11 <- dLagM::forecast(ADL11, x = data$TSpread[225:228], 
          h = 4, interval = T, nSim = 1000)
 predict.ADl11
 
@@ -101,7 +101,7 @@ data.predictADL11 <- data.frame(date = seq(as.Date("1960-01-01"), by="quarter", 
                            actual = observed, predicho = predictADL11, ic_l = lowerADL11, ic_u = upperADL11) |> 
   mutate(date = as.yearqtr(date, format = "%Y-%m-%d"))
 
-ggplot(data.predictADL11[201:2016,]) + 
+ggplot(data.predictADL11[201:216,]) + 
   geom_line(aes(x = date, y = actual, color = "Observada"), linewidth = 0.8) + 
   geom_line(aes(x = date, y = predicho, color = "Predicha"), linewidth = 0.8) + 
   geom_ribbon(aes(x = date, y = predicho, ymin = ic_l, ymax = ic_u, fill="IC"), alpha = 0.1)+
@@ -115,11 +115,11 @@ ADL12 <- ardlDlm(formula = GDPGrowth ~ TSpread,
                     data = data.frame(subdata), p = 1, q = 2)
 summary(ADL12)
 
-predict.ADl12 <- forecast(ADL12, x = c(1.8633333, 1.9466667, 2.6766667, 2.6833333), 
+predict.ADl12 <- forecast(ADL12, x = data$TSpread[225:228], 
                          h = 4, interval = T)
 predict.ADl12
 
-error.predict <- predic.ADl12[["forecasts"]][["Forecast"]][1] - data$GDPGrowth[225] 
+error.predict <- predict.ADl12[["forecasts"]][["Forecast"]][1] - data$GDPGrowth[225] 
 error.predict
 
 # Determinando el orden del ADL
@@ -148,12 +148,14 @@ subdata2 <- subdata |>
   select(date, GDPGrowth, TSpread, TSpread.1) |> 
   drop_na()
 
-ARMAX <- arima(subdata2$GDPGrowth, order =c(1, 0, 1), xreg = subdata2[,3:4])
+ARMAX <- arima(subdata2$GDPGrowth, 
+               order =c(1, 0, 1), 
+               xreg = subdata2[,3:4])
 summary(ARMAX)
 coeftest(ARMAX)
 
-newxreg <- data.frame(TSpread = c(1.8633333, 1.9466667, 2.6766667, 2.6833333),
-                      TSpread.1 = c(1.6200000, 1.8633333, 1.9466667, 2.6766667))
+newxreg <- data.frame(TSpread = data$TSpread[225:228],
+                      TSpread.1 = data$TSpread.1[225:228])
 
 predict.ARMAX <- predict(ARMAX, 
                          n.ahead = 4,
@@ -173,7 +175,7 @@ observed <- ts(c(GDPGrowth, rep(NA, 4)), start = 1960, frequency = 4)
 
 data.predictARMAX <- data.frame(date = seq(as.Date("1960-01-01"), by="quarter", length.out = 216),
                            actual = observed, predicho = predictARMAX,
-                           ic_l = lower, ic_u = upper) |> 
+                           ic_l = lowerARMAX, ic_u = upperARMAX) |> 
   mutate(date = as.yearqtr(date, format = "%Y-%m-%d"))
 
 ggplot(data.predictARMAX[201:216,]) + 
@@ -188,7 +190,7 @@ ggplot(data.predictARMAX[201:216,]) +
 
 data.predictADLARMAX <- data.frame(date = seq(as.Date("1960-01-01"), by="quarter", length.out = 216),
                                 actual = observed, predicho1 = predictADL11, predicho2 = predictARMAX,
-                                ic_l = lower, ic_u = upper) |> 
+                                ic_l = lowerARMAX, ic_u = upperARMAX) |> 
   mutate(date = as.yearqtr(date, format = "%Y-%m-%d"))
 
 
