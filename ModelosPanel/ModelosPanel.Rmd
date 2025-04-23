@@ -96,25 +96,27 @@ Link slides formato [PDF](https://gusgarciacruz.github.io/EconometriaII/ModelosP
 ---
 # <span style="font-size:80%">En este tema</span>
 
-- <span style="font-size:150%">[<span style="color:black">Generalidades](#generalidades)</span>
+- <span style="font-size:140%">[<span style="color:black">Generalidades](#generalidades)</span>
 
-- <span style="font-size:150%">[<span style="color:black">Tipos de paneles](#tipos)</span>
+- <span style="font-size:140%">[<span style="color:black">Tipos de paneles](#tipos)</span>
 
-- <span style="font-size:150%">[<span style="color:black">Técnicas de estimación](#tecnicas)</span>
+- <span style="font-size:140%">[<span style="color:black">Técnicas de estimación](#tecnicas)</span>
 
-- <span style="font-size:150%">[<span style="color:black">Modelo de MCO agrupados (*Pooling*)](#pool)</span>
+- <span style="font-size:140%">[<span style="color:black">Modelo de MCO agrupados (*Pooling*)](#pool)</span>
 
-- <span style="font-size:150%">[<span style="color:black">Modelo efectos fijos: MCO con variable dicótoma (MCVD)](#ef)</span>
+- <span style="font-size:140%">[<span style="color:black">Modelo efectos fijos: MCO con variable dicótoma (MCVD)](#ef)</span>
 
-- <span style="font-size:150%">[<span style="color:black">Modelo efectos fijos: estimador intragrupal (*Within*)](#within)</span>
+- <span style="font-size:140%">[<span style="color:black">Modelo efectos fijos: estimador intragrupal (*Within*)](#within)</span>
 
-- <span style="font-size:150%">[<span style="color:black">Modelo de efectos aleatorios](#ea)</span>
+- <span style="font-size:140%">[<span style="color:black">Modelo de efectos aleatorios](#ea)</span>
 
-- <span style="font-size:150%">[<span style="color:black">FE vs RE: algunos lineamientos](#lineamientos)</span>
+- <span style="font-size:140%">[<span style="color:black">FE vs RE: algunos lineamientos](#lineamientos)</span>
 
-- <span style="font-size:150%">[<span style="color:black">FE vs RE: qué dice Wooldridge](#wool)</span>
+- <span style="font-size:140%">[<span style="color:black">FE vs RE: qué dice Wooldridge](#wool)</span>
 
-- <span style="font-size:150%">[<span style="color:black">Ejercicio aplicado en R: función de costos de líneas de aviación](#r)</span>
+- <span style="font-size:140%">[<span style="color:black">Ejercicio aplicado en R: función de costos de líneas de aviación](#r)</span>
+
+- <span style="font-size:140%">[<span style="color:black">El estimador de diferencia en diferencias](#did)</span>
 
 ---
 # <span style="font-size:80%">Lecturas</span>
@@ -169,7 +171,7 @@ name: tecnicas
 
 <p style="margin-bottom: -.8em">
 
-Para ilustrar este tema asumamos que tenemos información sobre los costos de 6 líneas de aviación comercial ( $N=6$) de 1970 a 1984 ( $T=15$), para un total de 90 observaciones de datos panel. Con esto en mente, las técnicas de estimación son las siguientes: 
+Para ilustrar este tema asumamos que tenemos información sobre los costos de 6 líneas de aviación comercial  $(N=6)$ de 1970 a 1984 $(T=15)$, para un total de 90 observaciones de datos panel. Con esto en mente, las técnicas de estimación son las siguientes: 
 
 <p style="margin-bottom: -.6em">
 
@@ -517,7 +519,7 @@ knitr::include_graphics("Wooldridge.png")
 
 ---
 name: r
-# <span style="font-size:80%">Ejercicio aplicado: función de costos de líneas de aviación</span>
+# <span style="font-size:80%">Ejercicio aplicado en R: función de costos de líneas de aviación</span>
 <font size = "5">
 
 En este ejercicio aplicado se va a estudiar la función de costos de 6 líneas de aviación comercial entre 1970 y 1984, para un total de 90 observaciones de datos de panel. La ecuación a estimar es la siguiente:
@@ -531,3 +533,62 @@ En los siguientes links se encuentran los datos y el código utilizado en R:
 - [Datos](https://gusgarciacruz.github.io/EconometriaII/ModelosPanel/Table 16.1 Gujarati.dta)
 - [Código en R](https://gusgarciacruz.github.io/EconometriaII/ModelosPanel/Tema 12.R)
 
+---
+name: did
+# <span style="font-size:80%">El estimador de diferencia en diferencias</span>
+<font size = "4">
+
+- Una importante ventaja de tener datos panel es que permite evaluar el impacto de ciertos eventos y políticas
+
+- Con información antes y después de la ocurrencia del evento, la intervención o la política, es posible determinar el efecto sobre variables económicas
+
+- Cuando los datos surgen de un **experimento natural** (o de un **cuasiexperimento**) y se tiene información antes y después del evento, es posible identificar efectos causales de dicho evento sobre variables económicas
+
+- **Experimento natural**: tiene lugar cuando algún evento exógeno (es decir, que el evento ocurre de manera natural, sin manipulación del investigador), a menudo un cambio en las políticas gubernamentales, modifica el amniente en el que se desenvuelven las personas, las familias, las empresas o las ciudades
+
+- **Cuasiexperimento**: es un experimento que intenta imitar un experimento real, pero no puede asignar aleatoriamente a los participantes
+
+- **Efectos causales**: se refieren al impacto que una variable tiene sobre otra, donde una variable es la causa y la otra es el efecto. Esto es diferente de la correlación, donde dos variables pueden moverse juntas sin que una cause la otra. Identificar los efectos causales es fundamental para comprender la relación entre eventos, tomar decisiones informadas y diseñar intervenciones efectivas
+
+---
+# <span style="font-size:80%">El estimador de diferencia en diferencias</span>
+<font size = "5">
+
+- En un experimento natural siempre se cuenta con un **grupo de control** y un **grupo de tratamiento**:
+<p style="margin-bottom: -.8em">
+  - **Grupo de control**: grupo que no se ve afectado por el cambio de política
+  - **Grupo de tratamiento**: grupo que se ve afetado por el cambio de política
+
+- A diferencia de un experimento verdaderos (asignación aleatoria o RCT (Randomized Controlled Trial) que significa Ensayo Aleatorio Controlado), en el cual los grupos de control y de tratamiento se eligen de manera aleatoria y explícita, en los experimentos naturales los grupos surgen a partir del cambio en una política particular
+
+- Para controlar las diferencias sistemáticas entre los dos grupos, se necesitan datos de (al menos) dos años, un año antes y otro después del cambio de la politica
+
+- Así, la muestra se descompone en cuatro grupos:
+<p style="margin-bottom: -.8em">
+  - Grupo de control antes del cambio
+  - Grupo de control después del cambio
+  - Grupo de tratamiento antes del cambio
+  - Grupo de tratamiento después del cambio
+
+---
+# <span style="font-size:80%">El estimador de diferencia en diferencias</span> 
+<font size = "4">
+Sea:
+<p style="margin-bottom: -.8em">
+  - $C$ el grupo de control y $T$ el grupo de tratamiento
+  - $dT$ es igual a 1 para los miembros del grupo de tratamiento $T$ e igual a 0 si no lo son
+  - $d2$ es igual a 1 para el segundo periodo (después del cambio de la política) y 0 en el primer periodo (antes del cambio de la política)
+  
+La ecuación que interesa estimar es:
+<p style="margin-bottom: -.8em">
+$$y = \beta_0 + \delta_0d2 + \beta_1dT + \delta_1d2\cdot dT + u$$
+$\delta_1$ mide el efecto causal la política. Sin otros factores en la regresión, $\hat{\delta}_1$ será el estimador de diferencia en diferencias:
+
+$$\hat{\delta}_1=(\bar{y}_{2,T}-\bar{y}_{2,C})-(\bar{y}_{1,T}-\bar{y}_{1,C})$$
+donde la barra indica el promedio, el primer subíndice denota el año y el segundo subíndice, el grupo
+
+<p style="margin-bottom: 2em">
+
+$\delta_1$ en la literatura también es llamado el **efecto promedio del tratamiento** (ATE: Average Treatment Effects), debido a que mide el efecto del "tratamiento" o la política sobre el resultado promedio de $y$ 
+
+Cuando se añaden variables explicativas, para controlar el hecho de que las poblaciones muestrales pueden diferir sistemáticamente a lo largo de dos periodos, la estimación por MCO de $\delta_1$ ya no tiene la forma simple de la última ecuación, pero su interpretación es similar

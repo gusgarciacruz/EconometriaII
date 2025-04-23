@@ -22,3 +22,5 @@
 - <span style="font-size:150%">FE vs RE: qué dice Wooldridge</span>
 
 - <span style="font-size:150%"> Ejercicio aplicado en R: función de costos de líneas de aviación</span>
+
+- <span style="font-size:140%">El estimador de diferencia en diferencias</span>

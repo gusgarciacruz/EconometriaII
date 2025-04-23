@@ -4,7 +4,7 @@
     <title>Modelos de datos panel</title>
     <meta charset="utf-8" />
     <meta name="author" content="Gustavo A. García   ggarci24@eafit.edu.co                  " />
-    <script src="libs/header-attrs-2.11/header-attrs.js"></script>
+    <script src="libs/header-attrs-2.29/header-attrs.js"></script>
     <script src="libs/fabric-4.3.1/fabric.min.js"></script>
     <link href="libs/xaringanExtra-scribble-0.0.1/scribble.css" rel="stylesheet" />
     <script src="libs/xaringanExtra-scribble-0.0.1/scribble.js"></script>
@@ -13,8 +13,8 @@
     <link href="libs/xaringanExtra-clipboard-0.2.6/xaringanExtra-clipboard.css" rel="stylesheet" />
     <script src="libs/xaringanExtra-clipboard-0.2.6/xaringanExtra-clipboard.js"></script>
     <script>window.xaringanExtraClipboard(null, {"button":"<i class=\"fa fa-clipboard\"><\/i>","success":"<i class=\"fa fa-check\" style=\"color: #90BE6D\"><\/i>","error":"<i class=\"fa fa-times-circle\" style=\"color: #F94144\"><\/i>"})</script>
-    <link href="libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
-    <link href="libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+    <link href="libs/font-awesome-6.5.2/css/all.min.css" rel="stylesheet" />
+    <link href="libs/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet" />
     <link href="libs/xaringanExtra-extra-styles-0.2.6/xaringanExtra-extra-styles.css" rel="stylesheet" />
     <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
   </head>
@@ -22,9 +22,15 @@
     <textarea id="source">
 class: center, middle, inverse, title-slide
 
+.title[
 # Modelos de datos panel
+]
+.author[
 ### Gustavo A. García <br> <span class="notbold" style="font-size:65%"><a href="mailto:ggarci24@eafit.edu.co" class="email">ggarci24@eafit.edu.co</a></span> <br> <br> <br> <br> <br> <br> <br> <br> <br>
+]
+.date[
 ### <span class="notbold" style="font-size:65%">Econometría II <br> Programa de Economía <br> Universidad EAFIT</span>
+]
 
 ---
 
@@ -75,25 +81,27 @@ Link slides formato [PDF](https://gusgarciacruz.github.io/EconometriaII/ModelosP
 ---
 # &lt;span style="font-size:80%"&gt;En este tema&lt;/span&gt;
 
-- &lt;span style="font-size:150%"&gt;[&lt;span style="color:black"&gt;Generalidades](#generalidades)&lt;/span&gt;
+- &lt;span style="font-size:140%"&gt;[&lt;span style="color:black"&gt;Generalidades](#generalidades)&lt;/span&gt;
 
-- &lt;span style="font-size:150%"&gt;[&lt;span style="color:black"&gt;Tipos de paneles](#tipos)&lt;/span&gt;
+- &lt;span style="font-size:140%"&gt;[&lt;span style="color:black"&gt;Tipos de paneles](#tipos)&lt;/span&gt;
 
-- &lt;span style="font-size:150%"&gt;[&lt;span style="color:black"&gt;Técnicas de estimación](#tecnicas)&lt;/span&gt;
+- &lt;span style="font-size:140%"&gt;[&lt;span style="color:black"&gt;Técnicas de estimación](#tecnicas)&lt;/span&gt;
 
-- &lt;span style="font-size:150%"&gt;[&lt;span style="color:black"&gt;Modelo de MCO agrupados (*Pooling*)](#pool)&lt;/span&gt;
+- &lt;span style="font-size:140%"&gt;[&lt;span style="color:black"&gt;Modelo de MCO agrupados (*Pooling*)](#pool)&lt;/span&gt;
 
-- &lt;span style="font-size:150%"&gt;[&lt;span style="color:black"&gt;Modelo efectos fijos: MCO con variable dicótoma (MCVD)](#ef)&lt;/span&gt;
+- &lt;span style="font-size:140%"&gt;[&lt;span style="color:black"&gt;Modelo efectos fijos: MCO con variable dicótoma (MCVD)](#ef)&lt;/span&gt;
 
-- &lt;span style="font-size:150%"&gt;[&lt;span style="color:black"&gt;Modelo efectos fijos: estimador intragrupal (*Within*)](#within)&lt;/span&gt;
+- &lt;span style="font-size:140%"&gt;[&lt;span style="color:black"&gt;Modelo efectos fijos: estimador intragrupal (*Within*)](#within)&lt;/span&gt;
 
-- &lt;span style="font-size:150%"&gt;[&lt;span style="color:black"&gt;Modelo de efectos aleatorios](#ea)&lt;/span&gt;
+- &lt;span style="font-size:140%"&gt;[&lt;span style="color:black"&gt;Modelo de efectos aleatorios](#ea)&lt;/span&gt;
 
-- &lt;span style="font-size:150%"&gt;[&lt;span style="color:black"&gt;FE vs RE: algunos lineamientos](#lineamientos)&lt;/span&gt;
+- &lt;span style="font-size:140%"&gt;[&lt;span style="color:black"&gt;FE vs RE: algunos lineamientos](#lineamientos)&lt;/span&gt;
 
-- &lt;span style="font-size:150%"&gt;[&lt;span style="color:black"&gt;FE vs RE: qué dice Wooldridge](#wool)&lt;/span&gt;
+- &lt;span style="font-size:140%"&gt;[&lt;span style="color:black"&gt;FE vs RE: qué dice Wooldridge](#wool)&lt;/span&gt;
 
-- &lt;span style="font-size:150%"&gt;[&lt;span style="color:black"&gt;Ejercicio aplicado en R: función de costos de líneas de aviación](#r)&lt;/span&gt;
+- &lt;span style="font-size:140%"&gt;[&lt;span style="color:black"&gt;Ejercicio aplicado en R: función de costos de líneas de aviación](#r)&lt;/span&gt;
+
+- &lt;span style="font-size:140%"&gt;[&lt;span style="color:black"&gt;El estimador de diferencia en diferencias](#did)&lt;/span&gt;
 
 ---
 # &lt;span style="font-size:80%"&gt;Lecturas&lt;/span&gt;
@@ -148,7 +156,7 @@ name: tecnicas
 
 &lt;p style="margin-bottom: -.8em"&gt;
 
-Para ilustrar este tema asumamos que tenemos información sobre los costos de 6 líneas de aviación comercial ( `\(N=6\)`) de 1970 a 1984 ( `\(T=15\)`), para un total de 90 observaciones de datos panel. Con esto en mente, las técnicas de estimación son las siguientes: 
+Para ilustrar este tema asumamos que tenemos información sobre los costos de 6 líneas de aviación comercial  `\((N=6)\)` de 1970 a 1984 `\((T=15)\)`, para un total de 90 observaciones de datos panel. Con esto en mente, las técnicas de estimación son las siguientes: 
 
 &lt;p style="margin-bottom: -.6em"&gt;
 
@@ -490,7 +498,7 @@ name: woo
 
 ---
 name: r
-# &lt;span style="font-size:80%"&gt;Ejercicio aplicado: función de costos de líneas de aviación&lt;/span&gt;
+# &lt;span style="font-size:80%"&gt;Ejercicio aplicado en R: función de costos de líneas de aviación&lt;/span&gt;
 &lt;font size = "5"&gt;
 
 En este ejercicio aplicado se va a estudiar la función de costos de 6 líneas de aviación comercial entre 1970 y 1984, para un total de 90 observaciones de datos de panel. La ecuación a estimar es la siguiente:
@@ -504,14 +512,73 @@ En los siguientes links se encuentran los datos y el código utilizado en R:
 - [Datos](https://gusgarciacruz.github.io/EconometriaII/ModelosPanel/Table 16.1 Gujarati.dta)
 - [Código en R](https://gusgarciacruz.github.io/EconometriaII/ModelosPanel/Tema 12.R)
 
+---
+name: did
+# &lt;span style="font-size:80%"&gt;El estimador de diferencia en diferencias&lt;/span&gt;
+&lt;font size = "4"&gt;
+
+- Una importante ventaja de tener datos panel es que permite evaluar el impacto de ciertos eventos y políticas
+
+- Con información antes y después de la ocurrencia del evento, la intervención o la política, es posible determinar el efecto sobre variables económicas
+
+- Cuando los datos surgen de un **experimento natural** (o de un **cuasiexperimento**) y se tiene información antes y después del evento, es posible identificar efectos causales de dicho evento sobre variables económicas
+
+- **Experimento natural**: tiene lugar cuando algún evento exógeno (es decir, que el evento ocurre de manera natural, sin manipulación del investigador), a menudo un cambio en las políticas gubernamentales, modifica el amniente en el que se desenvuelven las personas, las familias, las empresas o las ciudades
+
+- **Cuasiexperimento**: es un experimento que intenta imitar un experimento real, pero no puede asignar aleatoriamente a los participantes
+
+- **Efectos causales**: se refieren al impacto que una variable tiene sobre otra, donde una variable es la causa y la otra es el efecto. Esto es diferente de la correlación, donde dos variables pueden moverse juntas sin que una cause la otra. Identificar los efectos causales es fundamental para comprender la relación entre eventos, tomar decisiones informadas y diseñar intervenciones efectivas
+
+---
+# &lt;span style="font-size:80%"&gt;El estimador de diferencia en diferencias&lt;/span&gt;
+&lt;font size = "5"&gt;
+
+- En un experimento natural siempre se cuenta con un **grupo de control** y un **grupo de tratamiento**:
+&lt;p style="margin-bottom: -.8em"&gt;
+  - **Grupo de control**: grupo que no se ve afectado por el cambio de política
+  - **Grupo de tratamiento**: grupo que se ve afetado por el cambio de política
+
+- A diferencia de un experimento verdaderos (asignación aleatoria o RCT (Randomized Controlled Trial) que significa Ensayo Aleatorio Controlado), en el cual los grupos de control y de tratamiento se eligen de manera aleatoria y explícita, en los experimentos naturales los grupos surgen a partir del cambio en una política particular
+
+- Para controlar las diferencias sistemáticas entre los dos grupos, se necesitan datos de (al menos) dos años, un año antes y otro después del cambio de la politica
+
+- Así, la muestra se descompone en cuatro grupos:
+&lt;p style="margin-bottom: -.8em"&gt;
+  - Grupo de control antes del cambio
+  - Grupo de control después del cambio
+  - Grupo de tratamiento antes del cambio
+  - Grupo de tratamiento después del cambio
+
+---
+# &lt;span style="font-size:80%"&gt;El estimador de diferencia en diferencias&lt;/span&gt; 
+&lt;font size = "4"&gt;
+Sea:
+&lt;p style="margin-bottom: -.8em"&gt;
+  - `\(C\)` el grupo de control y `\(T\)` el grupo de tratamiento
+  - `\(dT\)` es igual a 1 para los miembros del grupo de tratamiento `\(T\)` e igual a 0 si no lo son
+  - `\(d2\)` es igual a 1 para el segundo periodo (después del cambio de la política) y 0 en el primer periodo (antes del cambio de la política)
+  
+La ecuación que interesa estimar es:
+&lt;p style="margin-bottom: -.8em"&gt;
+`$$y = \beta_0 + \delta_0d2 + \beta_1dT + \delta_1d2\cdot dT + u$$`
+`\(\delta_1\)` mide el efecto causal la política. Sin otros factores en la regresión, `\(\hat{\delta}_1\)` será el estimador de diferencia en diferencias:
+
+`$$\hat{\delta}_1=(\bar{y}_{2,T}-\bar{y}_{2,C})-(\bar{y}_{1,T}-\bar{y}_{1,C})$$`
+donde la barra indica el promedio, el primer subíndice denota el año y el segundo subíndice, el grupo
+
+&lt;p style="margin-bottom: 2em"&gt;
+
+`\(\delta_1\)` en la literatura también es llamado el **efecto promedio del tratamiento** (ATE: Average Treatment Effects), debido a que mide el efecto del "tratamiento" o la política sobre el resultado promedio de `\(y\)` 
+
+Cuando se añaden variables explicativas, para controlar el hecho de que las poblaciones muestrales pueden diferir sistemáticamente a lo largo de dos periodos, la estimación por MCO de `\(\delta_1\)` ya no tiene la forma simple de la última ecuación, pero su interpretación es similar
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
 <script>var slideshow = remark.create({
-"highlightStyle": "github",
-"highlightLines": true,
-"countIncrementalSlides": false,
-"ratio": "16:9"
+  "highlightStyle": "github",
+  "highlightLines": true,
+  "countIncrementalSlides": false,
+  "ratio": "16:9"
 });
 if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
   window.dispatchEvent(new Event('resize'));
@@ -552,6 +619,19 @@ if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
     deleted = true;
   });
 })();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
 (function() {
   "use strict"
   // Replace <script> tags in slides area to make them executable
