@@ -5,4 +5,6 @@
 
 - <span style="font-size:150%">Propiedades de los estimadores MCO</span> <br>
 
-- <span style="font-size:150%">Ejercicio aplicado en R: tasas de retorno a la educación</span>
+- <span style="font-size:150%">Ejercicio aplicado en R: tasas de retorno a la educación</span> <br>
+
+- <span style="font-size:150%">Ejercicio aplicado en Python: tasas de retorno a la educación</span>
