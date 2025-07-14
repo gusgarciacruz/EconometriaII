@@ -4,13 +4,13 @@
     <title>Repaso de MCO</title>
     <meta charset="utf-8" />
     <meta name="author" content="Gustavo A. García   ggarci24@eafit.edu.co                  " />
-    <script src="libs/header-attrs-2.14/header-attrs.js"></script>
+    <script src="libs/header-attrs-2.29/header-attrs.js"></script>
     <script src="libs/clipboard-2.0.6/clipboard.min.js"></script>
     <link href="libs/xaringanExtra-clipboard-0.2.6/xaringanExtra-clipboard.css" rel="stylesheet" />
     <script src="libs/xaringanExtra-clipboard-0.2.6/xaringanExtra-clipboard.js"></script>
     <script>window.xaringanExtraClipboard(null, {"button":"<i class=\"fa fa-clipboard\"><\/i>","success":"<i class=\"fa fa-check\" style=\"color: #90BE6D\"><\/i>","error":"<i class=\"fa fa-times-circle\" style=\"color: #F94144\"><\/i>"})</script>
-    <link href="libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
-    <link href="libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+    <link href="libs/font-awesome-6.5.2/css/all.min.css" rel="stylesheet" />
+    <link href="libs/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet" />
     <link href="libs/xaringanExtra-extra-styles-0.2.6/xaringanExtra-extra-styles.css" rel="stylesheet" />
     <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
   </head>
@@ -83,7 +83,9 @@ Link slides en formato [PDF](https://gusgarciacruz.github.io/EconometriaII/MCO/M
 
 - &lt;span style="font-size:150%"&gt; [&lt;span style="color:black"&gt;Propiedades de los estimadores MCO](#propiedades)&lt;/span&gt; &lt;br&gt; &lt;br&gt;
 
-- &lt;span style="font-size:150%"&gt; [&lt;span style="color:black"&gt;Ejercicio aplicado en R: tasas de retorno a la educación](#r)&lt;/span&gt;
+- &lt;span style="font-size:150%"&gt; [&lt;span style="color:black"&gt;Ejercicio aplicado en R: tasas de retorno a la educación](#r)&lt;/span&gt; &lt;br&gt; &lt;br&gt;
+
+- &lt;span style="font-size:150%"&gt; [&lt;span style="color:black"&gt;Ejercicio aplicado en Python: tasas de retorno a la educación](#py)&lt;/span&gt;
 
 ---
 # &lt;span style="font-size:80%"&gt;Lecturas&lt;/span&gt;
@@ -106,7 +108,7 @@ Recordando los &lt;font color = "blue"&gt;supuestos iniciales&lt;/font&gt;:
 
 - Los coeficientes `\(\beta_{j}\)` con `\(j=1,2,3,...,k\)` son fijos y desconocidos
 
-- Las `\(X_{ij}\)` son estocásticamente fijas para `\(j=2,3,4,...,k\)`. Este es un supuesto de partida propio del laboratorio. Un supuesto más real en economía y que lleva a resultados similares es: las variables explicatorias son exógenas. Esto implica que:
+- Las `\(X_{ij}\)` son fijas o no estocásticas (no aleatorias) para `\(j=2,3,4,...,k\)`. Este es un supuesto de partida propio del laboratorio. Un supuesto más real en economía y que lleva a resultados similares es: las variables explicatorias son exógenas. Esto implica que:
 `$$Cov(X_{i2},u_{i})=0$$`
 `$$Cov(X_{i3},u_{i})=0$$`
 `$$\vdots$$`
@@ -325,7 +327,7 @@ name: r
 # &lt;span style="font-size:80%"&gt;Ejercicio aplicado en R: tasas de retorno a la educación&lt;/span&gt;
 
 
-```r
+``` r
 library(wooldridge); library(tidyverse); library(summarytools); library(modelsummary); library(gt)
 
 data('wage1')
@@ -336,7 +338,7 @@ Estimación por OLS
 .small-code[
 .pull-left-50[
 
-```r
+``` r
 ols1 &lt;- lm(lwage ~ educ, data = wage1)
 summary(ols1)
 ```
@@ -365,7 +367,7 @@ F-statistic: 119.6 on 1 and 524 DF,  p-value: &lt; 2.2e-16
 
 .pull-right-50[
 
-```r
+``` r
 ols2 &lt;- lm(lwage ~ educ + female, data = wage1)
 summary(ols2)
 ```
@@ -399,7 +401,7 @@ F-statistic: 112.2 on 2 and 523 DF,  p-value: &lt; 2.2e-16
 &lt;font size = "3"&gt;
 Utilizamos el paquete [```modelsummary```](https://vincentarelbundock.github.io/modelsummary/articles/modelsummary.html) para generar tablas editadas (Word, tex, text, png, html...)
 
-```r
+``` r
 modelos &lt;- list("OLS1" = lm(lwage ~ educ, data = wage1),
                 "OLS2"  = lm(lwage ~ educ + female, data = wage1))
                 
@@ -407,14 +409,26 @@ modelsummary(modelos, output = 'gt', coef_map = c('educ' = 'Educación', 'female
 tab_style(style = cell_text(size = "x-small"), locations = cells_source_notes()) |&gt;  tab_source_note(source_note = "Nota: Errores estándar en paréntesis")
 ```
 
-<div id="wqfxfgejfd" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>html {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
+<div id="odsxetdjhi" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#odsxetdjhi table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-#wqfxfgejfd .gt_table {
+#odsxetdjhi thead, #odsxetdjhi tbody, #odsxetdjhi tfoot, #odsxetdjhi tr, #odsxetdjhi td, #odsxetdjhi th {
+  border-style: none;
+}
+
+#odsxetdjhi p {
+  margin: 0;
+  padding: 0;
+}
+
+#odsxetdjhi .gt_table {
   display: table;
   border-collapse: collapse;
+  line-height: normal;
   margin-left: auto;
   margin-right: auto;
   color: #333333;
@@ -437,19 +451,12 @@ tab_style(style = cell_text(size = "x-small"), locations = cells_source_notes())
   border-left-color: #D3D3D3;
 }
 
-#wqfxfgejfd .gt_heading {
-  background-color: #FFFFFF;
-  text-align: center;
-  border-bottom-color: #FFFFFF;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
+#odsxetdjhi .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
 }
 
-#wqfxfgejfd .gt_title {
+#odsxetdjhi .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -461,25 +468,37 @@ tab_style(style = cell_text(size = "x-small"), locations = cells_source_notes())
   border-bottom-width: 0;
 }
 
-#wqfxfgejfd .gt_subtitle {
+#odsxetdjhi .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
-  padding-top: 0;
-  padding-bottom: 6px;
+  padding-top: 3px;
+  padding-bottom: 5px;
   padding-left: 5px;
   padding-right: 5px;
   border-top-color: #FFFFFF;
   border-top-width: 0;
 }
 
-#wqfxfgejfd .gt_bottom_border {
+#odsxetdjhi .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#odsxetdjhi .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#wqfxfgejfd .gt_col_headings {
+#odsxetdjhi .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -494,7 +513,7 @@ tab_style(style = cell_text(size = "x-small"), locations = cells_source_notes())
   border-right-color: #D3D3D3;
 }
 
-#wqfxfgejfd .gt_col_heading {
+#odsxetdjhi .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -514,7 +533,7 @@ tab_style(style = cell_text(size = "x-small"), locations = cells_source_notes())
   overflow-x: hidden;
 }
 
-#wqfxfgejfd .gt_column_spanner_outer {
+#odsxetdjhi .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -526,15 +545,15 @@ tab_style(style = cell_text(size = "x-small"), locations = cells_source_notes())
   padding-right: 4px;
 }
 
-#wqfxfgejfd .gt_column_spanner_outer:first-child {
+#odsxetdjhi .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#wqfxfgejfd .gt_column_spanner_outer:last-child {
+#odsxetdjhi .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#wqfxfgejfd .gt_column_spanner {
+#odsxetdjhi .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -546,7 +565,11 @@ tab_style(style = cell_text(size = "x-small"), locations = cells_source_notes())
   width: 100%;
 }
 
-#wqfxfgejfd .gt_group_heading {
+#odsxetdjhi .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#odsxetdjhi .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -569,9 +592,10 @@ tab_style(style = cell_text(size = "x-small"), locations = cells_source_notes())
   border-right-width: 1px;
   border-right-color: #D3D3D3;
   vertical-align: middle;
+  text-align: left;
 }
 
-#wqfxfgejfd .gt_empty_group_heading {
+#odsxetdjhi .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -586,15 +610,15 @@ tab_style(style = cell_text(size = "x-small"), locations = cells_source_notes())
   vertical-align: middle;
 }
 
-#wqfxfgejfd .gt_from_md > :first-child {
+#odsxetdjhi .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#wqfxfgejfd .gt_from_md > :last-child {
+#odsxetdjhi .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#wqfxfgejfd .gt_row {
+#odsxetdjhi .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -613,7 +637,7 @@ tab_style(style = cell_text(size = "x-small"), locations = cells_source_notes())
   overflow-x: hidden;
 }
 
-#wqfxfgejfd .gt_stub {
+#odsxetdjhi .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -626,7 +650,7 @@ tab_style(style = cell_text(size = "x-small"), locations = cells_source_notes())
   padding-right: 5px;
 }
 
-#wqfxfgejfd .gt_stub_row_group {
+#odsxetdjhi .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -640,11 +664,15 @@ tab_style(style = cell_text(size = "x-small"), locations = cells_source_notes())
   vertical-align: top;
 }
 
-#wqfxfgejfd .gt_row_group_first td {
+#odsxetdjhi .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#wqfxfgejfd .gt_summary_row {
+#odsxetdjhi .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#odsxetdjhi .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -654,16 +682,16 @@ tab_style(style = cell_text(size = "x-small"), locations = cells_source_notes())
   padding-right: 5px;
 }
 
-#wqfxfgejfd .gt_first_summary_row {
+#odsxetdjhi .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#wqfxfgejfd .gt_first_summary_row.thick {
+#odsxetdjhi .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#wqfxfgejfd .gt_last_summary_row {
+#odsxetdjhi .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -673,7 +701,7 @@ tab_style(style = cell_text(size = "x-small"), locations = cells_source_notes())
   border-bottom-color: #D3D3D3;
 }
 
-#wqfxfgejfd .gt_grand_summary_row {
+#odsxetdjhi .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -683,7 +711,7 @@ tab_style(style = cell_text(size = "x-small"), locations = cells_source_notes())
   padding-right: 5px;
 }
 
-#wqfxfgejfd .gt_first_grand_summary_row {
+#odsxetdjhi .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -693,11 +721,21 @@ tab_style(style = cell_text(size = "x-small"), locations = cells_source_notes())
   border-top-color: #D3D3D3;
 }
 
-#wqfxfgejfd .gt_striped {
+#odsxetdjhi .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#odsxetdjhi .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#wqfxfgejfd .gt_table_body {
+#odsxetdjhi .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -706,7 +744,7 @@ tab_style(style = cell_text(size = "x-small"), locations = cells_source_notes())
   border-bottom-color: #D3D3D3;
 }
 
-#wqfxfgejfd .gt_footnotes {
+#odsxetdjhi .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -720,30 +758,8 @@ tab_style(style = cell_text(size = "x-small"), locations = cells_source_notes())
   border-right-color: #D3D3D3;
 }
 
-#wqfxfgejfd .gt_footnote {
+#odsxetdjhi .gt_footnote {
   margin: 0px;
-  font-size: 90%;
-  padding-left: 4px;
-  padding-right: 4px;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-
-#wqfxfgejfd .gt_sourcenotes {
-  color: #333333;
-  background-color: #FFFFFF;
-  border-bottom-style: none;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 2px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-}
-
-#wqfxfgejfd .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -751,109 +767,131 @@ tab_style(style = cell_text(size = "x-small"), locations = cells_source_notes())
   padding-right: 5px;
 }
 
-#wqfxfgejfd .gt_left {
+#odsxetdjhi .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#odsxetdjhi .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#odsxetdjhi .gt_left {
   text-align: left;
 }
 
-#wqfxfgejfd .gt_center {
+#odsxetdjhi .gt_center {
   text-align: center;
 }
 
-#wqfxfgejfd .gt_right {
+#odsxetdjhi .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#wqfxfgejfd .gt_font_normal {
+#odsxetdjhi .gt_font_normal {
   font-weight: normal;
 }
 
-#wqfxfgejfd .gt_font_bold {
+#odsxetdjhi .gt_font_bold {
   font-weight: bold;
 }
 
-#wqfxfgejfd .gt_font_italic {
+#odsxetdjhi .gt_font_italic {
   font-style: italic;
 }
 
-#wqfxfgejfd .gt_super {
+#odsxetdjhi .gt_super {
   font-size: 65%;
 }
 
-#wqfxfgejfd .gt_two_val_uncert {
-  display: inline-block;
-  line-height: 1em;
-  text-align: right;
-  font-size: 60%;
-  vertical-align: -0.25em;
-  margin-left: 0.1em;
-}
-
-#wqfxfgejfd .gt_footnote_marks {
-  font-style: italic;
-  font-weight: normal;
+#odsxetdjhi .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
+  position: initial;
 }
 
-#wqfxfgejfd .gt_asterisk {
+#odsxetdjhi .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#wqfxfgejfd .gt_slash_mark {
-  font-size: 0.7em;
-  line-height: 0.7em;
-  vertical-align: 0.15em;
+#odsxetdjhi .gt_indent_1 {
+  text-indent: 5px;
 }
 
-#wqfxfgejfd .gt_fraction_numerator {
-  font-size: 0.6em;
-  line-height: 0.6em;
-  vertical-align: 0.45em;
+#odsxetdjhi .gt_indent_2 {
+  text-indent: 10px;
 }
 
-#wqfxfgejfd .gt_fraction_denominator {
-  font-size: 0.6em;
-  line-height: 0.6em;
-  vertical-align: -0.05em;
+#odsxetdjhi .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#odsxetdjhi .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#odsxetdjhi .gt_indent_5 {
+  text-indent: 25px;
+}
+
+#odsxetdjhi .katex-display {
+  display: inline-flex !important;
+  margin-bottom: 0.75em !important;
+}
+
+#odsxetdjhi div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+  height: 0px !important;
 }
 </style>
-<table class="gt_table">
-  &lt;caption&gt;Tabla 1. Determinantes de los salarios (Y = log(salario))&lt;/caption&gt;
-  
-  <thead class="gt_col_headings">
-    <tr>
-      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1"> </th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1">OLS1</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1">OLS2</th>
+<table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+  &lt;caption class='gt_caption'&gt;Tabla 1. Determinantes de los salarios (Y = log(salario))&lt;/caption&gt;
+  <thead>
+    <tr class="gt_col_headings">
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="a-"> </th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col" id="OLS1">OLS1</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col" id="OLS2">OLS2</th>
     </tr>
   </thead>
   <tbody class="gt_table_body">
-    <tr><td class="gt_row gt_left">Educación</td>
-<td class="gt_row gt_center">0.083***</td>
-<td class="gt_row gt_center">0.077***</td></tr>
-    <tr><td class="gt_row gt_left"></td>
-<td class="gt_row gt_center">(0.008)</td>
-<td class="gt_row gt_center">(0.007)</td></tr>
-    <tr><td class="gt_row gt_left">Mujer (=1)</td>
-<td class="gt_row gt_center"></td>
-<td class="gt_row gt_center">-0.361***</td></tr>
-    <tr><td class="gt_row gt_left" style="border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #000000;"></td>
-<td class="gt_row gt_center" style="border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #000000;"></td>
-<td class="gt_row gt_center" style="border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #000000;">(0.039)</td></tr>
-    <tr><td class="gt_row gt_left">Num.Obs.</td>
-<td class="gt_row gt_center">526</td>
-<td class="gt_row gt_center">526</td></tr>
-    <tr><td class="gt_row gt_left">R2</td>
-<td class="gt_row gt_center">0.186</td>
-<td class="gt_row gt_center">0.300</td></tr>
-    <tr><td class="gt_row gt_left">R2 Adj.</td>
-<td class="gt_row gt_center">0.184</td>
-<td class="gt_row gt_center">0.298</td></tr>
-    <tr><td class="gt_row gt_left">F</td>
-<td class="gt_row gt_center">119.582</td>
-<td class="gt_row gt_center">112.189</td></tr>
+    <tr><td headers=" " class="gt_row gt_left">Educación</td>
+<td headers="OLS1" class="gt_row gt_center">0.083***</td>
+<td headers="OLS2" class="gt_row gt_center">0.077***</td></tr>
+    <tr><td headers=" " class="gt_row gt_left"></td>
+<td headers="OLS1" class="gt_row gt_center">(0.008)</td>
+<td headers="OLS2" class="gt_row gt_center">(0.007)</td></tr>
+    <tr><td headers=" " class="gt_row gt_left">Mujer (=1)</td>
+<td headers="OLS1" class="gt_row gt_center"></td>
+<td headers="OLS2" class="gt_row gt_center">-0.361***</td></tr>
+    <tr><td headers=" " class="gt_row gt_left" style="border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #000000;"></td>
+<td headers="OLS1" class="gt_row gt_center" style="border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #000000;"></td>
+<td headers="OLS2" class="gt_row gt_center" style="border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #000000;">(0.039)</td></tr>
+    <tr><td headers=" " class="gt_row gt_left">Num.Obs.</td>
+<td headers="OLS1" class="gt_row gt_center">526</td>
+<td headers="OLS2" class="gt_row gt_center">526</td></tr>
+    <tr><td headers=" " class="gt_row gt_left">R2</td>
+<td headers="OLS1" class="gt_row gt_center">0.186</td>
+<td headers="OLS2" class="gt_row gt_center">0.300</td></tr>
+    <tr><td headers=" " class="gt_row gt_left">R2 Adj.</td>
+<td headers="OLS1" class="gt_row gt_center">0.184</td>
+<td headers="OLS2" class="gt_row gt_center">0.298</td></tr>
+    <tr><td headers=" " class="gt_row gt_left">F</td>
+<td headers="OLS1" class="gt_row gt_center">119.582</td>
+<td headers="OLS2" class="gt_row gt_center">112.189</td></tr>
   </tbody>
   <tfoot class="gt_sourcenotes">
     <tr>
@@ -866,14 +904,20 @@ tab_style(style = cell_text(size = "x-small"), locations = cells_source_notes())
   
 </table>
 </div>
+
+---
+name: py
+# &lt;span style="font-size:80%"&gt;Ejercicio aplicado en Python: tasas de retorno a la educación&lt;/span&gt;
+
+En el siguiente link se puede descagar el código en Python: [MCO.py](https://gusgarciacruz.github.io/EconometriaII/MCO/MCO.py)
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
 <script>var slideshow = remark.create({
-"highlightStyle": "github",
-"highlightLines": true,
-"countIncrementalSlides": false,
-"ratio": "16:9"
+  "highlightStyle": "github",
+  "highlightLines": true,
+  "countIncrementalSlides": false,
+  "ratio": "16:9"
 });
 if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
   window.dispatchEvent(new Event('resize'));

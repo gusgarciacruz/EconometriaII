@@ -101,7 +101,9 @@ Link slides en formato [PDF](https://gusgarciacruz.github.io/EconometriaII/MCO/M
 
 - <span style="font-size:150%"> [<span style="color:black">Propiedades de los estimadores MCO](#propiedades)</span> <br> <br>
 
-- <span style="font-size:150%"> [<span style="color:black">Ejercicio aplicado en R: tasas de retorno a la educación](#r)</span>
+- <span style="font-size:150%"> [<span style="color:black">Ejercicio aplicado en R: tasas de retorno a la educación](#r)</span> <br> <br>
+
+- <span style="font-size:150%"> [<span style="color:black">Ejercicio aplicado en Python: tasas de retorno a la educación](#py)</span>
 
 ---
 # <span style="font-size:80%">Lecturas</span>
@@ -124,7 +126,7 @@ Recordando los <font color = "blue">supuestos iniciales</font>:
 
 - Los coeficientes $\beta_{j}$ con $j=1,2,3,...,k$ son fijos y desconocidos
 
-- Las $X_{ij}$ son estocásticamente fijas para $j=2,3,4,...,k$. Este es un supuesto de partida propio del laboratorio. Un supuesto más real en economía y que lleva a resultados similares es: las variables explicatorias son exógenas. Esto implica que:
+- Las $X_{ij}$ son fijas o no estocásticas (no aleatorias) para $j=2,3,4,...,k$. Este es un supuesto de partida propio del laboratorio. Un supuesto más real en economía y que lleva a resultados similares es: las variables explicatorias son exógenas. Esto implica que:
 $$Cov(X_{i2},u_{i})=0$$
 $$Cov(X_{i3},u_{i})=0$$
 $$\vdots$$
@@ -380,3 +382,9 @@ modelos <- list("OLS1" = lm(lwage ~ educ, data = wage1),
 modelsummary(modelos, output = 'gt', coef_map = c('educ' = 'Educación', 'female' = 'Mujer (=1)'), stars = c('*'=.1, '**'=.05, '***'=.01), statistic = "std.error", title = 'Tabla 1. Determinantes de los salarios (Y = log(salario))', gof_omit = 'IC|Log|RMSE') |> 
 tab_style(style = cell_text(size = "x-small"), locations = cells_source_notes()) |>  tab_source_note(source_note = "Nota: Errores estándar en paréntesis")
 ```
+
+---
+name: py
+# <span style="font-size:80%">Ejercicio aplicado en Python: tasas de retorno a la educación</span>
+
+En el siguiente link se puede descagar el código en Python: [MCO.py](https://gusgarciacruz.github.io/EconometriaII/MCO/MCO.py)
