@@ -101,7 +101,9 @@ Link slides en formato [PDF](https://gusgarciacruz.github.io/EconometriaII/MCG/M
 
 - <span style="font-size:150%"> [<span style="color:black">El estimador MCG](#MCG)</span> <br> <br>
 
-- <span style="font-size:150%"> [<span style="color:black">Ejercicio aplicado en R: heteroscedasticidad](#r)</span>
+- <span style="font-size:150%"> [<span style="color:black">Ejercicio aplicado en R: heteroscedasticidad](#r)</span> <br> <br>
+
+- <span style="font-size:150%"> [<span style="color:black">Ejercicio aplicado en Python: heteroscedasticidad](#py)</span>
 
 ---
 # <span style="font-size:80%">Lecturas</span>
@@ -326,6 +328,11 @@ hc0
 
 hc1 <- coeftest(ols, vcov = vcovHC(ols, "HC1"))
 hc1
-
 ```
+
+---
+name: py
+# <span style="font-size:80%">Ejercicio aplicado en Python: heteroscedasticidad</span>
+
+En el siguiente link se puede descagar el código en Python: [MCG.py](https://gusgarciacruz.github.io/EconometriaII/MCO/MCG.py)
 

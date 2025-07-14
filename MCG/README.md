@@ -5,4 +5,6 @@
 
 - <span style="font-size:150%">El estimador MCG</span> <br>
 
-- <span style="font-size:150%"> Ejercicio aplicado en R: heteroscedasticidad</span>
+- <span style="font-size:150%"> Ejercicio aplicado en R: heteroscedasticidad</span> <br>
+
+- <span style="font-size:150%"> Ejercicio aplicado en Python: heteroscedasticidad</span>

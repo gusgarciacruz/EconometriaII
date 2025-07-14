@@ -4,13 +4,13 @@
     <title>Repaso de MCG</title>
     <meta charset="utf-8" />
     <meta name="author" content="Gustavo A. García   ggarci24@eafit.edu.co                  " />
-    <script src="libs/header-attrs-2.25/header-attrs.js"></script>
+    <script src="libs/header-attrs-2.29/header-attrs.js"></script>
     <script src="libs/clipboard-2.0.6/clipboard.min.js"></script>
     <link href="libs/xaringanExtra-clipboard-0.2.6/xaringanExtra-clipboard.css" rel="stylesheet" />
     <script src="libs/xaringanExtra-clipboard-0.2.6/xaringanExtra-clipboard.js"></script>
     <script>window.xaringanExtraClipboard(null, {"button":"<i class=\"fa fa-clipboard\"><\/i>","success":"<i class=\"fa fa-check\" style=\"color: #90BE6D\"><\/i>","error":"<i class=\"fa fa-times-circle\" style=\"color: #F94144\"><\/i>"})</script>
-    <link href="libs/font-awesome-6.4.2/css/all.min.css" rel="stylesheet" />
-    <link href="libs/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet" />
+    <link href="libs/font-awesome-6.5.2/css/all.min.css" rel="stylesheet" />
+    <link href="libs/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet" />
     <link href="libs/xaringanExtra-extra-styles-0.2.6/xaringanExtra-extra-styles.css" rel="stylesheet" />
     <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
   </head>
@@ -83,7 +83,9 @@ Link slides en formato [PDF](https://gusgarciacruz.github.io/EconometriaII/MCG/M
 
 - &lt;span style="font-size:150%"&gt; [&lt;span style="color:black"&gt;El estimador MCG](#MCG)&lt;/span&gt; &lt;br&gt; &lt;br&gt;
 
-- &lt;span style="font-size:150%"&gt; [&lt;span style="color:black"&gt;Ejercicio aplicado en R: heteroscedasticidad](#r)&lt;/span&gt;
+- &lt;span style="font-size:150%"&gt; [&lt;span style="color:black"&gt;Ejercicio aplicado en R: heteroscedasticidad](#r)&lt;/span&gt; &lt;br&gt; &lt;br&gt;
+
+- &lt;span style="font-size:150%"&gt; [&lt;span style="color:black"&gt;Ejercicio aplicado en Python: heteroscedasticidad](#py)&lt;/span&gt;
 
 ---
 # &lt;span style="font-size:80%"&gt;Lecturas&lt;/span&gt;
@@ -254,8 +256,26 @@ name: r
 Cuando `\(\boldsymbol\Omega\)` es una matriz diagonal de varianzas de error no iguales, estamos ante problemas de heteroscedasticidad, así que `\(\widehat{\textbf{B}}_{MCG}\)` será el estimador de *mínimos cuadrados ponderados* (MCP)
 
 
-```r
+``` r
 library(foreign); library(lmtest); library(sandwich)
+```
+
+```
+Loading required package: zoo
+```
+
+```
+
+Attaching package: 'zoo'
+```
+
+```
+The following objects are masked from 'package:base':
+
+    as.Date, as.Date.numeric
+```
+
+``` r
 data &lt;- read.dta("https://stats.idre.ucla.edu/stat/stata/webbooks/reg/elemapi2.dta")
 
 ols &lt;- lm(api00 ~ meals + ell + emer, data=data, subset = data$meals&gt;0) 
@@ -263,7 +283,7 @@ ols &lt;- lm(api00 ~ meals + ell + emer, data=data, subset = data$meals&gt;0)
 
 Probando la existencia de heteroscedasticidad a partir del test de Breuch-Pagan `\((H_0: \text{ homoscedasticidad})\)`
 
-```r
+``` r
 bptest(ols)
 ```
 
@@ -278,7 +298,7 @@ BP = 8.442, df = 3, p-value = 0.03771
 Ausumiendo que la variable `\(meals\)` es la cuausante de la heteroscedasticidad y que la estructura de la heteroscedasticidad es `\(Var(u) = \sigma^2meals\)`, el modelo corregido por MCP será
 
 
-```r
+``` r
 mcp &lt;- lm(api00 ~ meals + ell + emer, weight = 1/meals, data=data, subset = data$meals&gt;0)
 summary(mcp)
 ```
@@ -335,7 +355,7 @@ donde `\(h_{ii}\)` son los valores estimados, `\(\delta_i = min\{4,h_{ii}/\bar{h
 # &lt;span style="font-size:80%"&gt;Ejercicio aplicado en R: heteroscedasticidad&lt;/span&gt;
 
 
-```r
+``` r
 hc_const &lt;- coeftest(ols, vcov = vcovHC(ols, "const"))
 hc_const
 ```
@@ -353,7 +373,7 @@ emer         -1.57162    0.29315  -5.3612 1.409e-07 ***
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ```
 
-```r
+``` r
 hc0 &lt;- coeftest(ols, vcov = vcovHC(ols, "HC0"))
 hc0
 ```
@@ -371,7 +391,7 @@ emer         -1.57162    0.32857  -4.7833 2.439e-06 ***
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ```
 
-```r
+``` r
 hc1 &lt;- coeftest(ols, vcov = vcovHC(ols, "HC1"))
 hc1
 ```
@@ -389,14 +409,20 @@ emer         -1.57162    0.33022  -4.7593 2.731e-06 ***
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ```
 
+---
+name: py
+# &lt;span style="font-size:80%"&gt;Ejercicio aplicado en Python: heteroscedasticidad&lt;/span&gt;
+
+En el siguiente link se puede descagar el código en Python: [MCG.py](https://gusgarciacruz.github.io/EconometriaII/MCO/MCG.py)
+
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
 <script>var slideshow = remark.create({
-"highlightStyle": "github",
-"highlightLines": true,
-"countIncrementalSlides": false,
-"ratio": "16:9"
+  "highlightStyle": "github",
+  "highlightLines": true,
+  "countIncrementalSlides": false,
+  "ratio": "16:9"
 });
 if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
   window.dispatchEvent(new Event('resize'));
