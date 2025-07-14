@@ -334,5 +334,5 @@ hc1
 name: py
 # <span style="font-size:80%">Ejercicio aplicado en Python: heteroscedasticidad</span>
 
-En el siguiente link se puede descagar el código en Python: [MCG.py](https://gusgarciacruz.github.io/EconometriaII/MCO/MCG.py)
+En el siguiente link se puede descagar el código en Python: [MCG.py](https://gusgarciacruz.github.io/EconometriaII/MCG/MCG.py)
 
