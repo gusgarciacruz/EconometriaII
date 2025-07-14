@@ -2,7 +2,7 @@
 
 Profesor: [Gustavo A. García](https://gusgarciacruz.github.io/cv)
 
-[Programa del curso](https://gusgarciacruz.github.io/EconometriaII/EC0251ECONOMETRA2-2025I.pdf)<br>
+[Programa del curso](https://gusgarciacruz.github.io/EconometriaII/EC0251ECONOMETRA2-2025II.pdf)<br>
 
 **Temas**<br>
 [Una breve introducción a R](https://gusgarciacruz.github.io/EbookR_introduccion/)<br>
@@ -31,9 +31,6 @@ Profesor: [Gustavo A. García](https://gusgarciacruz.github.io/cv)
 
 [Modelos de elección discreta](https://gusgarciacruz.github.io/EconometriaII/ModelosEleccion/ModelosEleccion.html)<br>
 
-[Instrucciones trabajo de investigación](https://gusgarciacruz.github.io/EconometriaII/TrabajoInvestigacion/TrabajoInvestigacion.html)<br>
+[Reto 1: Haciendo Macroeconomía](https://gusgarciacruz.github.io/EconometriaII/Reto1.pdf)<br>
 
-[Q1](https://gusgarciacruz.github.io/EconometriaII/Q1.pdf)<br>
-
-[Q3](https://gusgarciacruz.github.io/EconometriaII/Q3.pdf)
-
+[Reto 2: Haciendo Microeconomía](https://gusgarciacruz.github.io/EconometriaII/Reto2.pdf)<br>
