@@ -25,11 +25,9 @@ Profesor: [Gustavo A. García](https://gusgarciacruz.github.io/cv)
 
 [Modelos de ecuaciones simultáneas](https://gusgarciacruz.github.io/EconometriaII/EcuSimultaneas/EcuSimultaneas.html)<br>
 
-[Modelos de datos panel](https://gusgarciacruz.github.io/EconometriaII/ModelosPanel/ModelosPanel.html)<br>
-
-[Diferencias en diferencias](https://gusgarciacruz.github.io/EconometriaII/DiD/DiD.html)<br>
-
 [Modelos de elección discreta](https://gusgarciacruz.github.io/EconometriaII/ModelosEleccion/ModelosEleccion.html)<br>
+
+[Modelos de datos panel](https://gusgarciacruz.github.io/EconometriaII/ModelosPanel/ModelosPanel.html)<br>
 
 [Reto 1: Haciendo Macroeconomía](https://gusgarciacruz.github.io/EconometriaII/Reto1.pdf)<br>
 
