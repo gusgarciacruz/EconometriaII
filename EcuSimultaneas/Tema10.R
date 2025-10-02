@@ -1,34 +1,18 @@
-# Modelos de ecuaciones simultáneas
+# Modelos de Ecuaciones Simultáneas
 
 # Condición de rango
 # Determinante de la matriz de coeficientes de las variables excluidas
-# Se debe instalar el paquete rSymPy, que depende de los paquetes rjson y rJython 
-# En el siguiente link se puede descargar el paquete rJython https://cran.r-project.org/src/contrib/Archive/rJython/ (bajar la versión 4)
-# En el siguiente link se puede descargar el paquete rSymPy https://cran.r-project.org/src/contrib/Archive/rSymPy/ (bajar la última versión)
-# Si tienen problema con RJava pueden mirar este blog donde mencionan la solución: https://www.r-statistics.com/2012/08/how-to-load-the-rjava-package-after-the-error-java_home-cannot-be-determined-from-the-registry/ 
-setwd("C:/Users/ggarci24/OneDrive - Universidad EAFIT/EAFIT/Cursos EAFIT/Econometria II/R/Tema 10")
-install.packages("rjson")
-library(rjson)
-install.packages("rJava")
-library(rJava)
-install.packages("rJython_0.0-4.tar.gz", repos = NULL, type = "source", INSTALL_opts = "--no-multiarch")
-library(rJython)
-install.packages("rSymPy_0.2-1.2.tar.gz", repos = NULL, type = "source", INSTALL_opts = "--no-multiarch")
-library(rSymPy)
+install.packages('Ryacas')
+library(Ryacas)
 
-# Si no funciona los install.packages seguir la siguiente ruta:
-# - ir a la pestaña de Packages, luego a Install
-# - En Install from: poner Package Archive file
-# - En Browse dar en el icono de R y cargar cada paquete
+gamma22 <- ysym("gamma22")
+gamma32 <- ysym("gamma32")
+gamma43 <- ysym("gamma43")
 
-Det <- function(x) Sym("(", x, ").det()")
-
-gamma22 <- Var("gamma22") 
-gamma32 <- Var("gamma32") 
-gamma43 <- Var("gamma43")
-A <- Matrix(List(0,-gamma22,0), List(0,-gamma32,0), List(1,0,-gamma43))
-A
-Det(A)
+A1 <- "List(List(0, -gamma22, 0), List(0, -gamma32, 0), List(1, 0, -gamma43))"
+A1
+deter.A1 <- yac_str(paste("Determinant(", A1, ")"))
+deter.A1
 
 # Analicemos el modelo del comportamiento del gasto gubernamental de US
 # El sistema de ecuaciones que se va a estimar es:
@@ -126,6 +110,9 @@ eq.sys <- list(EXP = eqEXP,
 MCO <- systemfit(eq.sys, method = "OLS", data = data)
 summary(MCO)
 
+EXP.mco <- lm(EXP ~ AID + INC + POP, data=data)
+AID.mco <- lm(AID ~ EXP + PS, data=data)
+
 stargazer(EXP.mco, AID.mco,
           header = FALSE, 
           type = "text",
@@ -168,6 +155,7 @@ summary(MC3E)
 # En este ejercicio se estima una función de demanda de gasolina para
 # 18 países de la OCDE en el periodo 1960-1978 (T=19)
 
+library(tidyverse)
 data <- read.csv("./Baltagi/GASOLINE.DAT", sep="") |> 
   filter(CO %in% c("AUSTRIA","BELGIUM","CANADA")) |> # Utilizamos información para tres países
   mutate(CO_l = case_when(CO=="AUSTRIA" ~ "A",
