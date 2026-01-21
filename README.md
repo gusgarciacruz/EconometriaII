@@ -2,7 +2,7 @@
 
 Profesor: [Gustavo A. García](https://gusgarciacruz.github.io/cv)
 
-[Programa del curso](https://gusgarciacruz.github.io/EconometriaII/EC0251ECONOMETRA2-2025II.pdf)<br>
+[Programa del curso](https://gusgarciacruz.github.io/EconometriaII/EC0251ECONOMETRA2-2026I.pdf)<br>
 
 **Temas**<br>
 [Una breve introducción a R](https://gusgarciacruz.github.io/EbookR_introduccion/)<br>
@@ -31,6 +31,4 @@ Profesor: [Gustavo A. García](https://gusgarciacruz.github.io/cv)
 
 [Reto 1: Haciendo Macroeconomía](https://gusgarciacruz.github.io/EconometriaII/Reto1.pdf)<br>
 
-[Bono Reto 1: Haciendo Macroeconomía](https://gusgarciacruz.github.io/EconometriaII/BonoReto1.pdf)<br>
-
-[Reto 2: Haciendo Microeconomía](https://gusgarciacruz.github.io/EconometriaII/Reto2.pdf)<br>
+[Reto 2: Haciendo Microeconomía](https://gusgarciacruz.github.io/EconometriaII/Reto22.pdf)<br>
