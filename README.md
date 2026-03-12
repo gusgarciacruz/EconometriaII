@@ -31,4 +31,4 @@ Profesor: [Gustavo A. García](https://gusgarciacruz.github.io/cv)
 
 [Reto 1: Haciendo Macroeconomía](https://gusgarciacruz.github.io/EconometriaII/Reto1.pdf)<br>
 
-[Reto 2: Haciendo Microeconomía](https://gusgarciacruz.github.io/EconometriaII/Reto22.pdf)<br>
+[Reto 2: Haciendo Microeconomía](https://gusgarciacruz.github.io/EconometriaII/Reto2.pdf)<br>
