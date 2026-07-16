@@ -2,7 +2,7 @@
 
 Profesor: [Gustavo A. García](https://gusgarciacruz.github.io/cv)
 
-[Programa del curso](https://gusgarciacruz.github.io/EconometriaII/EC0251ECONOMETRA2-2026I.pdf)<br>
+[Programa del curso](https://gusgarciacruz.github.io/EconometriaII/EC0251ECONOMETRA2-2026II.pdf)<br>
 
 **Temas**<br>
 [Una breve introducción a R](https://gusgarciacruz.github.io/EbookR_introduccion/)<br>
